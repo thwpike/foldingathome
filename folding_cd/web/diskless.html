@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Windows Diskless Folding HOWTO</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.4  (Linux)">
+	<META NAME="CREATED" CONTENT="20050109;20260300">
+	<META NAME="CHANGED" CONTENT="20050822;21171300">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=CENTER><FONT SIZE=7 STYLE="font-size: 32pt">Windows Diskless
+Folding HOWTO</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=5 STYLE="font-size: 20pt"><B>What you need:</B></FONT></P>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="font-weight: medium"><FONT SIZE=3>Broadband
+	always on Internet connection.</FONT></P>
+	<LI><P ALIGN=LEFT>Router for the Internet connection which can have
+	DHCP disabled on it.</P>
+	<LI><P ALIGN=LEFT>PC to act as a server for the diskless clients.
+	This can be your ordinary PC but it is going to need to be on all
+	the time &ndash; it should be on all the time folding anyway!</P>
+	<LI><P ALIGN=LEFT>Other PCs as diskless clients. These need at a
+	minimum:</P>
+	<UL>
+		<LI><P ALIGN=LEFT>Motherboard, processor, memory, power supply.</P>
+		<LI><P ALIGN=LEFT>Network card that supports PXE booting. This can
+		be built in to the motherboard, in fact nearly all the ones that are built
+		in to the motherboard seem to support network booting.</P>
+		<LI><P ALIGN=LEFT>You will need a keyboard, graphics card and
+		monitor to set them up initially, but once the diskless computers
+		are running they are not required. Usually just use one of each
+		between all the diskless computers.</P>
+	</UL>
+</UL>
+<P ALIGN=LEFT><FONT SIZE=5 STYLE="font-size: 20pt"><B>Setting it up:</B></FONT></P>
+<P ALIGN=LEFT><B>N.B. </B>The instructions below are from a Windows
+XP machine with SP2 and no extra software. This should work on all
+versions of Windows, but you may find options are on slightly
+different screens.</P>
+Start off with just your main computer
+running, all others turned off.<BR>
+<BR>
+Open your Network Connection Status
+window (from Control Panel, or from right clicking on the icon in
+your status bar)<BR>
+<IMG SRC="images/430a7376.jpg" NAME="Graphic1" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=306 HEIGHT=375 BORDER=0>
+<BR>
+Go to the Support tab:<BR>
+<IMG SRC="images/430a7377.jpg" NAME="Graphic2" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=306 HEIGHT=375 BORDER=0>
+<BR>
+And then go to Details...<BR>
+<IMG SRC="images/430a7378.jpg" NAME="Graphic3" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=289 HEIGHT=295 BORDER=0>
+<BR>
+Write down the following, with the
+details from your computer. You may only have one DNS server, that is
+fine, just note down what you have.<BR>
+IP Address: 192.168.1.2<BR>
+Subnet Mask: 255.255.255.0<BR>
+Default Gateway: 192.168.1.254<BR>
+DHCP Server: 192.168.1.254<BR>
+DNS Servers: 206.191.0.140,
+206.191.0.210<BR>
+<BR>
+<BR>
+Close that window, go back to the
+General tab, select Properties<BR>
+<IMG SRC="images/430a7379.jpg" NAME="Graphic4" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=306 HEIGHT=375 BORDER=0>
+<BR>
+Highlight Internet Protocol (TCP/IP)
+and select Properties here. Change it to Use the following IP address
+and Use the following DNS server addresses and fill them in with the
+information from above. If you only have one DNS server above, just
+leave the Alternate DNS server blank, don't try to make something up.<BR>
+<IMG SRC="images/430a737a.jpg" NAME="Graphic5" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=337 HEIGHT=379 BORDER=0>
+<BR>
+Now select OK and Close respectively to
+get out of all of the windows until you are back at your desktop.<BR>
+<BR>
+Go to your router configuration window
+and turn off the DHCP server. This is very router specific so I
+haven't shown it here.<BR>
+<BR>
+Download the newest version of <A HREF="http://perso.wanadoo.fr/philippe.jounin/tftpd32.html#Versions">tftpd32</A>,
+create a directory on your hard drive and put the contents of the zip
+file in that directory:<BR>
+<IMG SRC="images/430a737b.jpg" NAME="Graphic6" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=364 HEIGHT=373 BORDER=0>
+<BR>
+Startup tftpd32, note that Windows or
+any firewall program you have may pop up an alert about the ports
+that tftpd32 wants to listen on.<BR>
+<IMG SRC="images/430a737c.jpg" NAME="Graphic7" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=362 HEIGHT=260 BORDER=0>
+<BR>
+Select Unblock / Allow or similar
+<BR>
+<IMG SRC="images/430a737d.jpg" NAME="Graphic8" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=334 HEIGHT=266 BORDER=0><BR>
+Select Settings<BR>
+<IMG SRC="images/430a737e.jpg" NAME="Graphic9" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=307 HEIGHT=382 BORDER=0><BR>
+Only have the TFTP Server and DHCP
+Server enabled, leave the TFTP Security as Standard, turn on PXE
+Compatibility and Allow '\' As virtual root. Select OK and close and
+restart tftpd32 to get the changes to take effect.<BR>
+<BR>
+Go to the DHCP server tab on the main window<BR>
+<IMG SRC="images/430a737f.jpg" NAME="Graphic10" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=334 HEIGHT=266 BORDER=0><BR>
+IP Pool starting address should be the
+IP address of your main box + 10<BR>
+Size of pool should be number of
+diskless folders plus a few. Make sure that this plus the last number
+of the IP pool starting address is less than 254.<BR>
+Boot File should be pxelinux.0 (number
+0, not capital letter O)<BR>
+WINS/DNS Server should be your first
+DNS server<BR>
+Default router is the default gateway<BR>
+Mask is the subnet mask.<BR>
+Leave the rest blank and press Save.<BR>
+<BR>
+Download the network diskless zip file
+from <A HREF="diskless.zip">HERE</A> (12MB) and extract the contents to the same directory that is
+holding tftpd32.<BR>
+<IMG SRC="images/430a7380.jpg" NAME="Graphic11" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=558 HEIGHT=330 BORDER=0>
+<BR>
+In the pxelinux.cfg directory there is
+a file called default, open this with WordPad (use WordPad and not NotePad because the file is in Unix format) and change the USER and
+TEAM if necessary. You may also want to change BIG to no if you don't
+want to work on big WUs.<BR>
+<IMG SRC="images/430a7381.jpg" NAME="Graphic12" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=532 HEIGHT=213 BORDER=0>
+<BR>
+<BR>
+Boot your diskless workstations, you
+should see them startup in the log shown under the TFTP Server tab in
+tftpd32. This can help in determining the IP addresses of them for
+you to point a web browser at to monitor them.<BR>
+<IMG SRC="images/430a7382.jpg" NAME="Graphic13" ALT="&lt;IMG&gt;" ALIGN=BOTTOM WIDTH=479 HEIGHT=309 BORDER=0>
+<BR>
+After
+a couple of hours, you will see backup files appear in the same
+directory. These are of the format:
+<TT>backup.$IP.A.$Instance<BR>backup.$IP.B.$Instance<BR>latest.$IP.$Instance<BR></TT>
+where <TT>$IP</TT> is the IP address and <TT>$Instance</TT> is the instance being backed up.
+<BR>
+<BR>
+This software is covered by the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License Version 2</a>. The <a href="folding_cd.tar.bz2">source</a> (59MB) must be redistributed with the CD image. Note that the tar file should be extracted as root as it contains device special files and system files. It only contains relative paths and hence is safe to extract as root.<BR>
+<P ALIGN=LEFT><FONT SIZE=5 STYLE="font-size: 20pt"><B>News:</B></FONT></P>

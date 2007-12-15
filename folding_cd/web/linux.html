@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Debian/Ubuntu Diskless Folding HOWTO</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=CENTER><FONT SIZE=7 STYLE="font-size: 32pt">Debian/Ubuntu Diskless
+Folding HOWTO</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=5 STYLE="font-size: 20pt"><B>What you need:</B></FONT></P>
+<UL>
+	<LI><P ALIGN=LEFT STYLE="font-weight: medium"><FONT SIZE=3>Broadband
+	always on Internet connection.</FONT></P>
+	<LI><P ALIGN=LEFT>Router for the Internet connection which can have
+	DHCP disabled on it.</P>
+	<LI><P ALIGN=LEFT>PC to act as a server for the diskless clients.
+	This can be your ordinary PC but it is going to need to be on all
+	the time &ndash; it should be on all the time folding anyway!</P>
+	<LI><P ALIGN=LEFT>Other PCs as diskless clients. These need at a
+	minimum:</P>
+	<UL>
+		<LI><P ALIGN=LEFT>Motherboard, processor, memory, power supply.</P>
+		<LI><P ALIGN=LEFT>Network card that supports PXE booting. This can
+		be built in to the motherboard, in fact nearly all the ones that are built
+		in to the motherboard seem to support network booting.</P>
+		<LI><P ALIGN=LEFT>You will need a keyboard, graphics card and
+		monitor to set them up initially, but once the diskless computers
+		are running they are not required. Usually just use one of each
+		between all the diskless computers.</P>
+	</UL>
+</UL>
+<P ALIGN=LEFT><FONT SIZE=5 STYLE="font-size: 20pt"><B>Setting it up:</B></FONT></P>
+Start off with just your main computer
+running, all others turned off.<BR>
+<BR>
+Write down the following, with the
+details from your computer. You may only have one DNS server, that is
+fine, just note down what you have, e.g.<BR>
+<PRE>IP Address: 192.168.1.24
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.1.254
+DNS Servers: 206.191.0.140,
+             206.191.0.210
+</PRE>
+<BR>
+You can find:
+<UL>
+<LI>IP Address and subnet mask in the output of /sbin/ifconfig<BR>
+<LI>Default Gateway in the output of netstat -nr - it is the Gateway listed for the Destination 0.0.0.0
+<LI>DNS Servers listed as "nameserver" in the file /etc/resolv.conf
+</UL>
+<BR>
+As root (or via sudo) edit /etc/network/interfaces and change the line
+<PRE>iface eth0 inet dhcp</PRE>
+to
+<PRE>iface eth0 inet static
+	address 192.168.1.24
+	netmask 255.255.255.0
+	gateway 192.168.1.254
+</PRE>
+Substituting the values you obtained earlier for IP address Subnet Mask and Default Gateway.<BR>
+Now install the DHCP server and TFTP server on your PC
+<PRE>apt-get install dhcp3-server tftpd-hpa</PRE>
+Ignore any warnings and set tftpd-hpa to be started by inetd if you are prompted (Debian does, Ubuntu doesn't).<BR>
+Now edit /etc/dhcp3/dhcpd.conf
+<PRE>#
+# Sample configuration file for ISC dhcpd for Debian
+#
+# $Id: dhcpd.conf,v 1.1.1.1 2002/05/21 00:07:44 peloy Exp $
+#
+
+# The ddns-updates-style parameter controls whether or not the server will
+# attempt to do a DNS update when a lease is confirmed. We default to the
+# behavior of the version 2 packages ('none', since DHCP v2 didn't
+# have support for DDNS.)
+ddns-update-style none;
+
+# option definitions common to all supported networks...
+option domain-name-servers 206.191.0.140, 206.191.0.210;
+option routers 192.168.1.254;
+next-server 192.168.1.24;
+filename "PXEClient/pxelinux.0";
+use-host-decl-names on;
+
+# If this DHCP server is the official DHCP server for the local
+# network, the authoritative directive should be uncommented.
+authoritative;
+
+# Use this to send dhcp log messages to a different log file (you also
+# have to hack syslog.conf to complete the redirection).
+log-facility local7;
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.30 192.168.1.200;
+  default-lease-time 3600;
+  max-lease-time 7200;
+}
+</PRE>
+Replace domain-name-servers entries with your DNS Servers<BR>
+Replace routers rentry with your Default Gateway<BR>
+Replace next-server with your IP Address<BR>
+Ensure the subnet and netmask covers your IP Address and the Default Gateway, and ensure the range is valid for that subnet and netmask but does not include your IP Address or the Default Gateway.<BR>
+<BR>
+Start the DHCP server as root (or via sudo) with <TT>/etc/init.d/dhcp3-server restart</TT><BR>
+<BR>
+Go to your router configuration window
+and turn off the DHCP server. This is very router specific so I
+haven't shown it here.<BR>
+<BR>
+Download the network diskless zip file
+from <A HREF="diskless.zip">HERE</A> (12MB) and extract the contents to /var/lib/tftpboot/PXEClient (you will need to create this directory) with the <TT>unzip</TT> command.<BR>
+<BR>
+In the pxelinux.cfg directory there is
+a file called default, edit this and change the USER and
+TEAM if necessary. You may also want to change BIG to no if you don't
+want to work on big WUs.<BR>
+<BR>To enable the diskless machines to backup their work, touch the files<BR>
+<PRE>backup.$IP.A.$Instance
+backup.$IP.B.$Instance
+latest.$IP.$Instance
+</PRE>
+in the directory  /var/lib/tftpboot/ where <TT>$IP</TT> is the IP address of the diskless folder (starting at the beginning of the range specified in the dhcpd.conf file above) and <TT>$Instance</TT> is the instance being backed up. Instance numbers start at 1 and there is one per logical processor (so 2 for HyperThreading or Dual Core processors). Also chmod 777 the files after creating them.<BR><BR>
+Network boot your diskless workstations, you
+should see them obtain an IP address in /var/log/syslog.
+ This can help in determining the IP addresses of them for
+you to point a web browser at to monitor them.<BR>
+<BR>
+After a couple of hours, you will see the backup files you created earlier actually have some size to them if you <TT>ls -l /var/lib/tftpboot</TT>
+<BR>
+<BR>
+This software is covered by the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License Version 2</a>. The <a href="folding_cd.tar.bz2">source</a> (59MB) must be redistributed with the CD image. Note that the tar file should be extracted as root as it contains device special files and system files. It only contains relative paths and hence is safe to extract as root.<BR>
+<BR>
+<B>News</B><BR>

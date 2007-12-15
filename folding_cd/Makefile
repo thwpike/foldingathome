@@ -1,0 +1,330 @@
+WEBDIR = /var/www/reilly/folding
+CGIDIR = /usr/lib/cgi-bin
+
+all : folding_cd.iso diskless.zip usb.zip
+
+.PHONY : clean install_net install_web
+.NOTPARALLEL : glibc_32libs glibc64_libs
+
+clean:
+	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.2.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
+
+### install_web ###
+install_web: $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin
+
+$(WEBDIR)/diskless.zip : diskless.zip
+	cp diskless.zip $(WEBDIR)
+
+$(WEBDIR)/fold64.vmx : web/fold64.vmx
+	cp web/fold64.vmx $(WEBDIR)
+
+$(WEBDIR)/fold.vmx : web/fold.vmx
+	cp web/fold.vmx $(WEBDIR)
+
+$(WEBDIR)/index.html : web/index.html
+	cp web/index.html $(WEBDIR)
+
+$(WEBDIR)/syslinux : initrd_dir/bin/syslinux
+	cp initrd_dir/bin/syslinux $(WEBDIR)
+
+$(WEBDIR)/syslinux.com : diskless/syslinux.com
+	cp diskless/syslinux.com $(WEBDIR)
+
+$(WEBDIR)/syslinux.exe : diskless/syslinux.exe
+	cp diskless/syslinux.exe $(WEBDIR)
+
+$(WEBDIR)/usb.zip : usb.zip
+	cp usb.zip $(WEBDIR)
+
+$(CGIDIR)/fold.iso : web/fold.iso
+	cp web/fold.iso $(CGIDIR)
+
+$(CGIDIR)/kernel32 : boot/kernel32
+	cp boot/kernel32 $(CGIDIR)
+
+$(CGIDIR)/kernel64 : boot/kernel64
+	cp boot/kernel64 $(CGIDIR)
+
+$(CGIDIR)/initrd : boot/initrd
+	cp boot/initrd $(CGIDIR)
+
+$(CGIDIR)/isolinux.bin : boot/isolinux.bin
+	cp boot/isolinux.bin $(CGIDIR)
+
+$(WEBDIR)/cd.html : NEWS web/cd.html
+	cat web/cd.html > $(WEBDIR)/cd.html && \
+	sed "a<BR>" NEWS >> $(WEBDIR)/cd.html && \
+	echo "</body>" >> $(WEBDIR)/cd.html && \
+	echo "</html>" >> $(WEBDIR)/cd.html
+
+$(WEBDIR)/usb.html : NEWS web/usb.html
+	cat web/usb.html > $(WEBDIR)/usb.html && \
+	sed "a<BR>" NEWS >> $(WEBDIR)/usb.html && \
+	echo "</body>" >> $(WEBDIR)/usb.html && \
+	echo "</html>" >> $(WEBDIR)/usb.html
+
+$(WEBDIR)/linux.html : NEWS web/linux.html
+	cat web/linux.html > $(WEBDIR)/linux.html && \
+	sed "a<BR>" NEWS >> $(WEBDIR)/linux.html && \
+	echo "</body>" >> $(WEBDIR)/linux.html && \
+	echo "</html>" >> $(WEBDIR)/linux.html
+
+$(WEBDIR)/diskless.html : NEWS web/diskless.html
+	cat web/diskless.html > $(WEBDIR)/diskless.html && \
+	sed "a<BR>" NEWS >> $(WEBDIR)/diskless.html && \
+	echo "</body>" >> $(WEBDIR)/diskless.html && \
+	echo "</html>" >> $(WEBDIR)/diskless.html
+
+
+### install_net ###
+install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0
+
+/var/lib/tftpboot/PXEClient/kernel32 : boot/kernel32
+	cp boot/kernel32 /var/lib/tftpboot/PXEClient/kernel32
+
+/var/lib/tftpboot/PXEClient/kernel64 : boot/kernel64
+	cp boot/kernel64 /var/lib/tftpboot/PXEClient/kernel64
+
+/var/lib/tftpboot/PXEClient/initrd : boot/initrd
+	cp boot/initrd /var/lib/tftpboot/PXEClient/initrd
+
+/var/lib/tftpboot/PXEClient/pxelinux.cfg/default : boot/isolinux.cfg
+	cp boot/isolinux.cfg /var/lib/tftpboot/PXEClient/pxelinux.cfg/default
+
+/var/lib/tftpboot/PXEClient/pxelinux.0 : diskless/pxelinux.0
+	cp diskless/pxelinux.0 /var/lib/tftpboot/PXEClient/pxelinux.0
+
+### diskless.zip ###
+diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0
+	cd diskless && \
+	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default
+
+diskless/kernel32 : boot/kernel32
+	cp boot/kernel32 diskless/kernel32
+
+diskless/kernel64 : boot/kernel64
+	cp boot/kernel64 diskless/kernel64
+
+diskless/initrd : boot/initrd
+	cp boot/initrd diskless/initrd
+
+diskless/pxelinux.cfg/default : boot/isolinux.cfg
+	mkdir -p diskless/pxelinux.cfg && \
+	cp boot/isolinux.cfg diskless/pxelinux.cfg/default
+
+### usb.zip ###
+usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt
+	cd diskless && \
+	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt
+
+diskless/syslinux.cfg : boot/isolinux.cfg
+	cp boot/isolinux.cfg diskless/syslinux.cfg
+
+diskless/version.txt : initrd_dir/init
+	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
+
+### folding_cd.iso ###
+folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/isolinux.cfg
+	mkisofs -o folding_cd.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table boot
+
+boot/isolinux.cfg : patches/isolinux.cfg
+	cp patches/isolinux.cfg boot
+
+#### initrd ####
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/etc/folding/cgi-bin initrd_dir/etc/smb.conf
+	cd initrd_dir && \
+	find . > etc/manifest && \
+	bin/cpio-o < etc/manifest | gzip -9 > ../boot/initrd
+
+initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
+	gcc -m32 -L glibc-32 -o initrd_dir/bin/cpio-o cpio-o.c -lc -lc_nonshared glibc-32/elf/ld.so
+
+#### isolinux, pxelinux, syslinux ####
+boot/isolinux.bin : syslinux_src
+	cd syslinux-3.51 && \
+	$(MAKE) isolinux.bin && \
+	cp isolinux.bin ../boot
+
+diskless/pxelinux.0 : syslinux_src
+	cd syslinux-3.51 && \
+	$(MAKE) pxelinux.0 && \
+	cp pxelinux.0 ../diskless
+
+initrd_dir/bin/mbr.bin : syslinux_src
+	cd syslinux-3.51 && \
+	$(MAKE) mbr/mbr.bin && \
+        cp mbr/mbr.bin ../initrd_dir/bin/mbr.bin
+
+diskless/syslinux.exe : syslinux-3.51/mbr_bin.c syslinux-3.51/bootsect_bin.c syslinux-3.51/ldlinux_bin.c
+	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-3.51/win32 syslinux.exe && \
+	cp syslinux-3.51/win32/syslinux.exe diskless/syslinux.exe
+
+diskless/syslinux.com : syslinux-3.51/mbr_bin.c syslinux-3.51/bootsect_bin.c syslinux-3.51/ldlinux_bin.c
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/dos syslinux.com && \
+	cp syslinux-3.51/dos/syslinux.com diskless/syslinux.com
+
+initrd_dir/bin/syslinux : syslinux-3.51/unix/syslinux.o syslinux-3.51/unix/syslxmod.o syslinux-3.51/unix/bootsect_bin.o syslinux-3.51/unix/ldlinux_bin.o glibc_32libs
+	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-3.51/unix/syslinux.o syslinux-3.51/unix/syslxmod.o syslinux-3.51/unix/bootsect_bin.o syslinux-3.51/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
+
+syslinux-3.51/unix/syslinux.o : syslinux_src
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslinux.o
+
+syslinux-3.51/unix/syslxmod.o : syslinux_src
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslxmod.o
+
+syslinux-3.51/unix/bootsect_bin.o : syslinux-3.51/bootsect_bin.c
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix bootsect_bin.o
+
+syslinux-3.51/unix/ldlinux_bin.o : syslinux-3.51/ldlinux_bin.c
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix ldlinux_bin.o
+
+syslinux-3.51/bootsect_bin.c : syslinux_src
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51 bootsect_bin.c
+
+syslinux-3.51/ldlinux_bin.c : syslinux_src
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51 ldlinux_bin.c
+
+syslinux-3.51/mbr_bin.c : syslinux_src
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51 mbr_bin.c
+
+syslinux_src :
+	tar xjf syslinux-3.51.tar.bz2 && \
+	cd syslinux-3.51 && \
+	patch -p1 < ../patches/syslinux-3.51-64bit.patch && \
+	cd $(CURDIR) && \
+	touch syslinux_src
+
+#### Samba ####
+initrd_dir/bin/smbd : samba_extract glibc_32libs
+	cd samba-3.0.27a/source && \
+	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/smbd && \
+	cp bin/smbd ../../initrd_dir/bin/smbd
+
+initrd_dir/bin/nmbd : samba_extract glibc_32libs
+	cd samba-3.0.27a/source && \
+	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/nmbd && \
+	cp bin/nmbd ../../initrd_dir/bin/nmbd 
+
+samba_extract :
+	tar xzf samba-3.0.27a.tar.gz samba-3.0.27a/source && \
+	cd samba-3.0.27a/source && \
+	./configure CC="gcc -m32 -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" --with-lockdir=/tmp --with-piddir=/tmp --with-configdir=/etc --with-privatedir=/tmp --with-logfilebase=/tmp && \
+	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" include/proto.h
+	cd $(CURDIR) && \
+	touch samba_extract
+
+#### VM Detectors ####
+initrd_dir/bin/isVMWare : glibc_32libs
+	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVMWare isVMWare.c -lc -lc_nonshared glibc-32/elf/ld.so
+
+initrd_dir/bin/isVPC : glibc_32libs
+	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVPC isVPC.c -lc -lc_nonshared glibc-32/elf/ld.so
+
+#### ntpd ####
+initrd_dir/bin/ntpd : glibc_32libs
+	tar xzf ntp-4.2.2p3.tar.gz && \
+	cd ntp-4.2.2p3 && \
+	./configure CC="gcc -m32" --prefix=/ --disable-clockctl --disable-linuxcaps --disable-debugging --disable-all-clocks --disable-ipv6 --without-binsub --without-crypto --without-sntp && \
+	cd ntpd && \
+	$(MAKE) CC="gcc -m32 -L../../glibc-32" ntpd_LDADD="version.o libntpd.a ../libntp/libntp.a ../../glibc-32/math/libm.so ../../glibc-32/libc.so ../../glibc-32/libc_nonshared.a ../../glibc-32/elf/ld.so" ntpd && \
+	strip --strip-debug ntpd && \
+	cp ntpd ../../initrd_dir/bin
+
+#### Busybox ####
+initrd_dir/bin/busybox : glibc_32libs patches/busybox.config
+	tar xjf busybox-1.2.0.tar.bz2 && \
+	cd busybox-1.2.0 && \
+	cp ../patches/busybox.config .config && \
+	$(MAKE) CC="gcc -m32 -L../glibc-32" LIBRARIES="../glibc-32/libc_nonshared.a ../glibc-32/math/libm.so ../glibc-32/libc.so ../glibc-32/elf/ld.so" busybox && \
+	cp busybox ../initrd_dir/bin
+
+#### Glibc build targets ####
+glibc_32libs : glibc_src boot/kernel32
+	ln -s asm-i386 linux-2.6.22.1/include/asm && \
+	mkdir -p glibc-32 && \
+	cd glibc-32 && \
+	../glibc-2.4/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.22.1/include:$(CURDIR)/linux-2.6.22.1/kernel_32/include --enable-kernel=2.6.16 --disable-profile --host=i586-linux && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" lib && \
+	cd ../glibc-2.4/math && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+	cd ../nptl && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+	cd ../nss && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+	cd ../resolv && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+        cd ../crypt && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+	cd ../nis && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
+	cd $(CURDIR) && \
+	rm linux-2.6.22.1/include/asm && \
+	cp glibc-32/libc.so initrd_dir/lib/libc.so.6 && \
+	cp glibc-32/elf/ld-linux.so.2 initrd_dir/lib && \
+	cp glibc-32/nptl/libpthread.so.0 initrd_dir/lib && \
+	cp glibc-32/math/libm.so.6 initrd_dir/lib && \
+	cp glibc-32/nss/libnss_files.so.2 initrd_dir/lib && \
+	cp glibc-32/resolv/libnss_dns.so.2 initrd_dir/lib && \
+	cp glibc-32/resolv/libresolv.so.2 initrd_dir/lib && \
+	cp glibc-32/crypt/libcrypt.so.1 initrd_dir/lib && \
+	cp glibc-32/nis/libnsl.so.1 initrd_dir/lib && \
+	touch glibc_32libs
+
+glibc_64libs : glibc_src boot/kernel64
+	ln -s asm-x86_64 linux-2.6.22.1/include/asm && \
+	mkdir -p glibc-64 && \
+	cd glibc-64 && \
+	../glibc-2.4/configure CFLAGS="-O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.22.1/include:$(CURDIR)/linux-2.6.22.1/kernel_64/include --enable-kernel=2.6.16 --disable-profile && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" lib && \
+        cd ../glibc-2.4/math && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd ../nptl && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd ../rt && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd ../nss && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd ../resolv && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd $(CURDIR) && \
+	rm linux-2.6.22.1/include/asm && \
+	cp glibc-64/libc.so initrd_dir/lib64/libc.so.6 && \
+	cp glibc-64/elf/ld-linux-x86-64.so.2 initrd_dir/lib64 && \
+	cp glibc-64/rt/librt.so.1 initrd_dir/lib64 && \
+	cp glibc-64/nptl/libpthread.so.0 initrd_dir/lib64 && \
+	cp glibc-64/math/libm.so.6 initrd_dir/lib64 && \
+	cp glibc-64/nss/libnss_files.so.2 initrd_dir/lib64 && \
+	cp glibc-64/resolv/libnss_dns.so.2 initrd_dir/lib64 && \
+	cp glibc-64/resolv/libresolv.so.2 initrd_dir/lib64 && \
+	touch glibc_64libs
+
+glibc_src : glibc-2.4.tar.bz2
+	tar xjf glibc-2.4.tar.bz2 && \
+	touch glibc_src
+
+#### Kernel build targets ####
+initrd_dir/bin/kernel32 : boot/kernel32
+	cp boot/kernel32 initrd_dir/bin/kernel32
+
+initrd_dir/bin/kernel64 : boot/kernel64
+	cp boot/kernel64 initrd_dir/bin/kernel64
+
+boot/kernel32 : kernel_patch
+	$(MAKE) -C linux-2.6.22.1 O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
+	cp linux-2.6.22.1/kernel_32/arch/i386/boot/bzImage boot/kernel32
+
+boot/kernel64 : kernel_patch
+	$(MAKE) -C linux-2.6.22.1 O=kernel_64 && \
+	cp linux-2.6.22.1/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
+
+kernel_patch : linux-2.6.22.1.tar.bz2 patches/kernel_blank.patch patches/kernel32.config patches/kernel64.config
+	tar xjf linux-2.6.22.1.tar.bz2 && \
+	cd linux-2.6.22.1 && \
+	patch -p1 < ../patches/kernel_blank.patch && \
+	patch -p1 < ../patches/kernel_ioctl.patch && \
+	mkdir -p kernel_64 && \
+	cp ../patches/kernel64.config kernel_64/.config && \
+	mkdir -p kernel_32 && \
+	cp ../patches/kernel32.config kernel_32/.config && \
+	cd .. && \
+	touch kernel_patch

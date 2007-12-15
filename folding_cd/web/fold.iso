@@ -1,0 +1,51 @@
+#!/bin/bash
+if [ "$REQUEST_METHOD" != "POST" ]
+then
+  echo "Content-type: text/html"
+  echo ""
+  echo "<html><body>"
+  echo "Must use post method"
+  echo "</body></html>"
+  exit 0
+fi
+
+read POST_STRING
+while true
+do
+  HEX="$(echo "$POST_STRING" | sed 's#^.*%\(..\).*#\1#')"
+  if [ "$HEX" = "$POST_STRING" ]
+  then
+    break;
+  fi
+  REP=$(echo -e \\x$HEX)
+  POST_STRING="$(echo "$POST_STRING" | sed 's#^\(.*\)%\(..\)#\1'$REP'#')"
+done
+POST_STRING=`echo $POST_STRING | sed 's/&/ /g'`
+dir=/tmp/cd_`date +%s%N`
+mkdir -p $dir/cd/isolinux
+cp kernel32 kernel64 initrd isolinux.bin $dir/cd/isolinux
+cat <<_EndOfIsolinux.cfg_ > $dir/cd/isolinux/isolinux.cfg
+PROMPT 0
+DEFAULT fold
+DEFAULT64 fold64
+TIMEOUT 0
+
+LABEL fold
+    KERNEL kernel32
+    APPEND initrd=initrd $POST_STRING
+
+LABEL fold64
+    KERNEL kernel64
+    APPEND initrd=initrd $POST_STRING
+_EndOfIsolinux.cfg_
+
+mkisofs -o $dir/folding.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table $dir/cd
+
+echo "Content-type: application/octet-stream"
+echo "Pragma: no-cache"
+echo "Content-length:" `stat -c %s $dir/folding.iso`
+echo ""
+cat $dir/folding.iso
+rm -rf $dir
+
+

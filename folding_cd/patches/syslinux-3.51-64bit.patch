@@ -1,0 +1,103 @@
+--- syslinux-3.51.orig/parseconfig.inc	2007-06-10 18:51:39.000000000 -0400
++++ syslinux-3.51/parseconfig.inc	2007-08-27 21:14:34.000000000 -0400
+@@ -20,7 +20,46 @@
+ ;
+ ; "default" command
+ ;
+-pc_default:	mov di,default_cmd
++pc_default:	cmp byte [HasDefault64],0	; Check if we accepted 'default64'
++		ja pc_getline			; If so, do nothing
++		mov di,default_cmd
++		call getline
++		mov byte [di-1],0		; null-terminate
++		ret
++
++;
++; "default64" command
++;
++pc_default64:
++;
++; First check if this CPU supports the CPUID command
++;
++                pushfd                          ; Save the flags again
++                pushfd
++                pop eax
++                mov ebx,eax
++                xor eax,(1 << 21)               ; CPUID bit
++                push eax
++                popfd
++                pushfd
++                pop eax
++                popfd                           ; Restore the original flags
++                xor eax,ebx
++                jz pc_getline
++;
++; Now check for the 64-bit flag in bit 29 of the Extended CPU features byte,
++; ($8000_0001, edx).
++;
++                mov eax, 80000000h              ; Find last extended CPUID #
++                cpuid
++                cmp eax, 80000000h
++                jbe pc_getline
++                mov eax, 80000001h              ; Read Extended CPU flags
++                cpuid
++                bt edx, 29                      ; 64-bit if bit 29 is set
++                jnc pc_getline
++		mov byte [HasDefault64],1	; Note that we saw a default64
++		mov di,default_cmd
+ 		call getline
+ 		mov byte [di-1],0		; null-terminate
+ 		ret
+@@ -431,6 +470,7 @@
+ SerialPort	dw 0			; Serial port base (or 0 for no serial port)
+ VKernelBytes	dw 0			; Number of bytes used by vkernels
+ VKernel		db 0			; Have we seen any "label" statements?
++HasDefault64	db 0			; We've seen a 'default64' statement
+ 
+ %if IS_PXELINUX
+ IPAppend	db 0			; Default IPAPPEND option
+diff -ur syslinux-3.51.orig/keywords syslinux-3.51/keywords
+--- syslinux-3.51.orig/keywords	2007-06-10 18:51:39.000000000 -0400
++++ syslinux-3.51/keywords	2007-06-17 11:37:19.000000000 -0400
+@@ -4,6 +4,7 @@
+ append
+ config
+ default
++default64
+ display
+ font
+ implicit
+diff -ur syslinux-3.51.orig/keywords.inc syslinux-3.51/keywords.inc
+--- syslinux-3.51.orig/keywords.inc	2007-06-10 18:51:39.000000000 -0400
++++ syslinux-3.51/keywords.inc	2007-06-17 11:37:19.000000000 -0400
+@@ -50,6 +50,7 @@
+ 		keyword include,	pc_filecmd,	pc_include
+ 		keyword append,		pc_append
+ 		keyword default,	pc_default
++		keyword default64,	pc_default64
+ 		keyword display,	pc_filecmd,	get_msg_file
+ 		keyword font,		pc_filecmd,	loadfont
+ 		keyword implicit,	pc_setint16,	AllowImplicit
+diff -ur syslinux-3.51.orig/kwdhash.gen syslinux-3.51/kwdhash.gen
+--- syslinux-3.51.orig/kwdhash.gen	2007-06-10 18:51:45.000000000 -0400
++++ syslinux-3.51/kwdhash.gen	2007-06-17 11:37:19.000000000 -0400
+@@ -4,6 +4,7 @@
+ hash_append             equ 0xc53999a4
+ hash_config             equ 0xc0c69547
+ hash_default            equ 0xcc5159ed
++hash_default64          equ 0x4567b1c5
+ hash_display            equ 0xd509bc40
+ hash_font               equ 0x0032b1b4
+ hash_implicit           equ 0xa6f50207
+diff -ur syslinux-3.51.orig/layout.inc syslinux-3.51/layout.inc
+--- syslinux-3.51.orig/layout.inc	2007-06-10 18:51:39.000000000 -0400
++++ syslinux-3.51/layout.inc	2007-06-17 11:38:08.000000000 -0400
+@@ -26,7 +26,7 @@
+ ; The secondary BSS section, above the text; we really wish we could
+ ; just make it follow .bcopy32 or hang off the end,
+ ; but it doesn't seem to work that way.
+-LATEBSS_START	equ 0B300h
++LATEBSS_START	equ 0B310h
+ 
+ ; Reserve memory for the stack.  This causes checkov to abort the
+ ; compile if we violate this space.

@@ -1,0 +1,52 @@
+The Folding CD can only be built on a 64bit (x86_64) system. It will build an
+image that will work for both 64bit(x86_64) and 32bit(i686) systems.
+
+The Diskless Folding zip file (for PXE boot) is derived from The Folding CD and is also built. It appears as diskless.zip in the base directory.
+
+The Folding USB stick zip file (for USB boot) is derived from The Folding CD and
+is also built. It appears as usb.zip in the base directory.
+
+The build system uses a standard Makefile. Interesting targets are:
+all:         folding_cd.iso diskless.zip usb.zip
+install_net: Installs a PXE boot in to /var/lib/tftpboot
+install_web: Publishes everything to /var/www/reilly/folding including scripts
+             and necessary files to /usr/lib/cgi-bin
+
+The Folding CD makes use of the following Open Source Software
+licensed under the GPLv2:
+Linux Kernel
+Syslinux
+Busybox
+GlibC
+
+In order to build, you will need an up to date tool chain, including the
+following specialised tools (Debian/Ubuntu package names):
+nasm
+gawk
+zip
+mkisofs
+
+In addition a set of 32 bit C libraries is cross compiled to support the
+folding client and other binaries. This requires the additional tools:
+ia32-libs
+libc6-dev-i386
+lib32gcc1
+gcc-multilib (Ubuntu 7.10, not required on Ubuntu 7.04)
+
+To completely build and install requires the building of a Windows version of
+syslinux, this requires the mingw compiler available through the following
+package:
+mingw32
+
+This software downloads the folding client and cores from Stanford to comply
+with the Folding@Home license.
+
+Folding CD is:
+
+   Copyright 2006-2007 Nick Reilly - All Rights Reserved
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
+   Boston MA 02111-1307, USA; either version 2 of the License, or
+   (at your option) any later version; incorporated herein by reference.

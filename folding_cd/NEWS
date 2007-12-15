@@ -1,0 +1,22 @@
+28 November 07: Fixed Guest account for SMB support.
+27 November 07: Added SMB server support, should allow monitoring by FAHMon etc.
+21 November 07: Fixed syntax error in expr in autodetect of SMP hang.
+20 November 07: Removed previous links with an autodetect of SMP hang and kill -9 of the cores if that is the case, warning will kill all cores on multiple SMP instances if you have more than 4 logical processors.
+13 November 07: Add additional kill -9 link as previous link doesn't seem to cut it.
+5 November 07: Add link to kill any remaining FahCore_a1.exe processes if SMP is hung at 100%.
+22 October 07: Fix hostname to request a default hostname from DHCP and use any DHCP supplied one, if no DHCP supplied one then go with the default. Default is "fold-ABCD" where ABCD are the last 4 characters of the interface MAC address.
+21 October 07: Fix INSTALL option on CD generator webpage. Fix /tmp permissions. Fix install to USB drive B.
+12 October 07: Change URL to match new Stanford website.
+2 October 07: Update to FAH version 6 Beta 1 for both SMP and normal clients. Fix Makefile to build on Ubuntu 7.04 64bit. N.B. Version string was previously back to front, remove version.txt from any USB sticks before running this version to get an automatic update if the install option is enabled.
+19 September 07: Major rewrite! New Makefile build system. Change from an initrd to initramfs. Upgrade to kernet 2.6.22.1 for more network drivers. Work with any connected ethernet interface (eth0 - eth9) rather than just eth0. Fixed detecting extra processor if string "processor in the model name. Really finally remove hangcheck timer on 64bit (I hope!). Detect VirtualPC in addition to VMWare when deciding if to run NTP to sync time. Detects 32bit or 64bit - one image for both. Remote reboot option. Install to up to two USB drives on boot option. Run without logging to the console. Removed -advmethods from SMP - may not be any WUs available and fallback may be broken. Added -verbosity 9 to both to improve debug. Backup and restore works with up to 2 USB drives as well as with the old TFTP.
+25 April 07: Bump VMWare memory a bit more to 512MB.
+24 April 07: Really remove hangcheck timer from 64 bit (was only removed from 32 bit). Add backup link plus more info on webpage. Add configurable backup time including core checkpoint if in valid range (3-30 mins), default backup is set to 15, set to 0 to disable. Change CD Generator to work with / and reserve # as per Stanford. Increase VMWare .vmx file memory to avoid out of memory crashes. Detect VMWare and only run NTP if VMWare not found.
+3 April 07: Corrected VMWare stuff to VMWare Server for SMP version and updated the .vmx file with 2 CPUs.
+2 April 07: Kernel patch for SKB errors plus remove hangcheck timer (doesn't work in VMWare)
+20 Mar 07: New 64 bit version for SMP folding
+27 Oct 06: Updated kernel to use ACPI - should correctly pickup SMP on all systems now. Added dmesg.txt and cpuinfo.txt files accessible from the browser to help with any future processor detection issues.
+18 Sep 06: New version uploaded, removed wine as no longer necessary (Linux and Windows cores now using same compiler) and updated kernel to 2.6.17.2 to support Core 2 Duo Motherboards. Also released source to comply with GPL.
+20 Aug 05: New version uploaded, now uses wine to run the windows console client for improved performance.
+13 Aug 05: New version uploaded, correctly handles HTML encoding of non-alphanumeric characters.
+11 Aug 05: New version uploaded, now checks for TFTP server IP in DHCP before trying to backup/restore to it.
+7 Aug 05: New version uploaded, doesn't try to backup/restore via TFTP as caused issues with some routers. If you tried before and it got stuck saying "to" then this should fix it.

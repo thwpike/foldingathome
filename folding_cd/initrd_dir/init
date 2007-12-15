@@ -1,0 +1,376 @@
+#!/bin/sh
+
+# Check the current directory for an installation, if not present then
+# create an installation
+VERSION=071128
+install() {
+  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt ]
+  then
+    if [ `cat version.txt` -ge $VERSION ]
+    then
+      return 1
+    else
+      echo "Out of date installation found, updating it"
+    fi
+  fi
+  cp /bin/kernel64 .
+  cp /bin/kernel32 .
+  cat << EOF > syslinux.cfg
+DEFAULT fold
+DEFAULT64 fold64
+
+LABEL fold
+        KERNEL kernel32
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL
+
+LABEL fold64
+        KERNEL kernel64
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL
+EOF
+  savedir=`pwd`
+  cd /
+  cpio-o < /etc/manifest | gzip -9 > $savedir/initrd
+  cd $savedir
+  echo $VERSION > version.txt
+  return 0
+}
+
+# Main begins here
+/bin/mknod /dev/null c 1 3
+/bin/mknod /dev/urandom c 1 9
+/bin/mknod /dev/sda b 8 0
+/bin/mknod /dev/sda1 b 8 1
+/bin/mknod /dev/sdb b 8 16
+/bin/mknod /dev/sdb1 b 8 17
+
+mount -n -t proc proc /proc
+ifconfig lo 127.0.0.1
+# Make sure we try all interfaces for DHCP
+for iface in `awk '/eth/ {sub(":", "" ) ; print $1}' /proc/net/dev`
+do
+  name=fold-`ifconfig eth0 | awk -F : '/HWaddr/ {print $6$7}'`
+  udhcpc -s /etc/dhcp.script -i $iface -H $name -b
+done
+if [ "`hostname`" = "(none)" ]
+then
+  echo "No hostname from DHCP, setting hostname to $name"
+  hostname $name
+fi
+echo "127.0.0.1 `hostname`" > /etc/hosts
+
+numprocs=`grep -c "^processor" /proc/cpuinfo`
+arch=`uname -m`
+cd /etc/folding
+cat /proc/cpuinfo > cpuinfo.txt
+dmesg > dmesg.txt
+httpd
+nmbd -D
+smbd -D
+
+if [ -z "$USER" ]
+then
+  USER=notfred2630
+fi
+if [ -z "$TEAM" ]
+then
+  TEAM=2630
+fi
+if [ -z "$BIG" ]
+then
+  BIG=no
+fi
+if [ -z "$BACKUP" ]
+then
+  BACKUP=15
+fi
+if [ $BACKUP -lt 3 ] || [ $BACKUP -gt 30 ]
+then
+  CHECKPOINT=15
+else
+  CHECKPOINT=$BACKUP
+fi
+if [ -z "$REBOOT" -o "$REBOOT" != "enabled" ]
+then
+  REBOOT=disabled
+fi
+if [ -z "$INSTALL" -o "$INSTALL" != "yes" ]
+then
+  INSTALL=no
+fi
+
+# Check for USB drives
+echo "\n\n\nWaiting 10 seconds for any USB drives to start"
+sleep 10
+mount -n -t vfat /dev/sda1 /usba > /dev/null 2>&1
+noUSBa=$?
+if [ $noUSBa -eq 0 ]
+then
+  echo "USB drive A found"
+  umount /usba
+fi
+mount -n -t vfat /dev/sdb1 /usbb > /dev/null 2>&1
+noUSBb=$?
+if [ $noUSBb -eq 0 ]
+then
+  echo "USB drive B found"
+  umount /usbb
+fi
+
+# Do installation
+if [ "$INSTALL" = "yes" ]
+then
+  if [ $noUSBa -eq 0 ]
+  then
+    echo "Attempting install to USB drive A"
+    mount -n -t vfat /dev/sda1 /usba
+    cd /usba
+    install
+    did_install=$?
+    cd /etc/folding
+    umount /usba
+    if [ $did_install -eq 1 ]
+    then
+      echo "USB drive A has already been installed, ignoring INSTALL flag"
+    else
+      cat /bin/mbr.bin > /dev/sda
+      syslinux /dev/sda1
+      echo "Installation to drive A completed"
+    fi
+  fi
+  if [ $noUSBb -eq 0 ]
+  then
+    echo "Attempting install to USB drive B"
+    mount -n -t vfat /dev/sdb1 /usbb
+    cd /usbb
+    install
+    did_install=$?
+    cd /etc/folding
+    umount /usbb
+    if [ $did_install -eq 1 ]
+    then
+      echo "USB drive B has already been installed, ignoring INSTALL flag"
+    else
+      cat /bin/mbr.bin > /dev/sdb
+      syslinux /dev/sdb1
+      echo "Installation to drive B completed"
+    fi
+  fi
+fi
+
+# Download the client from Stanford
+wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz
+tar xzf FAH6.00beta1-Linux.tgz
+
+# Dump useful info to the screen and web page
+echo "\n\n\nProcessor type: $arch"
+echo "Found $numprocs processors"
+echo "User: $USER"
+echo "Team: $TEAM"
+echo "Big Packets: $BIG"
+echo "Backup every $BACKUP minutes"
+echo "Core checkpoint every $CHECKPOINT minutes"
+echo "Remote reboot: $REBOOT"
+echo "Install: $INSTALL"
+echo "Hostname: " `hostname`
+echo "IP address:" `cat /tmp/myip`
+cat << EOF > index.backup
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE></TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=CENTER><FONT SIZE=7 STYLE="font-size: 32pt">Diskless Folder</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Processor type: $arch</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Found $numprocs processors</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>User: $USER</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Team: $TEAM</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Big Packets: $BIG</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Backup every $BACKUP minutes</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Core checkpoint every $CHECKPOINT minutes</FONT></P>
+EOF
+
+# Do remote reboot setup
+if [ "$REBOOT" = "enabled" ]
+then
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Remote reboot: <a href=\"reboot.html\">enabled</a></FONT></P>" >> index.backup
+  cat << EOF > reboot.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Reboot</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="cgi-bin/reboot.cgi">here</a> to reboot this diskless folder</FONT></P> 
+</BODY></HTML>
+EOF
+  cat << EOF > /bin/do_reboot.sh
+#!/bin/sh
+/bin/sleep 1
+/bin/reboot
+EOF
+  chmod 755 /bin/do_reboot.sh
+  cat << EOF > cgi-bin/reboot.cgi
+#!/bin/sh
+echo "Content-type: text/html"
+echo ""
+echo "<html><body>"
+echo "Remote reboot command sent, after reboot click <a href="/">here</a> to return to the main page for this diskless folder."
+echo "</body></html>"
+echo ""
+/bin/do_reboot.sh > /dev/null 2>&1 &
+EOF
+  chmod 755 cgi-bin/reboot.cgi
+else
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Remote reboot: disabled</FONT></P>" >> index.backup
+fi
+echo "<P ALIGN=LEFT><FONT SIZE=3>Install: $INSTALL</FONT></P>" >> index.backup
+echo "<P ALIGN=LEFT><FONT SIZE=3>Hostname: " `hostname` "</FONT></P>" >> index.backup
+echo "<P ALIGN=LEFT><FONT SIZE=3>IP address:" `cat /tmp/myip` "</FONT></P>" >> index.backup
+
+# Check if this is running on the bare metal or a VM and do NTP if necessary
+isVMWare
+noVMWare=$?
+isVPC
+noVPC=$?
+if [ $noVMWare -eq 0 ]
+then
+  echo "Running under VMWare, not using NTP to sync time\n"
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Running under VMWare, not using NTP to sync time</FONT></P>" >> index.backup
+elif [ $noVPC -eq 0 ]
+then
+  echo "Running under VirtualPC, not using NTP to sync time\n"
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Running under VirtualPC, not using NTP to sync time</FONT></P>" >> index.backup
+else
+  echo "VMWare and VirtualPC not detected, using NTP to sync time\n"
+  echo "<P ALIGN=LEFT><FONT SIZE=3>VMWare and VirtualPC not detected, using NTP to sync time</FONT></P>" >> index.backup
+  ntpd -A -g
+fi
+
+# Determine if SMP or normal and correct "processor" count for SMP
+if [ "$arch" = "x86_64" -a $numprocs -gt 1 ]
+then
+  smp=1
+  carry=`expr $numprocs % 4`
+  if [ $carry -gt 0 ]
+  then
+    numprocs=`expr $numprocs / 4 + 1`
+  else
+    numprocs=`expr $numprocs / 4`
+  fi
+else
+  smp=0
+fi
+
+# Setup webpage for each instance
+instance=1
+while [ "$instance" -le "$numprocs" ]
+do
+  cat << EOF >> index.backup
+<P ALIGN=LEFT><FONT SIZE=3>Instance $instance</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/FAHlog.txt">Folding
+Log File</A></FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/unitinfo.txt">Unit
+Info</A></FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/backup.tar">Backup of WU</A></FONT></P>
+EOF
+  instance=`expr $instance + 1`
+done
+echo "</BODY></HTML>" >> index.backup
+grep -v backup index.backup > index.html
+
+# Setup the instances
+while [ "$numprocs" -gt "0" ]
+do
+  echo "Setting up instance $numprocs"
+  mkdir $numprocs
+  cd $numprocs
+  cat << EOF > client.cfg
+[settings]
+username=$USER
+team=$TEAM
+asknet=no
+bigpackets=$BIG
+machineid=$numprocs
+
+[http]
+active=no
+host=localhost
+port=8080
+
+[core]
+checkpoint=$CHECKPOINT
+
+EOF
+
+# Restore from tftp backup if present
+  if [ "`cat /tmp/tftpserverip`" != "" ]
+  then
+    tftp -g `cat /tmp/tftpserverip` -l latest.`cat /tmp/myip`.$numprocs -r latest.`cat /tmp/myip`.$numprocs > /dev/null 2>&1
+    if [ "`cat latest.* 2>/dev/null`" != "" ]
+    then
+      echo "Restoring from TFTP"
+      tftp -g `cat /tmp/tftpserverip` -l backup.`cat /tmp/myip`.`cat latest.*`.$numprocs -r backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+      tar xvf backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+      rm backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+      echo "Restore done"
+    fi
+  fi
+
+# Restore from USB drive A if present
+  mount -n -t vfat /dev/sda1 /usba > /dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    if [ -d /usba/folding/$numprocs ]
+    then
+      echo "Restoring from USB drive A"
+      cp -r /usba/folding/$numprocs/* .
+      echo "Restore done"
+    fi
+    umount /usba
+ fi
+
+# Restore from USB drive B if present
+  mount -n -t vfat /dev/sdb1 /usbb > /dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    if [ -d /usbb/folding/$numprocs ]
+    then
+      echo "Restoring from USB drive B"
+      cp -r /usbb/folding/$numprocs/* .
+      echo "Restore done"
+    fi
+    umount /usbb
+  fi
+
+# Start up the client
+  ln -s /etc/folding/fah6 .
+  ln -s /etc/folding/mpiexec .
+  if [ $smp -eq 1 ]
+  then
+    ./fah6 -local -forceasm -verbosity 9 -smp > /dev/null 2>&1 &
+  else
+    ./fah6 -local -forceasm -verbosity 9 -advmethods > /dev/null 2>&1 &
+  fi
+
+  numprocs=`expr $numprocs - 1`
+  cd /etc/folding
+done
+
+# Startup the backup process
+if [ $BACKUP -gt 0 ]
+then
+  backup.sh $BACKUP &
+fi
+
+# Startup the hang checker
+check_hang.sh &
+
+# Empty loop so we don't exit init
+while [ 1 ]
+do
+  sleep 86400
+done
