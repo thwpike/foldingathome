@@ -14,13 +14,13 @@ do
   instance=1
   while [ -d /etc/folding/$instance ]
   do
-    # Check for FINISHED_UNIT as the last line of the file
-    tail -n 1 /etc/folding/$instance/FAHlog.txt | grep -q FINISHED_UNIT
+    # Check for FINISHED_UNIT without CoreStatus following
+    grep -E 'FINISHED_UNIT|CoreStatus' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -q FINISHED_UNIT
     if [ $?  -eq 0 ]
     then
       # Give the client a chance to kill the cores
       sleep 300
-      tail -n 1 /etc/folding/$instance/FAHlog.txt | grep -q FINISHED_UNIT
+      grep -E 'FINISHED_UNIT|CoreStatus' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -q FINISHED_UNIT
       if [ $?  -eq 0 ]
       then
         # Still there - it has hung
