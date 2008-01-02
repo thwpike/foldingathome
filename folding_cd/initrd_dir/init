@@ -159,6 +159,19 @@ fi
 
 # Download the client from Stanford
 wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz
+if [ $? -eq 1 ]
+then
+  echo "\n\n\nFailed to download the client from Stanford's website:"
+  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz"
+  echo ""
+  echo "Please double check your Gateway and DNS information"
+  echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`
+  echo "DNS servers: " `awk '{print $2}' /etc/resolv.conf`
+  while  [ 1 ]
+  do
+    sleep 86400
+  done
+fi
 tar xzf FAH6.00beta1-Linux.tgz
 
 # Dump useful info to the screen and web page
