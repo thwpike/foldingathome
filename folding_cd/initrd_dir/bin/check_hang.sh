@@ -1,9 +1,6 @@
 #!/bin/sh
 # check_hang.sh - checks log files and kills the cores if hung at completion
 #
-# TBD!!!! This will not work on multiple SMP instances, need to parse cwd 
-#         symbolic link from the proc entries and only kill -9 those procs
-#         that are in the correct cwd.
 
 while [ 1 ]
 do
@@ -23,8 +20,16 @@ do
       grep -E 'FINISHED_UNIT|CoreStatus' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -q FINISHED_UNIT
       if [ $?  -eq 0 ]
       then
-        # Still there - it has hung
-        killall -9 FahCore_a1.exe > /dev/null 2>&1 &
+        # Still there - it has hung so walk /proc looking for processes
+        for procdir in `find /proc -name '[1-9]*' | awk '/\/proc\/[1-9]*$/ {print $0}'`
+        do
+          # Check if they are the right exe and the right cwd
+          if [ "`readlink $procdir/exe`" = "/etc/folding/$instance/FahCore_a1.exe" -a  "`readlink $procdir/cwd`" = "/etc/folding/$instance" ]
+          then
+            # kill -9 the core procs to free the hang
+            kill -9 `awk -F / '{print $3}`
+          fi
+        done
       fi 
     fi
   instance=`expr $instance + 1`
