@@ -24,10 +24,13 @@ do
         for procdir in `find /proc -name '[1-9]*' | awk '/\/proc\/[1-9]*$/ {print $0}'`
         do
           # Check if they are the right exe and the right cwd
-          if [ "`readlink $procdir/exe`" = "/etc/folding/$instance/FahCore_a1.exe" -a  "`readlink $procdir/cwd`" = "/etc/folding/$instance" ]
+          if [ -e $procdir/exe -a -e $procdir/cwd ]
           then
-            # kill -9 the core procs to free the hang
-            kill -9 `awk -F / '{print $3}`
+            if [ "`readlink $procdir/exe`" = "/etc/folding/$instance/FahCore_a1.exe" -a  "`readlink $procdir/cwd`" = "/etc/folding/$instance" ]
+            then
+              # kill -9 the core procs to free the hang
+              kill -9 `echo $procdir | awk -F / '{print $3}'`
+            fi
           fi
         done
       fi 
