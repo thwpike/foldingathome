@@ -1,3 +1,4 @@
+11 January 07: Moved source and bug / feature tracking to SourceForge. Fixed a couple of issues in the SMP hang check - now supports multiple SMP instances (if you have more than 4 processors) and still does the kill if the Autosend text happens after the hang. Also added a check that the download from Stanford didn't error and if it did print troubleshooting suggestions and stop there.
 28 November 07: Fixed Guest account for SMB support.
 27 November 07: Added SMB server support, should allow monitoring by FAHMon etc.
 21 November 07: Fixed syntax error in expr in autodetect of SMP hang.

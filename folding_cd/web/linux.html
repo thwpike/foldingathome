@@ -123,11 +123,11 @@ in the directory  /var/lib/tftpboot/ where <TT>$IP</TT> is the IP address of the
 Network boot your diskless workstations, you
 should see them obtain an IP address in /var/log/syslog.
  This can help in determining the IP addresses of them for
-you to point a web browser at to monitor them.<BR>
+you to point a web browser at to monitor them. Alternatively, the machine exports the ramdisk via Windows Networking and the folding files are in <TT>\\$Machine\C\etc\folding\$Instance</TT>.<BR>
 <BR>
 After a couple of hours, you will see the backup files you created earlier actually have some size to them if you <TT>ls -l /var/lib/tftpboot</TT>
 <BR>
 <BR>
-This software is covered by the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License Version 2</a>. The <a href="folding_cd.tar.bz2">source</a> (59MB) must be redistributed with the CD image. Note that the tar file should be extracted as root as it contains device special files and system files. It only contains relative paths and hence is safe to extract as root.<BR>
+This software is covered by the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License Version 2</a>. The source and a bug / feature traker are hosted by SourceForge at <a href="http://sourceforge.net/projects/foldingcd/">http://sourceforge.net/projects/foldingcd/</a> and this link must be redistributed with the files.<BR>
 <BR>
 <B>News</B><BR>

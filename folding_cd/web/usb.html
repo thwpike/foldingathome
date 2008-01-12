@@ -13,7 +13,7 @@ Download syslinux as appropriate for your OS:
 <LI>Linux <A HREF="syslinux">here</A>
 </UL>
 From a command prompt run &quot;syslinux &lt;device&gt;&quot; where &lt;device&gt; is the device or drive letter of the USB stick, e.g. &quot;syslinux X:&quot; for Windows, &quot;./syslinux /dev/sda1&quot; for Linux (should not be mounted). If it complains about unable to lock the device for exclusive access, ignore the warning.<BR><BR>
-Edit the file isolinux.sys and change the USER and TEAM options to get it to fold for you rather than me. You may also want to change BIG=yes to BIG=no to avoid large WU depending on your network.<BR>
+Edit the file isolinux.sys and change the USER and TEAM options to get it to fold for you rather than me. You may also want to change BIG=yes to BIG=no to avoid large WU depending on your network. REBOOT can be set to enabled or disabled to add or remove a link to allow remote rebooting to the machine's webpage, and INSTALL to yes or no to allow or deny installation on to the first two USB memory sticks or disk drives at boot time - useful for cloning the install.<BR>
 <BR>Boot your machine from the USB stick. Note that not all machines like booting from USB sticks, even if the option is there in the BIOS.<BR><BR>
 <B>N.B.</B> Please comply with the F@H terms of service and only use this on
 computers you own / have permission. Law enforcement agencies have been
@@ -24,10 +24,10 @@ involved in previous unauthorised use of computers for folding!<BR><BR>
 <LI>It will run an instance of folding per processor that it finds (logical processor, so 2 on hyperthreading and dual-core CPUs) or if there are multiple x86_64 processors it will run an SMP client per 4 processors.<BR>
 <LI>Instances of folding are stored in the directories 1, 2 etc. that it creates on the USB stick.
 <LI>You only need motherboard, processor (with heatsink/fan!), memory and a supported network connection (just about any PCI or onboard Ethernet card supported by Linux). Keyboard is ignored, if you do have a video card and monitor it will show progress of the first folding instance on the screen.<BR>
-<LI>To monitor the machine, just point your web browser at it.<BR>
+<LI>To monitor the machine, just point your web browser at it. Alternatively, the machine exports the ramdisk via Windows Networking and the folding files are in <TT>\\$Machine\C\etc\folding\$Instance</TT>.<BR>
 <LI>If you have a TFTP server and your DHCP server advertises it, the work will get backed up at the specified interval into the following 3 files<BR><TT>backup.$IP.A.$Instance<BR>backup.$IP.B.$Instance<BR>latest.$IP.$Instance<BR></TT>where <TT>$IP</TT> is the IP address and <TT>$Instance</TT> is the instance being backed up. You typically need to initially create empty versions of these files on your TFTP server and make them writable by all for this to work. It will also backup and restore from up to 2 USB drives if present.<BR>
-<LI>If you select the install option, if it finds any USB drives at boot, it will write a copy to the USB drive and also write a Master Boot Record making the USB drive bootable.<BR>
 <LI>If you have any further questions, hit the "TR Distributed Computing Effort" forum at <a href=http://www.techreport.com>The Tech Report</a> and ask "notfred".
+<LI>This software is covered by the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License Version 2</a>. The source and a bug / feature traker are hosted by SourceForge at <a href="http://sourceforge.net/projects/foldingcd/">http://sourceforge.net/projects/foldingcd/</a> and this link must be redistributed with the CD image.<BR>
 </UL>
 <BR>
 <B>News</B><BR>
