@@ -58,12 +58,19 @@ then
 fi
 echo "127.0.0.1 `hostname`" > /etc/hosts
 
-numprocs=`grep -c "^processor" /proc/cpuinfo`
-arch=`uname -m`
 cd /etc/folding
 cat /proc/cpuinfo > cpuinfo.txt
 dmesg > dmesg.txt
 httpd
+
+# If doing benchmark, go do that and go no further, it never comes back.
+if [ "$BENCHMARK" = "yes" ]
+then
+  benchmark.sh
+fi
+
+numprocs=`grep -c "^processor" /proc/cpuinfo`
+arch=`uname -m`
 nmbd -D
 smbd -D
 
@@ -230,8 +237,15 @@ EOF
 #!/bin/sh
 echo "Content-type: text/html"
 echo ""
-echo "<html><body>"
-echo "Remote reboot command sent, after reboot click <a href="/">here</a> to return to the main page for this diskless folder."
+echo "<html><head><META HTTP-EQUIV=\"Refresh\" CONTENT=\"60;URL=/\">"
+echo "<SCRIPT LANGUAGE=\"JavaScript\"><!--"
+echo "function redirect () { setTimeout(\"go_now()\",60000); }"
+echo "function go_now ()   { window.location.href = \"/\"; }"
+echo "//--></SCRIPT></head>"
+echo "<body onLoad \"redirect()\">"
+echo "Remote reboot command sent."
+echo "<BR>This page will refresh back to the main page for this diskless folder in 60 seconds."
+echo "<BR>If this does not work, click <a href="/">here</a>."
 echo "</body></html>"
 echo ""
 /bin/do_reboot.sh > /dev/null 2>&1 &

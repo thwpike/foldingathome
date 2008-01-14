@@ -15,8 +15,19 @@ BEGIN {
 }
 
 END {
-	printf "Found %d processor(s)\n",count
-	printf "Found %d processor(s)<BR>\n",count >> "/etc/header.html"
-	printf "\nProgress\n"
+	"uname -m" | getline arch
+        if (arch == "x86_64") {
+          bits=64
+        } else {
+          bits=32
+        }
+        if (count == 1) {
+	  printf "Found 1 %dbit processor\n",bits
+	  printf "Found 1 %dbit processor<BR>\n",bits >> "/etc/header.html"
+	} else {
+          printf "Found %d %dbit processors\n",count,bits
+          printf "Found %d %dbit processors<BR>\n",count,bits >> "/etc/header.html"
+	}
+	printf "\nProgress:\n"
 	printf"<BR><B>Progress</B><BR>\n" >> "/etc/header.html"
 }
