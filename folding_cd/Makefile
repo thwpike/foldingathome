@@ -133,7 +133,8 @@ boot/isolinux.cfg : patches/isolinux.cfg
 #### initrd ####
 boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin initrd_dir/etc/smb.conf
 	cd initrd_dir && \
-	find . > etc/manifest && \
+	chmod 1777 tmp && \
+	find . -name .svn -prune -o -print > etc/manifest && \
 	bin/cpio-o < etc/manifest | gzip -9 > ../boot/initrd
 
 initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
