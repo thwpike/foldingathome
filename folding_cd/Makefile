@@ -10,7 +10,7 @@ clean:
 	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.2.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
 
 ### install_web ###
-install_web: $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin
+install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
 
 $(WEBDIR)/diskless.zip : diskless.zip
 	cp diskless.zip $(WEBDIR)
@@ -51,6 +51,12 @@ $(CGIDIR)/initrd : boot/initrd
 $(CGIDIR)/isolinux.bin : boot/isolinux.bin
 	cp boot/isolinux.bin $(CGIDIR)
 
+$(CGIDIR)/fold.txt : boot/fold.txt
+	cp boot/fold.txt $(CGIDIR)
+
+$(WEBDIR)/benchmark.html : web/benchmark.html
+	cp web/benchmark.html $(WEBDIR)
+
 $(WEBDIR)/cd.html : NEWS web/cd.html
 	cat web/cd.html > $(WEBDIR)/cd.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/cd.html && \
@@ -77,7 +83,7 @@ $(WEBDIR)/diskless.html : NEWS web/diskless.html
 
 
 ### install_net ###
-install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0
+install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0 /var/lib/tftpboot/PXEClient/fold.txt
 
 /var/lib/tftpboot/PXEClient/kernel32 : boot/kernel32
 	cp boot/kernel32 /var/lib/tftpboot/PXEClient/kernel32
@@ -94,10 +100,14 @@ install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/ke
 /var/lib/tftpboot/PXEClient/pxelinux.0 : diskless/pxelinux.0
 	cp diskless/pxelinux.0 /var/lib/tftpboot/PXEClient/pxelinux.0
 
+/var/lib/tftpboot/PXEClient/fold.txt : boot/fold.txt
+	cp boot/fold.txt /var/lib/tftpboot/PXEClient/fold.txt
+
+
 ### diskless.zip ###
-diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0
+diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt
 	cd diskless && \
-	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default
+	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default fold.txt
 
 diskless/kernel32 : boot/kernel32
 	cp boot/kernel32 diskless/kernel32
@@ -112,10 +122,13 @@ diskless/pxelinux.cfg/default : boot/isolinux.cfg
 	mkdir -p diskless/pxelinux.cfg && \
 	cp boot/isolinux.cfg diskless/pxelinux.cfg/default
 
+diskless/fold.txt : boot/fold.txt
+	cp boot/fold.txt diskless/fold.txt
+
 ### usb.zip ###
-usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt
+usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt
 	cd diskless && \
-	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt
+	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt fold.txt
 
 diskless/syslinux.cfg : boot/isolinux.cfg
 	cp boot/isolinux.cfg diskless/syslinux.cfg
@@ -124,11 +137,14 @@ diskless/version.txt : initrd_dir/init
 	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
 
 ### folding_cd.iso ###
-folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/isolinux.cfg
+folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/isolinux.cfg boot/fold.txt
 	mkisofs -o folding_cd.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table boot
 
 boot/isolinux.cfg : patches/isolinux.cfg
 	cp patches/isolinux.cfg boot
+
+boot/fold.txt : patches/fold.txt
+	cp patches/fold.txt boot
 
 #### initrd ####
 boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin initrd_dir/etc/smb.conf

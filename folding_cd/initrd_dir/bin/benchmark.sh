@@ -50,7 +50,7 @@ free_procs=`expr $free_procs - 1`
 
 check_tinker ()
 {
-grep -q '([ \t]*34[ \t]*)' /etc/fold.tinker/FAHlog.txt
+grep -q '([ \t]*2[ \t]*)' /etc/fold.tinker/FAHlog.txt
 if [ $? -eq 0 ]
 then
   echo "Finished benchmark of Tinker WU"
@@ -72,7 +72,7 @@ fi
 
 check_amber ()
 {
-grep -q '([ \t]*8[ \t]*\(%\|percent\)[ \t]*)' /etc/fold.amber/FAHlog.txt
+grep -q '([ \t]*1[ \t]*\(%\|percent\)[ \t]*)' /etc/fold.amber/FAHlog.txt
 if [ $? -eq 0 ]
 then
   echo "Finished benchmark of Amber WU"
