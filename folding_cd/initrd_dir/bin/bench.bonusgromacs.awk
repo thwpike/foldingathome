@@ -1,6 +1,10 @@
 # This is for a 600 point Gromacs Bonus WU, but we report it without the
 # bonus, i.e. as a 300 point Gromacs
 
+/^\[[0-9:]+\] Version/ {
+  version = $2 " " $3 " " $4 " " $5 " " $6
+}
+
 /\([ \t]*0[ \t]*(%|percent)[ \t]*\)/ {
   split($1,A,"[\]\:\[]")
   initial = A[2] * 3600 + A[3] * 60 + A[4]
@@ -13,9 +17,10 @@
   if (diff <= 0) {
     diff = 24 * 3600 + diff
   }
-  print "Gromacs " 3 * 3600 / diff " points per hour, " 3 * 3600 * 24 / diff " points per day"
+  print "Gromacs " version " " 3 * 3600 / diff " points per hour, " 3 * 3600 * 24 / diff " points per day"
   print "<tr>" >> "/etc/results.html"
   print "<td>Gromacs</td>" >> "/etc/results.html"
+  print "<td>" version "</td>" >> "/etc/results.html"
   print "<td>" 3 * 3600 / diff "</td>" >> "/etc/results.html"
   print "<td>" 3 * 3600 * 24 / diff "</td>" >> "/etc/results.html"
   print "</tr>" >> "/etc/results.html"

@@ -200,6 +200,9 @@ echo
 awk -f /bin/processor.awk /proc/cpuinfo
 
 # Create the remote reboot files
+if [ "$REBOOT" = "enabled" ]
+then
+
 cat << EOF > reboot.html
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
@@ -208,7 +211,8 @@ cat << EOF > reboot.html
 <TITLE>Reboot</TITLE>
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
-<P ALIGN=LEFT><FONT SIZE=3>Click <a href="cgi-bin/reboot.cgi">here</a> to reboot this diskless folder</FONT></P> 
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="cgi-bin/reboot.cgi">here</a> to reboot this diskless folder.</FONT></P> 
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="/">here</a> to return to the homepage.</FONT></P>
 </BODY></HTML>
 EOF
 
@@ -237,6 +241,21 @@ echo ""
 /bin/do_reboot.sh > /dev/null 2>&1 &
 EOF
 chmod 755 cgi-bin/reboot.cgi
+
+else 
+cat << EOF > reboot.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Reboot</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=LEFT><FONT SIZE=3>Reboot is disabled.</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="/"here</a> to return to the homepage.</FONT></P>
+</BODY></HTML>
+EOF
+fi
 
 cat /etc/header.html /etc/results.html /etc/footer.html > /etc/folding/index.html
 

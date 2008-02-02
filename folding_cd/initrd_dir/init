@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080111
+VERSION=080202
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt ]
   then
@@ -62,18 +62,11 @@ cd /etc/folding
 cat /proc/cpuinfo > cpuinfo.txt
 dmesg > dmesg.txt
 httpd
-
-# If doing benchmark, go do that and go no further, it never comes back.
-if [ "$BENCHMARK" = "yes" ]
-then
-  benchmark.sh
-fi
-
-numprocs=`grep -c "^processor" /proc/cpuinfo`
-arch=`uname -m`
 nmbd -D
 smbd -D
 
+numprocs=`grep -c "^processor" /proc/cpuinfo`
+arch=`uname -m`
 if [ -z "$USER" ]
 then
   USER=notfred2630
@@ -164,12 +157,18 @@ then
   fi
 fi
 
+# If doing benchmark, go do that and go no further, it never comes back.
+if [ "$BENCHMARK" = "yes" ]
+then
+  benchmark.sh
+fi
+
 # Download the client from Stanford
-wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz
+wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz
 if [ $? -eq 1 ]
 then
   echo "\n\n\nFailed to download the client from Stanford's website:"
-  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz"
+  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz"
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`
@@ -179,7 +178,7 @@ then
     sleep 86400
   done
 fi
-tar xzf FAH6.00beta1-Linux.tgz
+tar xzf FAH6.00beta2-Linux.tgz
 
 # Dump useful info to the screen and web page
 echo "\n\n\nProcessor type: $arch"
