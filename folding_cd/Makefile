@@ -157,7 +157,7 @@ initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/cpio-o cpio-o.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 initrd_dir/etc/fold.txt : patches/fold.txt
-	cp patches/fold.txt initrd_dir
+	cp patches/fold.txt initrd_dir/etc
 
 #### isolinux, pxelinux, syslinux ####
 boot/isolinux.bin : syslinux_src
