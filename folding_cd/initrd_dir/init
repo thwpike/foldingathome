@@ -15,17 +15,30 @@ install() {
   fi
   cp /bin/kernel64 .
   cp /bin/kernel32 .
+  cp /etc/fold.txt .
   cat << EOF > syslinux.cfg
 DEFAULT fold
 DEFAULT64 fold64
+TIMEOUT 150
+PROMPT 1
+DISPLAY fold.txt
 
 LABEL fold
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no
 
 LABEL fold64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no
+
+LABEL benchmark
+        KERNEL kernel32
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes
+
+LABEL benchmark64
+        KERNEL kernel64
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes
+
 EOF
   savedir=`pwd`
   cd /
@@ -96,6 +109,11 @@ fi
 if [ -z "$INSTALL" -o "$INSTALL" != "yes" ]
 then
   INSTALL=no
+fi
+
+if [ -z "$SMPCPUS" ]
+then
+  SMPCPUS=4
 fi
 
 # Check for USB drives
@@ -264,14 +282,14 @@ isVPC
 noVPC=$?
 if [ $noVMWare -eq 0 ]
 then
-  echo "Running under VMWare, not using NTP to sync time\n"
+  echo "Running under VMWare, not using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>Running under VMWare, not using NTP to sync time</FONT></P>" >> index.backup
 elif [ $noVPC -eq 0 ]
 then
-  echo "Running under VirtualPC, not using NTP to sync time\n"
+  echo "Running under VirtualPC, not using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>Running under VirtualPC, not using NTP to sync time</FONT></P>" >> index.backup
 else
-  echo "VMWare and VirtualPC not detected, using NTP to sync time\n"
+  echo "VMWare and VirtualPC not detected, using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>VMWare and VirtualPC not detected, using NTP to sync time</FONT></P>" >> index.backup
   ntpd -A -g
 fi
@@ -280,17 +298,21 @@ fi
 if [ "$arch" = "x86_64" -a $numprocs -gt 1 ]
 then
   smp=1
-  carry=`expr $numprocs % 4`
+  carry=`expr $numprocs % $SMPCPUS`
   if [ $carry -gt 0 ]
   then
-    numprocs=`expr $numprocs / 4 + 1`
+    numprocs=`expr $numprocs / $SMPCPUS + 1`
   else
-    numprocs=`expr $numprocs / 4`
+    numprocs=`expr $numprocs / $SMPCPUS`
   fi
+  echo "" > /etc/folding/hanglog.txt
   echo "<P ALIGN=LEFT><FONT SIZE=3>Hang check <A HREF=\"hanglog.txt\">logfile</A></FONT></P>" >> index.backup
+  echo "<P ALIGN=LEFT><FONT SIZE=3>SMP instance per $SMPCPUS CPUs</FONT></P>" >> index.backup
+  echo "SMP instance per $SMPCPUS CPUs"
 else
   smp=0
 fi
+echo
 
 # Setup webpage for each instance
 instance=1

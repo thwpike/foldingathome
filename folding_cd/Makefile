@@ -7,7 +7,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.2.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
+	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.2.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest initrd_dir/etc/fold.txt diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -147,7 +147,7 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin initrd_dir/etc/smb.conf
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin initrd_dir/etc/smb.conf initrd_dir/etc/fold.txt
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \
@@ -155,6 +155,9 @@ boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd i
 
 initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/cpio-o cpio-o.c -lc -lc_nonshared glibc-32/elf/ld.so
+
+initrd_dir/etc/fold.txt : patches/fold.txt
+	cp patches/fold.txt initrd_dir
 
 #### isolinux, pxelinux, syslinux ####
 boot/isolinux.bin : syslinux_src
