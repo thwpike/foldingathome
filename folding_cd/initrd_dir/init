@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080202
+VERSION=080301
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt ]
   then
@@ -287,6 +287,7 @@ then
   else
     numprocs=`expr $numprocs / 4`
   fi
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Hang check <A HREF=\"hanglog.txt\">logfile</A></FONT></P>" >> index.backup
 else
   smp=0
 fi
@@ -296,13 +297,17 @@ instance=1
 while [ "$instance" -le "$numprocs" ]
 do
   cat << EOF >> index.backup
-<P ALIGN=LEFT><FONT SIZE=3>Instance $instance</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3><B>Instance $instance</B></FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/FAHlog.txt">Folding
 Log File</A></FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/unitinfo.txt">Unit
 Info</A></FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/backup.tar">Backup of WU</A></FONT></P>
 EOF
+  if [ $smp -eq 1 ]
+  then
+    echo "<P ALIGN=LEFT><FONT SIZE=3><A HREF="cgi-bin/kill_cores.cgi?$instance">Kill</A> folding cores</FONT></P>" >> index.backup
+  fi
   instance=`expr $instance + 1`
 done
 echo "</BODY></HTML>" >> index.backup
@@ -393,7 +398,10 @@ then
 fi
 
 # Startup the hang checker
-check_hang.sh &
+if [ $smp -eq 1 ]
+then
+  check_hang.sh &
+fi
 
 # Empty loop so we don't exit init
 while [ 1 ]

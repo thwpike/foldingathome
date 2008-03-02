@@ -32,21 +32,7 @@ do
       if [ $?  -eq 0 ]
       then
         echo "Hang failed to clear, killing cores" >> /etc/folding/hanglog.txt
-
-        # Still there - it has hung so walk /proc looking for processes
-        for procdir in `find /proc -name '[0-9]*' | awk '/\/proc\/[0-9]*$/ {print $0}'`
-        do
-          # Check if they are the right exe and the right cwd
-          if [ -e $procdir/exe -a -e $procdir/cwd ]
-          then
-            if [ "`readlink $procdir/exe`" = "/etc/folding/$instance/FahCore_a1.exe" -a  "`readlink $procdir/cwd`" = "/etc/folding/$instance" ]
-            then
-              # kill -9 the core procs to free the hang
-              kill -9 `echo $procdir | awk -F / '{print $3}'`
-              echo "Killing " `echo $procdir | awk -F / '{print $3}'` >> /etc/folding/hanglog.txt
-            fi
-          fi
-        done
+        kill_cores.sh $instance
       fi 
     fi
   instance=`expr $instance + 1`
