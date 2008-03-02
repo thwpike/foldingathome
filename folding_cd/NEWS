@@ -1,3 +1,4 @@
+1 March 08: Fix a bug in the hang check - wasn't killing cores with a 0 in the PID. Fix 1903637 - Add kill link to homepage. Fix 1870815 - Allow SMP per 2 CPUs.
 2 February 08: Fixed install after move to SourceForge. Added autoreturn to homepage after reboot. Added the Benchmark CD as a boot option. Changed to FAH version 6 Beta 2.
 11 January 08: Moved source and bug / feature tracking to SourceForge. Fixed a couple of issues in the SMP hang check - now supports multiple SMP instances (if you have more than 4 processors) and still does the kill if the Autosend text happens after the hang. Also added a check that the download from Stanford didn't error and if it did print troubleshooting suggestions and stop there.
 28 November 07: Fixed Guest account for SMB support.
