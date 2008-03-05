@@ -7,7 +7,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.2.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest initrd_dir/etc/fold.txt diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
+	-rm -rf linux-2.6.22.1 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest initrd_dir/etc/fold.txt diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -252,11 +252,11 @@ initrd_dir/bin/ntpd : glibc_32libs
 
 #### Busybox ####
 initrd_dir/bin/busybox : glibc_32libs patches/busybox.config
-	tar xjf busybox-1.2.0.tar.bz2 && \
-	cd busybox-1.2.0 && \
+	tar xjf busybox-1.9.1.tar.bz2 && \
+	cd busybox-1.9.1 && \
 	cp ../patches/busybox.config .config && \
-	patch -p1 < ../patches/busybox.patch && \
-	$(MAKE) CC="gcc -m32 -L../glibc-32" LIBRARIES="../glibc-32/libc_nonshared.a ../glibc-32/math/libm.so ../glibc-32/libc.so ../glibc-32/elf/ld.so" busybox && \
+	patch < ../patches/busybox.patch && \
+	$(MAKE) CC="gcc -m32 -L../glibc-32" busybox && \
 	cp busybox ../initrd_dir/bin
 
 #### Glibc build targets ####
