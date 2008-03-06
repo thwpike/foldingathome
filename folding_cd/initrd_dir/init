@@ -320,7 +320,7 @@ instance=1
 while [ "$instance" -le "$numprocs" ]
 do
   cat << EOF >> index.backup
-<P ALIGN=LEFT><FONT SIZE=3><B>Instance $instance</B></FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3><B>Instance <A HREF="$instance/">$instance</A></B></FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/FAHlog.txt">Folding
 Log File</A></FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3><A HREF="$instance/unitinfo.txt">Unit
