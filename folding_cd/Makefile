@@ -7,7 +7,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.4 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest initrd_dir/etc/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
+	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/etc/manifest initrd_dir/etc/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -268,9 +268,9 @@ glibc_32libs : glibc_src boot/kernel32
 	ln -s asm-x86 linux-2.6.24.3/include/asm && \
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
-	../glibc-2.4/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.24.3/include:$(CURDIR)/linux-2.6.24.3/kernel_32/include --enable-kernel=2.6.16 --disable-profile --host=i586-linux && \
+	../glibc-2.7/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.24.3/include:$(CURDIR)/linux-2.6.24.3/kernel_32/include --enable-kernel=2.6.24 --disable-profile --host=i586-linux && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" lib && \
-	cd ../glibc-2.4/math && \
+	cd ../glibc-2.7/math && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../nptl && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
@@ -299,9 +299,9 @@ glibc_64libs : glibc_src boot/kernel64
 	ln -s asm-x86 linux-2.6.24.3/include/asm && \
 	mkdir -p glibc-64 && \
 	cd glibc-64 && \
-	../glibc-2.4/configure CFLAGS="-O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.24.3/include:$(CURDIR)/linux-2.6.24.3/kernel_64/include --enable-kernel=2.6.16 --disable-profile && \
+	../glibc-2.7/configure CFLAGS="-O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.24.3/include:$(CURDIR)/linux-2.6.24.3/kernel_64/include --enable-kernel=2.6.24 --disable-profile && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" lib && \
-        cd ../glibc-2.4/math && \
+        cd ../glibc-2.7/math && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
 	cd ../nptl && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
@@ -323,9 +323,11 @@ glibc_64libs : glibc_src boot/kernel64
 	cp glibc-64/resolv/libresolv.so.2 initrd_dir/lib64 && \
 	touch glibc_64libs
 
-glibc_src : glibc-2.4.tar.bz2
-	tar xjf glibc-2.4.tar.bz2 && \
-	touch glibc_src
+glibc_src : glibc-2.7.tar.bz2
+	tar xjf glibc-2.7.tar.bz2 && \
+	cd glibc-2.7 && \
+	patch -p0  < ../patches/glibc.patch && \
+	touch ../glibc_src
 
 #### Kernel build targets ####
 initrd_dir/bin/kernel32 : boot/kernel32
