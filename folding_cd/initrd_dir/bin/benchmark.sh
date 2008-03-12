@@ -138,7 +138,7 @@ fi
 
 failed_download ()
 {
-  echo "\n\n\nFailed to download the client from Stanford's website."
+  echo -e "\n\n\nFailed to download the client from Stanford's website."
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "and reboot afterwards."

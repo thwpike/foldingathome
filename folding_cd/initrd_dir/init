@@ -57,6 +57,7 @@ mknod /dev/sdb b 8 16
 mknod /dev/sdb1 b 8 17
 
 mount -n -t proc proc /proc
+stty -echo
 ifconfig lo 127.0.0.1
 
 # Make sure we try all interfaces for DHCP
@@ -117,8 +118,11 @@ then
   SMPCPUS=4
 fi
 
+# Set screen blank interval
+echo -e "\033[9;1]
+
 # Check for USB drives
-echo "\n\n\nWaiting 10 seconds for any USB drives to start"
+echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
 sleep 10
 mount -n -t vfat /dev/sda1 /usba > /dev/null 2>&1
 noUSBa=$?
@@ -186,7 +190,7 @@ fi
 wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz
 if [ $? -eq 1 ]
 then
-  echo "\n\n\nFailed to download the client from Stanford's website:"
+  echo -e "\n\n\nFailed to download the client from Stanford's website:"
   echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz"
   echo ""
   echo "Please double check your Gateway and DNS information"
@@ -200,7 +204,7 @@ fi
 tar xzf FAH6.00beta2-Linux.tgz
 
 # Dump useful info to the screen and web page
-echo "\n\n\nProcessor type: $arch"
+echo -e "\n\n\nProcessor type: $arch"
 echo "Found $numprocs processors"
 echo "User: $USER"
 echo "Team: $TEAM"
