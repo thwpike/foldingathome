@@ -118,8 +118,17 @@ then
   SMPCPUS=4
 fi
 
+if [ -z "$BLANK" ]
+then
+  BLANK=0
+fi
+if [ $BLANK -lt 0 ] || [ $BLANK -gt 60 ]
+then
+  BLANK=0
+fi
+
 # Set screen blank interval
-echo -e "\033[9;1]
+echo -e "\033[9;$BLANK]"
 
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
@@ -213,6 +222,12 @@ echo "Backup every $BACKUP minutes"
 echo "Core checkpoint every $CHECKPOINT minutes"
 echo "Remote reboot: $REBOOT"
 echo "Install: $INSTALL"
+if [ $BLANK -eq 0 ]
+then
+  echo "Console blank: disabled"
+else
+  echo "Console blank: $BLANK minutes"
+fi
 echo "Hostname: " `hostname`
 echo "IP address:" `cat /tmp/myip`
 cat << EOF > index.backup
