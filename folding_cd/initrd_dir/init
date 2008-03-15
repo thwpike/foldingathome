@@ -110,12 +110,10 @@ if [ -z "$INSTALL" -o "$INSTALL" != "yes" ]
 then
   INSTALL=no
 fi
-
 if [ -z "$SMPCPUS" ]
 then
   SMPCPUS=4
 fi
-
 if [ -z "$BLANK" ]
 then
   BLANK=0
@@ -124,7 +122,14 @@ if [ $BLANK -lt 0 ] || [ $BLANK -gt 60 ]
 then
   BLANK=0
 fi
-
+if [ -z "$SAMBA" ]
+then
+  SAMBA=2
+fi
+if [ $SAMBA -lt 0 ] || [ $SAMBA -gt 2 ]
+then
+  SAMBA=2
+fi
 if [ -z "$GROUP" ]
 then
   GROUP=DISKLESS
@@ -149,9 +154,14 @@ path = /
 guest ok = yes
 guest only = yes
 EOF
-
-nmbd -D
-smbd -D
+if [ $SAMBA -eq 2 ]
+then
+  nmbd -D
+fi
+if [ $SAMBA -ne 0 ]
+then
+  smbd -D
+fi
 
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
@@ -253,8 +263,17 @@ else
 fi
 echo "Hostname: " `hostname`
 echo "IP address:" `cat /tmp/myip`
-cat << EOF > index.backup
+if [ $SAMBA -eq 2 ]
+then
+  echo "Workgroup: $GROUP"
+elif [ $SAMBA -eq 1 ]
+then
+  echo "Browsing: Disabled"
+else
+  echo "Windows Networking: Disabled"
+fi
 
+cat << EOF > index.backup
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
@@ -315,8 +334,23 @@ else
   echo "<P ALIGN=LEFT><FONT SIZE=3>Remote reboot: disabled</FONT></P>" >> index.backup
 fi
 echo "<P ALIGN=LEFT><FONT SIZE=3>Install: $INSTALL</FONT></P>" >> index.backup
+if [ $BLANK -eq 0 ]
+then
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Console blank: disabled</FONT></P>" >> index.backup
+else
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Console blank: $BLANK minutes</FONT></P>" >> index.backup
+fi
 echo "<P ALIGN=LEFT><FONT SIZE=3>Hostname: " `hostname` "</FONT></P>" >> index.backup
 echo "<P ALIGN=LEFT><FONT SIZE=3>IP address:" `cat /tmp/myip` "</FONT></P>" >> index.backup
+if [ $SAMBA -eq 2 ]
+then
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Workgroup: $GROUP</FONT></P>" >> index.backup
+elif [ $SAMBA -eq 1 ]
+then
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Browsing: Disabled</FONT></P>" >> index.backup
+else
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Windows Networking: Disabled</FONT></P>" >> index.backup
+fi
 
 # Check if this is running on the bare metal or a VM and do NTP if necessary
 isVMWare
