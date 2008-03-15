@@ -2,9 +2,9 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080301
+VERSION=080314
 install() {
-  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt ]
+  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
   then
     if [ `cat version.txt` -ge $VERSION ]
     then
