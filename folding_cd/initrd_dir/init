@@ -77,8 +77,6 @@ cd /etc/folding
 cat /proc/cpuinfo > cpuinfo.txt
 dmesg > dmesg.txt
 httpd
-nmbd -D
-smbd -D
 
 numprocs=`grep -c "^processor" /proc/cpuinfo`
 arch=`uname -m`
@@ -127,8 +125,33 @@ then
   BLANK=0
 fi
 
+if [ -z "$GROUP" ]
+then
+  GROUP=DISKLESS
+fi
+
 # Set screen blank interval
 echo -e "\033[9;$BLANK]"
+
+# Setup Samba
+echo "[global]" > /etc/smb.conf
+echo "workgroup=$GROUP" >> /etc/smb.conf
+cat << EOF >> /etc/smb.conf
+guest account = root
+domain master = yes
+local master = yes
+security = share
+load printers = no
+printcap name = /dev/null
+
+[C]
+path = /
+guest ok = yes
+guest only = yes
+EOF
+
+nmbd -D
+smbd -D
 
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
