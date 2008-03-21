@@ -1,0 +1,59 @@
+#!/usr/bin/vmplayer
+
+# This is a Workstation 5 or 5.5 config file
+# It can be used with Player
+config.version = "8"
+virtualHW.version = "4"
+
+# Number of virtual CPUs. Your virtual machine will not
+# work if this number is higher than the number of your physical CPUs
+numvcpus = "2"
+
+# Memory
+memsize = "512"
+
+# Selected operating system for your virtual machine
+guestOS = "other-64"
+
+# displayName is your own name for the virtual machine
+displayName = "Folding@Home"
+
+# These fields are free text description fields
+annotation = "Folding CD"
+guestinfo.vmware.product.long = "notfred's Diskless Folding CD"
+guestinfo.vmware.product.url = "http://reilly.homeip.net"
+guestinfo.vmware.product.class = "virtual machine"
+
+# First serial port, physical COM1 is not available
+serial0.present = "FALSE"
+
+# Optional second serial port, physical COM2 is not available
+serial1.present = "FALSE"
+
+# First parallel port, physical LPT1 is not available
+parallel0.present = "FALSE"
+
+# Settings for physical floppy drive
+floppy0.present = "FALSE"
+
+# Logging
+logging = "FALSE"
+
+# These settings decides interaction between your
+# computer and the virtual machine
+isolation.tools.hgfs.disable = "FALSE"
+isolation.tools.dnd.disable = "FALSE"
+isolation.tools.copy.enable = "FALSE"
+isolation.tools.paste.enabled = "FALSE"
+
+# First network interface card
+ethernet0.present = "TRUE"
+ethernet0.virtualDev = "e1000"
+ethernet0.connectionType = "bridged"
+ethernet0.addressType = "generated"
+ethernet0.generatedAddressOffset = "0"
+
+ide0:0.present = "TRUE"
+ide0:0.fileName = "folding.vmdk"
+
+ide0:0.redo = ""

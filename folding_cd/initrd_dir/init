@@ -55,6 +55,8 @@ mknod /dev/sda b 8 0
 mknod /dev/sda1 b 8 1
 mknod /dev/sdb b 8 16
 mknod /dev/sdb1 b 8 17
+mknod /dev/hda b 3 0
+mknod /dev/hda1 b 3 1
 
 mount -n -t proc proc /proc
 stty -echo
@@ -162,6 +164,8 @@ if [ $SAMBA -ne 0 ]
 then
   smbd -D
 fi
+
+# mount -n /dev/hda1 /etc/folding/drive
 
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
