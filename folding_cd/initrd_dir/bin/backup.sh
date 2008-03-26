@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# Check for VMWare
+isVMWare
+noVMWare=$?
+
 while [ 1 ]
 do
   sleep `expr $1 \* 60`
@@ -63,8 +68,7 @@ do
       # Make any directories necessary
       mkdir -p /usbb/folding/$instance/work
       # Copy across any files that are newer than what is on the USB drive
-      for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f
-`
+      for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
       do
         if [ ! -f /usbb/folding/$instance/$name ]
         then
@@ -77,6 +81,32 @@ do
       umount /usbb
     fi
 
+    # Backup to hard drive image if VMWare
+    if [ $noVMWare -eq 0 ]
+    then
+      mount -n -t vfat /dev/hda1 /hda
+      if [ $? -eq 0 ]
+      then
+        # Make any directories necessary
+        mkdir -p /hda/folding/$instance/work
+        # Copy across any files that are newer than what is on the hard drive image
+        for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
+        do
+          if [ ! -f /hda/folding/$instance/$name ]
+          then
+            cp /etc/folding/$instance/$name /hda/folding/$instance/$name
+          elif [ /etc/folding/$instance/$name -nt /hda/folding/$instance/$name ]
+          then
+            cp /etc/folding/$instance/$name /hda/folding/$instance/$name
+          fi
+        done
+        umount /hda
+      fi
+    else
+      echo "Hard drive image is corrupted, not backing up"
+    fi
+
+    # Next instance
     instance=`expr $instance + 1`
   done
 

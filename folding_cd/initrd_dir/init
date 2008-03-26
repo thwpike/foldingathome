@@ -233,11 +233,11 @@ then
 fi
 
 # Download the client from Stanford
-wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz
+wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz
 if [ $? -eq 1 ]
 then
   echo -e "\n\n\nFailed to download the client from Stanford's website:"
-  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta2-Linux.tgz"
+  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz"
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`
@@ -247,7 +247,7 @@ then
     sleep 86400
   done
 fi
-tar xzf FAH6.00beta2-Linux.tgz
+tar xzf FAH6.00beta1-Linux.tgz
 
 # Dump useful info to the screen and web page
 echo -e "\n\n\nProcessor type: $arch"
@@ -478,6 +478,24 @@ EOF
       echo "Restore done"
     fi
     umount /usbb
+  fi
+
+# Restore from hard drive image if VMWare
+  if [ $noVMWare -eq 0 ]
+  then
+    mount -n -t vfat /dev/hda1 /hda
+    if [ $? -eq 0 ]
+    then
+      if [ -d /hda/folding/$numprocs ]
+      then
+        echo "Restoring from disk image"
+        cp -r /hda/folding/$numprocs/* .
+        echo "Restore done"
+      fi
+      umount /hda
+    else
+      echo "Disk image is corrupt, not restoring"
+    fi
   fi
 
 # Start up the client
