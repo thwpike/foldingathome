@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080314
+VERSION=080326
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
   then
@@ -233,11 +233,11 @@ then
 fi
 
 # Download the client from Stanford
-wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz
+wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.02beta1-Linux.tgz
 if [ $? -eq 1 ]
 then
   echo -e "\n\n\nFailed to download the client from Stanford's website:"
-  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.00beta1-Linux.tgz"
+  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.02beta1-Linux.tgz"
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`

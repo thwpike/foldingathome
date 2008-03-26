@@ -1,3 +1,4 @@
+26 March 08: Stanford upgraded the beta and moved the download location - again.
 14 March 08: Upgrade to new kernel version (support more network cards), glibc and busybox. Fix 1881099 - Add folding directory link to web interface. Fix 1880850 - Optional enable of screen blanking. Fix 1914624 - Configurable Workgroup. Fix 1914625 - Disabling of nmbd and smbd.
 1 March 08: Fix a bug in the hang check - wasn't killing cores with a 0 in the PID. Fix 1903637 - Add kill link to homepage. Fix 1870815 - Allow SMP per 2 CPUs.
 2 February 08: Fixed install after move to SourceForge. Added autoreturn to homepage after reboot. Added the Benchmark CD as a boot option. Changed to FAH version 6 Beta 2.
