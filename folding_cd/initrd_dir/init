@@ -247,7 +247,7 @@ then
     sleep 86400
   done
 fi
-tar xzf FAH6.00beta1-Linux.tgz
+tar xzf FAH6.02beta1-Linux.tgz
 
 # Dump useful info to the screen and web page
 echo -e "\n\n\nProcessor type: $arch"
