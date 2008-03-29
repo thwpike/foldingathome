@@ -19,8 +19,8 @@ guestOS = "other-64"
 displayName = "Folding@Home"
 
 # These fields are free text description fields
-annotation = "Folding CD"
-guestinfo.vmware.product.long = "notfred's Diskless Folding CD"
+annotation = "Diskless Folding@Home"
+guestinfo.vmware.product.long = "Diskless Folding by Nick Reilly"
 guestinfo.vmware.product.url = "http://reilly.homeip.net"
 guestinfo.vmware.product.class = "virtual machine"
 

@@ -250,7 +250,8 @@ fi
 tar xzf FAH6.02beta1-Linux.tgz
 
 # Dump useful info to the screen and web page
-echo -e "\n\n\nProcessor type: $arch"
+echo -e "\n\n\nDiskless Folding version $VERSION by Nick Reilly"
+echo "Processor type: $arch"
 echo "Found $numprocs processors"
 echo "User: $USER"
 echo "Team: $TEAM"
@@ -282,10 +283,11 @@ cat << EOF > index.backup
 <HTML>
 <HEAD>
 <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
-<TITLE></TITLE>
+<TITLE>Diskless Folder</TITLE>
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <P ALIGN=CENTER><FONT SIZE=7 STYLE="font-size: 32pt">Diskless Folder</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Diskless Folding version $VERSION by Nick Reilly</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Processor type: $arch</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Found $numprocs processors</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>User: $USER</FONT></P>
