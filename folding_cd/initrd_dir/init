@@ -165,8 +165,6 @@ then
   smbd -D
 fi
 
-# mount -n /dev/hda1 /etc/folding/drive
-
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
 sleep 10
@@ -250,6 +248,8 @@ fi
 tar xzf FAH6.02beta1-Linux.tgz
 
 # Dump useful info to the screen and web page
+echo "Bootloader:"
+cat /proc/sys/kernel/bootloader_type
 echo -e "\n\n\nDiskless Folding version $VERSION by Nick Reilly"
 echo "Processor type: $arch"
 echo "Found $numprocs processors"
@@ -367,6 +367,157 @@ if [ $noVMWare -eq 0 ]
 then
   echo "Running under VMWare, not using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>Running under VMWare, not using NTP to sync time</FONT></P>" >> index.backup
+  if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
+  then
+    echo "<P ALIGN=LEFT><FONT SIZE=3><A HREF=\"reconfigure.html\">Reconfigure</A> this host.</FONT></P>" >> index.backup
+    cat << EOF > reconfigure.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Diskless Folding Parameters</title>
+</head>
+<body>
+<Form action="cgi-bin/reconf.cgi" method="post">
+  <P>
+    <Label for="USER">Username: </Label>
+    <Input type="text" name="USER" value="$USER"><BR>
+    <Label for="TEAM">Team: </Label>
+    <Input type="text" name="TEAM" value="$TEAM"><BR>
+    <Label for="BACKUP">Backup interval (in minutes, 0 to disable) </Label>
+    <Input type="text" name="BACKUP" value="$BACKUP"><BR>
+    Big Work Units:<BR>
+EOF
+    if [ "$BIG" = "yes" ]
+    then
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\"> Disabled<BR>" >> reconfigure.html
+    else
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\" checked=\"true\"> Disabled<BR>" >> reconfigure.html
+    fi
+    echo "    SMP instance per:<BR>" >> reconfigure.html
+    if [ "$SMPCPUS" = "4" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\" checked=\"true\"> 4 CPUs<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> reconfigure.html
+    else
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\" checked=\"true\"> 2 CPUs<BR>" >> reconfigure.html
+    fi
+    echo "    Remote Reboot:<BR>" >> reconfigure.html
+    if [ "$REBOOT" = "enabled" ]
+    then
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"enabled\" checked=\"true\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"disabled\"> Disabled<BR>" >> reconfigure.html
+    else
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"enabled\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"disabled\" checked=\"true\"> Disabled<BR>" >> reconfigure.html
+    fi
+    echo "    Install to USB drives on boot:<BR>" >> reconfigure.html
+    if [ "$INSTALL" = "yes" ]
+    then
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"no\"> Disabled<BR>" >> reconfigure.html
+    else
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"yes\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"no\" checked=\"true\"> Disabled<BR>" >> reconfigure.html
+    fi
+    echo "    <Label for=\"BLANK\">Console blank time (1-60 minutes, 0=disabled): </Label>" >> reconfigure.html
+    echo "    <Input type=\"text\" name=\"BLANK\" value=\"$BLANK\"><BR>" >> reconfigure.html
+    echo "    Windows Networking:<BR>" >> reconfigure.html
+    if [ "$SAMBA" = "2" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\" checked=\"true\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> reconfigure.html
+    elif [ "$SAMBA" = "1" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\" checked=\"true\"> Browsing disabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> reconfigure.html
+    else
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> reconfigure.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\" checked=\"true\"> Disabled<BR>" >> reconfigure.html
+    fi
+    cat << EOF >> reconfigure.html
+    <Label for="GROUP">Windows Networking Workgroup: </Label>
+    <Input type="text" name="GROUP" value="$GROUP"><BR>
+    <Input type="submit" value="Reconfigure"> <Input type="reset">
+  </P>
+</Form>
+</body>
+</html>
+EOF
+    cat << EOF > cgi-bin/reconf.cgi
+#!/bin/sh
+if [ "\$REQUEST_METHOD" != "POST" ]
+then
+  echo "Content-type: text/html"
+  echo ""
+  echo "<html><body>"
+  echo "Must use post method"
+  echo "</body></html>"
+  exit 0
+fi
+
+read POST_STRING
+while true
+do
+  HEX="\$(echo "\$POST_STRING" | sed 's#^.*%\(..\).*#\1#')"
+  if [ "\$HEX" = "\$POST_STRING" ]
+  then
+    break;
+  fi
+  REP=\$(echo -e \\\\x\$HEX)
+  POST_STRING="\$(echo "\$POST_STRING" | sed 's#^\(.*\)%\(..\)#\1'\$REP'#')"
+done
+POST_STRING=\`echo \$POST_STRING | sed 's/&/ /g'\`
+mount -n -t vfat /dev/hda1 /hda
+rm /hda/syslinux.cfg
+cat <<_EndOfSyslinux.cfg_ > /hda/syslinux.cfg
+PROMPT 1
+DEFAULT fold
+DEFAULT64 fold64
+TIMEOUT 150
+DISPLAY fold.txt
+
+LABEL fold
+    KERNEL kernel32
+    APPEND initrd=initrd \$POST_STRING BENCHMARK=no
+
+LABEL fold64
+    KERNEL kernel64
+    APPEND initrd=initrd \$POST_STRING BENCHMARK=no
+
+LABEL benchmark
+        KERNEL kernel32
+        APPEND initrd=initrd \$POST_STRING BENCHMARK=yes
+
+LABEL benchmark64
+        KERNEL kernel64
+        APPEND initrd=initrd \$POST_STRING BENCHMARK=yes
+_EndOfSyslinux.cfg_
+umount /hda
+
+echo "Content-type: text/html"
+echo ""
+echo "<html><head><META HTTP-EQUIV=\"Refresh\" CONTENT=\"15;URL=/\">"
+echo "<SCRIPT LANGUAGE=\"JavaScript\"><!--"
+echo "function redirect () { setTimeout(\"go_now()\",15000); }"
+echo "function go_now ()   { window.location.href = \"/\"; }"
+echo "//--></SCRIPT></head>"
+echo "<body onLoad \"redirect()\">"
+echo "Configuration for this Diskless Folding VM changed. A reboot will be required for the new configuration to take effect."
+echo "<BR>This page will refresh back to the main page for this diskless folder 
+in 15 seconds."
+echo "<BR>If this does not work, click <a href="/">here</a>."
+echo "</body></html>"
+echo ""
+EOF
+    chmod 755 cgi-bin/reconf.cgi
+  fi
 elif [ $noVPC -eq 0 ]
 then
   echo "Running under VirtualPC, not using NTP to sync time"
@@ -482,8 +633,8 @@ EOF
     umount /usbb
   fi
 
-# Restore from hard drive image if VMWare
-  if [ $noVMWare -eq 0 ]
+# Restore from hard drive image if VMWare and booted from syslinux
+  if [ $noVMWare -eq 0 -a "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
   then
     mount -n -t vfat /dev/hda1 /hda
     if [ $? -eq 0 ]

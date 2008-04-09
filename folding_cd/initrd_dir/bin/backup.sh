@@ -81,8 +81,8 @@ do
       umount /usbb
     fi
 
-    # Backup to hard drive image if VMWare
-    if [ $noVMWare -eq 0 ]
+    # Backup to hard drive image if VMWare and booted by syslinux
+    if [ $noVMWare -eq 0 -a "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
     then
       mount -n -t vfat /dev/hda1 /hda
       if [ $? -eq 0 ]
