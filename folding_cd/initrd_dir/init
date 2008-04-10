@@ -247,6 +247,90 @@ then
 fi
 tar xzf FAH6.02beta1-Linux.tgz
 
+# Create a CD generator link
+cat << EOF > cd.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Diskless Folding Parameters</title>
+</head>
+<body>
+<Form action="cgi-bin/fold.iso" method="post">
+  <P>
+    <Label for="USER">Username: </Label>
+    <Input type="text" name="USER" value="$USER"><BR>
+    <Label for="TEAM">Team: </Label>
+    <Input type="text" name="TEAM" value="$TEAM"><BR>
+    <Label for="BACKUP">Backup interval (in minutes, 0 to disable) </Label>
+    <Input type="text" name="BACKUP" value="$BACKUP"><BR>
+    Big Work Units:<BR>
+EOF
+    if [ "$BIG" = "yes" ]
+    then
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
+    echo "    SMP instance per:<BR>" >> cd.html
+    if [ "$SMPCPUS" = "4" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\" checked=\"true\"> 4 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\" checked=\"true\"> 2 CPUs<BR>" >> cd.html
+    fi
+    echo "    Remote Reboot:<BR>" >> cd.html
+    if [ "$REBOOT" = "enabled" ]
+    then
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"enabled\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"disabled\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"enabled\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"disabled\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
+    echo "    Install to USB drives on boot:<BR>" >> cd.html
+    if [ "$INSTALL" = "yes" ]
+    then
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"no\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"yes\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"INSTALL\" value=\"no\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
+    echo "    <Label for=\"BLANK\">Console blank time (1-60 minutes, 0=disabled): </Label>" >> cd.html
+    echo "    <Input type=\"text\" name=\"BLANK\" value=\"$BLANK\"><BR>" >> cd.html
+    echo "    Windows Networking:<BR>" >> cd.html
+    if [ "$SAMBA" = "2" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> cd.html
+    elif [ "$SAMBA" = "1" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\" checked=\"true\"> Browsing disabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
+    cat << EOF >> cd.html
+    <Label for="GROUP">Windows Networking Workgroup: </Label>
+    <Input type="text" name="GROUP" value="$GROUP"><BR>
+    <Input type="submit" value="Download ISO"> <Input type="reset">
+  </P>
+</Form>
+</body>
+</html>
+EOF
+
+
+
 # Dump useful info to the screen and web page
 echo "Bootloader:"
 cat /proc/sys/kernel/bootloader_type
@@ -546,6 +630,7 @@ then
 else
   smp=0
 fi
+echo "<P ALIGN=LEFT><FONT SIZE=3>Folding CD <A HREF="cd.html">Generator</A></FONT></P>" >> index.backup
 echo
 
 # Setup webpage for each instance
