@@ -7,7 +7,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding.vmdk.WRITELOCK folding/folding.vmdk cdrkit-1.1.7.1
+	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding.vmdk.WRITELOCK folding/folding.vmdk cdrkit-1.1.7.1
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -36,8 +36,8 @@ $(WEBDIR)/syslinux.exe : diskless/syslinux.exe
 $(WEBDIR)/usb.zip : usb.zip
 	cp usb.zip $(WEBDIR)
 
-$(CGIDIR)/fold.iso : web/fold.iso
-	cp web/fold.iso $(CGIDIR)
+$(CGIDIR)/fold.iso : initrd_dir/etc/folding/cgi-bin/fold.iso
+	cp initrd_dir/etc/folding/cgi-bin/fold.iso $(CGIDIR)
 
 $(CGIDIR)/kernel32 : boot/kernel32
 	cp boot/kernel32 $(CGIDIR)
@@ -164,7 +164,7 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/bin/kernel32 initrd_dir/bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \
@@ -173,8 +173,8 @@ boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd i
 initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/cpio-o cpio-o.c -lc -lc_nonshared glibc-32/elf/ld.so
 
-initrd_dir/etc/fold.txt : patches/fold.txt
-	cp patches/fold.txt initrd_dir/etc
+initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
+	cp patches/fold.txt initrd_dir/etc/folding/cgi-bin
 
 initrd_dir/bin/genisoimage : glibc_32libs cdrkit-1.1.7.1.tar.gz patches/genisoimage.patch
 	tar xzf cdrkit-1.1.7.1.tar.gz && \
@@ -187,8 +187,8 @@ initrd_dir/bin/genisoimage : glibc_32libs cdrkit-1.1.7.1.tar.gz patches/genisoim
 
 
 #### isolinux, pxelinux, syslinux ####
-initrd_dir/bin/isolinux.bin : boot/isolinux.bin
-	cp boot/isolinux.bin initrd_dir/bin/isolinux.bin
+initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
+	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 boot/isolinux.bin : syslinux_src
 	cd syslinux-3.51 && \
@@ -360,11 +360,11 @@ glibc_src : glibc-2.7.tar.bz2
 	touch ../glibc_src
 
 #### Kernel build targets ####
-initrd_dir/bin/kernel32 : boot/kernel32
-	cp boot/kernel32 initrd_dir/bin/kernel32
+initrd_dir/etc/folding/cgi-bin/kernel32 : boot/kernel32
+	cp boot/kernel32 initrd_dir/etc/folding/cgi-bin/kernel32
 
-initrd_dir/bin/kernel64 : boot/kernel64
-	cp boot/kernel64 initrd_dir/bin/kernel64
+initrd_dir/etc/folding/cgi-bin/kernel64 : boot/kernel64
+	cp boot/kernel64 initrd_dir/etc/folding/cgi-bin/kernel64
 
 boot/kernel32 : kernel_patch
 	$(MAKE) -C linux-2.6.24.3 O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \

@@ -13,9 +13,9 @@ install() {
       echo "Out of date installation found, updating it"
     fi
   fi
-  cp /bin/kernel64 .
-  cp /bin/kernel32 .
-  cp /etc/fold.txt .
+  cp /etc/folding/cgi-bin/kernel64 .
+  cp /etc/folding/cgi-bin/kernel32 .
+  cp /etc/folding/cgi-bin/fold.txt .
   cat << EOF > syslinux.cfg
 DEFAULT fold
 DEFAULT64 fold64
@@ -328,8 +328,6 @@ EOF
 </body>
 </html>
 EOF
-
-
 
 # Dump useful info to the screen and web page
 echo "Bootloader:"

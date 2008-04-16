@@ -9,6 +9,20 @@ then
   exit 0
 fi
 
+# Clean up any stale (over 60 minute old) files
+find /tmp -name 'cd_*' -cmin +60 -exec rm -rf \{\} \;
+
+# Check if there is room
+if [ `ls /tmp | grep -c cd_` -gt 5 ]
+then
+  echo "Content-type: text/html"
+  echo ""
+  echo "<html><body>"
+  echo "Too many downloads in progress right now. Please try again later."
+  echo "</body></html>"
+  exit 0
+fi
+
 read POST_STRING
 while true
 do
@@ -21,13 +35,16 @@ do
   POST_STRING="$(echo "$POST_STRING" | sed 's#^\(.*\)%\(..\)#\1'$REP'#')"
 done
 POST_STRING=`echo $POST_STRING | sed 's/&/ /g'`
-
-dir=/tmp/cd_`date +%s`
+dir=/tmp/cd_`date +%s`_$REMOTE_ADDR
 mkdir -p $dir/cd/isolinux
-cp /bin/kernel32 /bin/kernel64 /bin/isolinux.bin /etc/fold.txt $dir/cd/isolinux
-cd /
-cpio-o < /etc/manifest | gzip -9 > $dir/cd/isolinux/initrd
-
+cp kernel32 kernel64 isolinux.bin fold.txt $dir/cd/isolinux
+if [ -f initrd ]
+then
+  cp initrd $dir/cd/isolinux
+else
+  cd /
+  cpio-o < /etc/manifest | gzip -9 > $dir/cd/isolinux/initrd
+fi
 cat <<_EndOfIsolinux.cfg_ > $dir/cd/isolinux/isolinux.cfg
 PROMPT 1
 DEFAULT fold
@@ -60,5 +77,3 @@ echo "Content-length:" `stat -c %s $dir/folding.iso`
 echo ""
 cat $dir/folding.iso
 rm -rf $dir
-
-
