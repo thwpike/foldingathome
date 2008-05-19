@@ -61,12 +61,12 @@ LABEL fold64
     APPEND initrd=initrd $POST_STRING BENCHMARK=no
 
 LABEL benchmark
-        KERNEL kernel32
-        APPEND initrd=initrd $POST_STRING BENCHMARK=yes
+    KERNEL kernel32
+    APPEND initrd=initrd $POST_STRING BENCHMARK=yes
 
 LABEL benchmark64
-        KERNEL kernel64
-        APPEND initrd=initrd $POST_STRING BENCHMARK=yes
+    KERNEL kernel64
+    APPEND initrd=initrd $POST_STRING BENCHMARK=yes
 _EndOfIsolinux.cfg_
 
 genisoimage -o $dir/folding.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table $dir/cd

@@ -1,5 +1,7 @@
 WEBDIR = /var/www/reilly/folding
 CGIDIR = /usr/lib/cgi-bin
+LOOPDEV = $(shell sudo losetup -f)
+MOUNT = /mnt
 
 all : folding_cd.iso diskless.zip usb.zip
 
@@ -7,7 +9,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding.vmdk.WRITELOCK folding/folding.vmdk cdrkit-1.1.7.1
+	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding/folding.vmdk cdrkit-1.1.7.1
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -140,22 +142,23 @@ diskless/version.txt : initrd_dir/init
 folding.zip: initrd_dir/bin/mbr.bin sfdisk.in diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux
 	dd if=/dev/zero of=outfile bs=524288 count=1024 && \
 	cat initrd_dir/bin/mbr.bin outfile > disk && \
-        sfdisk -D --no-reread -q disk < sfdisk.in && \
+	sfdisk -D --no-reread -q disk < sfdisk.in && \
+	sudo losetup -o 32256 $(LOOPDEV) disk && \
+	mkdosfs -F 32 $(LOOPDEV) && \
+	sudo mount $(LOOPDEV) $(MOUNT) && \
+	sudo cp diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt $(MOUNT) && \
+	sudo umount $(MOUNT) && \
+	sudo initrd_dir/bin/syslinux $(LOOPDEV) && \
+	sudo losetup -d $(LOOPDEV) && \
 	qemu-img convert disk -O vmdk folding.vmdk && \
-	sudo sh -c "vmware-loop folding.vmdk 1 /dev/nbd0 &" && \
-	sleep 1 && \
-	mkdosfs -F 32 /dev/nbd0 && \
-	sudo mount /dev/nbd0 /mnt && \
-	sudo cp diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt /mnt && \
-	sudo umount /mnt && \
-	sudo initrd_dir/bin/syslinux /dev/nbd0 && \
-	sudo killall vmware-loop && \
         mv folding.vmdk folding && \
         zip folding.zip folding/folding.vmx folding/folding.vmdk
 
 ### folding_cd.iso ###
 folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/isolinux.cfg boot/fold.txt
-	mkisofs -o folding_cd.iso -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table boot
+	cp boot/isolinux.bin boot/isolin.bin && \
+	mkisofs -o folding_cd.iso -b isolin.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table boot && \
+	rm boot/isolin.bin
 
 boot/isolinux.cfg : patches/isolinux.cfg
 	cp patches/isolinux.cfg boot
@@ -164,7 +167,7 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \

@@ -3,6 +3,8 @@
 # Check for VMWare
 isVMWare
 noVMWare=$?
+grep -q "QEMU Virtual CPU" /proc/cpuinfo
+noQEMU=$?
 
 while [ 1 ]
 do
@@ -82,28 +84,31 @@ do
     fi
 
     # Backup to hard drive image if VMWare and booted by syslinux
-    if [ $noVMWare -eq 0 -a "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
+    if [ $noVMWare -eq 0 -o $noQEMU -eq 0 ] 
     then
-      mount -n -t vfat /dev/hda1 /hda
-      if [ $? -eq 0 ]
+      if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
       then
-        # Make any directories necessary
-        mkdir -p /hda/folding/$instance/work
-        # Copy across any files that are newer than what is on the hard drive image
-        for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
-        do
-          if [ ! -f /hda/folding/$instance/$name ]
-          then
-            cp /etc/folding/$instance/$name /hda/folding/$instance/$name
-          elif [ /etc/folding/$instance/$name -nt /hda/folding/$instance/$name ]
-          then
-            cp /etc/folding/$instance/$name /hda/folding/$instance/$name
-          fi
-        done
-        umount /hda
+        mount -n -t vfat /dev/hda1 /hda
+        if [ $? -eq 0 ]
+        then
+          # Make any directories necessary
+          mkdir -p /hda/folding/$instance/work
+          # Copy across any files that are newer than what is on the hard drive image
+          for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
+          do
+            if [ ! -f /hda/folding/$instance/$name ]
+            then
+              cp /etc/folding/$instance/$name /hda/folding/$instance/$name
+            elif [ /etc/folding/$instance/$name -nt /hda/folding/$instance/$name ]
+            then
+              cp /etc/folding/$instance/$name /hda/folding/$instance/$name
+            fi
+          done
+          umount /hda
+        fi
+      else
+        echo "Hard drive image is corrupted, not backing up"
       fi
-    else
-      echo "Hard drive image is corrupted, not backing up"
     fi
 
     # Next instance
