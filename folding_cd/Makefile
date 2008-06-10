@@ -12,7 +12,10 @@ clean:
 	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding/folding.vmdk cdrkit-1.1.7.1
 
 ### install_web ###
-install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
+install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/fold64.vmx $(WEBDIR)/fold.vmx $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
+
+$(WEBDIR)/folding.zip : folding.zip
+	cp folding.zip $(WEBDIR)
 
 $(WEBDIR)/diskless.zip : diskless.zip
 	cp diskless.zip $(WEBDIR)
@@ -58,6 +61,12 @@ $(CGIDIR)/fold.txt : boot/fold.txt
 
 $(WEBDIR)/benchmark.html : web/benchmark.html
 	cp web/benchmark.html $(WEBDIR)
+
+$(WEBDIR)/vm.html : NEWS web/vm.html
+	cat web/vm.html > $(WEBDIR)/vm.html && \
+	sed "a<BR>" NEWS >> $(WEBDIR)/vm.html && \
+	echo "</body>" >> $(WEBDIR)/vm.html && \
+	echo "</html>" >> $(WEBDIR)/vm.html
 
 $(WEBDIR)/cd.html : NEWS web/cd.html
 	cat web/cd.html > $(WEBDIR)/cd.html && \

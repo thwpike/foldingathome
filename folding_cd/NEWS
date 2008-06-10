@@ -1,3 +1,4 @@
+9 June 08: Fix 1914982 - Add 30 secs to auto-return to home page after remote reboot. Fix 1853837 - Official VMWare Appliance. Fix 1922071 - Version Numbers & Add to Web Interface. Fix 1853668 - Make options selectable / changeable at boot screen -  this gives a built-in Folding CD Generator and the ability to reconfigure the USB stick or VMWare Apliance.
 26 March 08: Stanford upgraded the beta and moved the download location - again.
 14 March 08: Upgrade to new kernel version (support more network cards), glibc and busybox. Fix 1881099 - Add folding directory link to web interface. Fix 1880850 - Optional enable of screen blanking. Fix 1914624 - Configurable Workgroup. Fix 1914625 - Disabling of nmbd and smbd.
 1 March 08: Fix a bug in the hang check - wasn't killing cores with a 0 in the PID. Fix 1903637 - Add kill link to homepage. Fix 1870815 - Allow SMP per 2 CPUs.
