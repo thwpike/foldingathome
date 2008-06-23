@@ -231,6 +231,22 @@ then
 fi
 
 # Download the client from Stanford
+# Sort out http_proxy environment variable for wget
+if [ -n "$PROXY_HOST" ]
+then
+  if [ -z "$PROXY_PORT" ]
+  then
+    PROXY_PORT=8080
+  fi
+  if [ -z "$PROXY_USER" ]
+  then
+    export http_proxy=http://$PROXY_HOST:$PROXY_PORT
+    echo "Proxy is $http_proxy"
+  else
+    export http_proxy=http://$PROXY_USER:$PROXY_PASS@$PROXY_HOST:$PROXY_PORT
+    echo "Proxy is $http_proxy"
+  fi
+fi
 wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.02beta1-Linux.tgz
 if [ $? -eq 1 ]
 then
@@ -534,14 +550,39 @@ bigpackets=$BIG
 machineid=$numprocs
 
 [http]
-active=no
-host=localhost
-port=8080
+EOF
+
+  if [ -z "$PROXY_HOST" ]
+  then
+    echo "active=no" >> client.cfg
+    echo "host=localhost" >> client.cfg
+    echo "port=8080" >> client.cfg
+  else
+    echo "active=yes" >> client.cfg
+    echo "host=$PROXY_HOST" >> client.cfg
+    echo "port=$PROXY_PORT" >> client.cfg
+    if [ -z "$PROXY_USER" ]
+    then
+      echo "usepasswd=no" >> client.cfg
+    else
+      echo "usepasswd=yes" >> client.cfg
+      echo "proxy_name=$PROXY_USER"  >> client.cfg
+      echo "proxy_passwd=$PROXY_PASS" >> client.cfg
+    fi
+  fi
+  cat << EOF >> client.cfg
 
 [core]
 checkpoint=$CHECKPOINT
 
 EOF
+
+# Do the Caesar Cipher on the proxy password (+0x64 and terminate with 0xae)
+  if [ -n "PROXY_PASS" ]
+  then
+    encode < client.cfg > client.tmp
+    mv client.tmp client.cfg
+  fi
 
 # Restore from tftp backup if present
   if [ "`cat /tmp/tftpserverip`" != "" ]
