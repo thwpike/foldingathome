@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080609
+VERSION=080623
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
   then
@@ -25,19 +25,19 @@ DISPLAY fold.txt
 
 LABEL fold
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
 
 LABEL fold64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
 
 LABEL benchmark
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
 
 LABEL benchmark64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
 
 EOF
   savedir=`pwd`
@@ -338,6 +338,14 @@ EOF
     cat << EOF >> cd.html
     <Label for="GROUP">Windows Networking Workgroup: </Label>
     <Input type="text" name="GROUP" value="$GROUP"><BR>
+    <Label for="PROXY_HOST">Proxy Hostname (blank if no proxy): </Label>
+    <Input type="text" name="PROXY_HOST" value="$PROXY_HOST"><BR>
+    <Label for="PROXY_PORT">Proxy Port (blank if no proxy): </Label>
+    <Input type="text" name="PROXY_PORT" value="$PROXY_PORT"><BR>
+    <Label for="PROXY_USER">Proxy Username (blank if no proxy or proxy doesn't require username and password): </Label>
+    <Input type="text" name="PROXY_USER" value="$PROXY_USER"><BR>
+    <Label for="PROXY_PASS">Proxy Password (blank if no proxy or proxy doesn't require username and password): </Label>
+    <Input type="text" name="PROXY_PASS" value="$PROXY_PASS"><BR>
     <Input type="submit" value="Download ISO"> <Input type="reset">
   </P>
 </Form>
