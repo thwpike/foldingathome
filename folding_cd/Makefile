@@ -9,7 +9,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip outfile disk folding/folding.vmdk cdrkit-1.1.7.1
+	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -36,22 +36,22 @@ $(WEBDIR)/usb.zip : usb.zip
 	cp usb.zip $(WEBDIR)
 
 $(CGIDIR)/fold.iso : initrd_dir/etc/folding/cgi-bin/fold.iso
-	cp initrd_dir/etc/folding/cgi-bin/fold.iso $(CGIDIR)
+	sudo cp initrd_dir/etc/folding/cgi-bin/fold.iso $(CGIDIR)
 
 $(CGIDIR)/kernel32 : boot/kernel32
-	cp boot/kernel32 $(CGIDIR)
+	sudo cp boot/kernel32 $(CGIDIR)
 
 $(CGIDIR)/kernel64 : boot/kernel64
-	cp boot/kernel64 $(CGIDIR)
+	sudo cp boot/kernel64 $(CGIDIR)
 
 $(CGIDIR)/initrd : boot/initrd
-	cp boot/initrd $(CGIDIR)
+	sudo cp boot/initrd $(CGIDIR)
 
 $(CGIDIR)/isolinux.bin : boot/isolinux.bin
-	cp boot/isolinux.bin $(CGIDIR)
+	sudo cp boot/isolinux.bin $(CGIDIR)
 
 $(CGIDIR)/fold.txt : boot/fold.txt
-	cp boot/fold.txt $(CGIDIR)
+	sudo cp boot/fold.txt $(CGIDIR)
 
 $(WEBDIR)/benchmark.html : web/benchmark.html
 	cp web/benchmark.html $(WEBDIR)
@@ -142,10 +142,9 @@ diskless/version.txt : initrd_dir/init
 	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
 
 ### folding.zip ###
-folding.zip: initrd_dir/bin/mbr.bin sfdisk.in diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
+folding.zip: initrd_dir/bin/mbr.bin partition_table diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
 	dd if=/dev/zero of=outfile bs=524288 count=1024 && \
-	cat initrd_dir/bin/mbr.bin outfile > disk && \
-	sfdisk -D --no-reread -q disk < sfdisk.in && \
+	cat initrd_dir/bin/mbr.bin partition_table outfile > disk && \
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
 	sudo mount $(LOOPDEV) $(MOUNT) && \
@@ -156,6 +155,12 @@ folding.zip: initrd_dir/bin/mbr.bin sfdisk.in diskless/kernel32 diskless/kernel6
 	qemu-img convert disk -O vmdk folding.vmdk && \
         mv folding.vmdk folding && \
         zip folding.zip folding/folding.vmx folding/folding.vmdk
+
+partition_table: part_gen
+	./part_gen > partition_table
+
+part_gen: part_gen.c
+	gcc -o part_gen part_gen.c
 
 ### folding_cd.iso ###
 folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/isolinux.cfg boot/fold.txt
