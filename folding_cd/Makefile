@@ -142,9 +142,7 @@ diskless/version.txt : initrd_dir/init
 	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
 
 ### folding.zip ###
-folding.zip: initrd_dir/bin/mbr.bin partition_table diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
-	dd if=/dev/zero of=outfile bs=524288 count=1024 && \
-	cat initrd_dir/bin/mbr.bin partition_table outfile > disk && \
+folding.zip: disk diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
 	sudo mount $(LOOPDEV) $(MOUNT) && \
@@ -155,6 +153,10 @@ folding.zip: initrd_dir/bin/mbr.bin partition_table diskless/kernel32 diskless/k
 	qemu-img convert disk -O vmdk folding.vmdk && \
         mv folding.vmdk folding && \
         zip folding.zip folding/folding.vmx folding/folding.vmdk
+
+disk: initrd_dir/bin/mbr.bin partition_table
+	dd if=/dev/zero of=outfile bs=524288 count=1024 && \
+	cat initrd_dir/bin/mbr.bin partition_table outfile > disk
 
 partition_table: part_gen
 	./part_gen > partition_table

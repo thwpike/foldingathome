@@ -1,3 +1,4 @@
+24 June 08: Fix 1959158 - Add support for static network config.
 23 June 08: Fix 1853657 - Add support for proxy web access.
 9 June 08: Fix 1914982 - Add 30 secs to auto-return to home page after remote reboot. Fix 1853837 - Official VMWare Appliance. Fix 1922071 - Version Numbers & Add to Web Interface. Fix 1853668 - Make options selectable / changeable at boot screen -  this gives a built-in Folding CD Generator and the ability to reconfigure the USB stick or VMWare Apliance.
 26 March 08: Stanford upgraded the beta and moved the download location - again.

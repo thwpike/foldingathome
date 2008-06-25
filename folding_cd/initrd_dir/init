@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080623
+VERSION=080624
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
   then
@@ -25,19 +25,19 @@ DISPLAY fold.txt
 
 LABEL fold
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS
 
 LABEL fold64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS
 
 LABEL benchmark
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS
 
 LABEL benchmark64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS
 
 EOF
   savedir=`pwd`
@@ -62,16 +62,34 @@ mount -n -t proc proc /proc
 stty -echo
 ifconfig lo 127.0.0.1
 
-# Make sure we try all interfaces for DHCP
-for iface in `awk '/eth/ {sub(":", "" ) ; print $1}' /proc/net/dev`
-do
-  name=fold-`ifconfig eth0 | awk -F : '/HWaddr/ {print $6$7}'`
-  udhcpc -s /etc/dhcp.script -i $iface -H $name -b
-done
-if [ "`hostname`" = "(none)" ]
+if [ -z "$IP" ]
 then
-  echo "No hostname from DHCP, setting hostname to $name"
+  # Make sure we try all interfaces for DHCP
+  for iface in `awk '/eth/ {sub(":", "" ) ; print $1}' /proc/net/dev`
+  do
+    name=fold-`ifconfig $iface | awk -F : '/HWaddr/ {print $6$7}'`
+    udhcpc -s /etc/dhcp.script -i $iface -H $name -b
+  done
+  if [ "`hostname`" = "(none)" ]
+  then
+    echo "No hostname from DHCP, setting hostname to $name"
+    hostname $name
+  fi
+else
+  # Static config
+  echo
+  echo
+  echo "Static config IP:$IP"
+  echo "            Mask:$MASK"
+  echo "         Gateway:$GATEWAY"
+  echo "      DNS Server:$DNS"
+  ifconfig eth0 $IP netmask $MASK
+  route add default gw $GATEWAY
+  echo "nameserver $DNS" > /etc/resolv.conf
+  name=fold-`ifconfig eth0 | awk -F : '/HWaddr/ {print $6$7}'`
   hostname $name
+  echo $IP > /tmp/myip
+  echo "" > /tmp/tftpserverip
 fi
 echo "127.0.0.1 `hostname`" > /etc/hosts
 
@@ -346,6 +364,14 @@ EOF
     <Input type="text" name="PROXY_USER" value="$PROXY_USER"><BR>
     <Label for="PROXY_PASS">Proxy Password (blank if no proxy or proxy doesn't require username and password): </Label>
     <Input type="text" name="PROXY_PASS" value="$PROXY_PASS"><BR>
+    <Label for="IP">Static IP (blank for DHCP):  </Label>
+    <Input type="text" name="IP" value="$IP"><BR>
+    <Label for="MASK">Subnet Mask (blank for DHCP):  </Label>
+    <Input type="text" name="MASK" value="$MASK"><BR>
+    <Label for="GATEWAY">Default Gateway (blank for DHCP):  </Label>
+    <Input type="text" name="GATEWAY" value="$GATEWAY"><BR>
+    <Label for="DNS">DNS Server IP (blank for DHCP):  </Label>
+    <Input type="text" name="DNS" value="$DNS"><BR>
     <Input type="submit" value="Download ISO"> <Input type="reset">
   </P>
 </Form>
