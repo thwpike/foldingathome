@@ -41,6 +41,8 @@
     <Input type="text" name="PROXY_USER" value=""><BR>
     <Label for="PROXY_PASS">Proxy Password (blank if no proxy or proxy doesn't require username and password): </Label>
     <Input type="text" name="PROXY_PASS" value=""><BR>
+    <Label for="INTF">Interface(blank for DHCP round-robin):  </Label>
+    <Input type="text" name="INTF" value=""><BR>
     <Label for="IP">Static IP (blank for DHCP):  </Label>
     <Input type="text" name="IP" value=""><BR>
     <Label for="MASK">Subnet Mask (blank for DHCP):  </Label>
@@ -49,6 +51,11 @@
     <Input type="text" name="GATEWAY" value=""><BR>
     <Label for="DNS">DNS Server IP (blank for DHCP):  </Label>
     <Input type="text" name="DNS" value=""><BR>
+    <Label for="TFTP">TFTP Server IP (blank for DHCP):  </Label>
+    <Input type="text" name="TFTP" value=""><BR>
+    Login shell:<BR>
+    <Input type="radio" name="SHELL" value="yes"> Enabled<BR>
+    <Input type="radio" name="SHELL" value="no" checked="true"> Disabled<BR>
     <Input type="submit" value="Download ISO"> <Input type="reset">
   </P>
 </Form>
