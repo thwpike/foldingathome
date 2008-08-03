@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080717
+VERSION=080803
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
   then
@@ -25,19 +25,19 @@ DISPLAY fold.txt
 
 LABEL fold
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
 
 LABEL fold64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
 
 LABEL benchmark
         KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
 
 LABEL benchmark64
         KERNEL kernel64
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL
 
 EOF
   savedir=`pwd`
@@ -127,9 +127,13 @@ if [ -z "$TEAM" ]
 then
   TEAM=2630
 fi
-if [ -z "$BIG" -o "$BIG" != "yes" ]
+if [ -z "$BIG" ]
 then
-  BIG=no
+  BIG=normal
+fi
+if [ -z "$ADVMETHODS" ]
+then
+  ADVMETHODS=no
 fi
 if [ -z "$BACKUP" ]
 then
@@ -323,14 +327,32 @@ cat << EOF > cd.html
     <Input type="text" name="BACKUP" value="$BACKUP"><BR>
     Big Work Units:<BR>
 EOF
-    if [ "$BIG" = "yes" ]
+    if [ "$BIG" = "normal" ]
     then
-      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\"> Disabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"big\"> Big (>10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"normal\" checked=\"true\"> Normal (5-10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"small\"> Small (<5MB)<BR>" >> cd.html
+    elif [ "$BIG" = "big" ]
+    then
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"big\" checked=\"true\"> Big (>10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"normal\"> Normal (5-10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"small\"> Small (<5MB)<BR>" >> cd.html
     else
-      echo "    <Input type=\"radio\" name=\"BIG\" value=\"yes\"> Enabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"BIG\" value=\"no\" checked=\"true\"> Disabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"big\"> Big (>10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"normal\"> Normal (5-10MB)<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"BIG\" value=\"small\" checked=\"true\"> Small (<5MB)<BR>" >> cd.html
     fi
+    echo "    Advmethods requesting new advanced cores and/or work units if available:<BR>" >> cd.html
+    if [ "$ADVMETHODS" = "yes" ]
+    then
+      echo "    <Input type=\"radio\" name=\"ADVMETHODS\" value=\"yes\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"ADVMETHODS\" value=\"no\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"ADVMETHODS\" value=\"yes\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"ADVMETHODS\" value=\"no\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
+    echo "    <Label for=\"MEM\">Memory, in MB, to indicate (leave blank for auto-detect): </Label>" >> cd.html
+    echo "    <Input type=\"text\" name=\"MEM\" value=\"$MEM\"><BR>" >> cd.html
     echo "    SMP instance per:<BR>" >> cd.html
     if [ "$SMPCPUS" = "4" ]
     then
@@ -427,6 +449,8 @@ echo "Found $numprocs processors"
 echo "User: $USER"
 echo "Team: $TEAM"
 echo "Big Packets: $BIG"
+echo "Advmethods: $ADVMETHODS"
+echo "Memory: $MEM MB"
 echo "Backup every $BACKUP minutes"
 echo "Core checkpoint every $CHECKPOINT minutes"
 echo "Remote reboot: $REBOOT"
@@ -464,6 +488,8 @@ cat << EOF > index.backup
 <P ALIGN=LEFT><FONT SIZE=3>User: $USER</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Team: $TEAM</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Big Packets: $BIG</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Advmethods: $ADVMETHODS</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Memory: $MEM MB</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Backup every $BACKUP minutes</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Core checkpoint every $CHECKPOINT minutes</FONT></P>
 EOF
@@ -647,10 +673,21 @@ EOF
 [core]
 checkpoint=$CHECKPOINT
 
+[clienttype]
 EOF
+  if [ -n "$MEM" ]
+  then
+    echo "memory=$MEM" >> client.cfg
+  fi
+  if [ "$ADVMETHODS" = "yes" ]
+  then
+    echo "type=3" >> client.cfg
+  else
+    echo "type=0" >> client.cfg
+  fi
 
 # Do the Caesar Cipher on the proxy password (+0x64 and terminate with 0xae)
-  if [ -n "PROXY_PASS" ]
+  if [ -n "$PROXY_PASS" ]
   then
     encode < client.cfg > client.tmp
     mv client.tmp client.cfg
@@ -724,7 +761,7 @@ EOF
   then
     ./fah6 -local -forceasm -verbosity 9 -smp > /dev/null 2>&1 &
   else
-    ./fah6 -local -forceasm -verbosity 9 -advmethods > /dev/null 2>&1 &
+    ./fah6 -local -forceasm -verbosity 9 > /dev/null 2>&1 &
   fi
 
   numprocs=`expr $numprocs - 1`

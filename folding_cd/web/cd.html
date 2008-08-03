@@ -14,8 +14,14 @@
     <Label for="BACKUP">Backup interval (in minutes, 0 to disable) </Label>
     <Input type="text" name="BACKUP" value="15"><BR>
     Big Work Units:<BR>
-    <Input type="radio" name="BIG" value="yes" checked="true"> Enabled<BR>
-    <Input type="radio" name="BIG" value="no"> Disabled<BR>
+    <Input type="radio" name="BIG" value="big" checked="true"> Big (>10MB)<BR>
+    <Input type="radio" name="BIG" value="normal"> Normal (5-10MB)<BR>
+    <Input type="radio" name="BIG" value="small"> Small (<5MB)<BR>
+    Advmethods requesting new advanced cores and/or work units if available:<BR>
+    <Input type="radio" name="ADVMETHODS" value="yes" checked="true"> Enabled<BR>
+    <Input type="radio" name="ADVMETHODS" value="no"> Disabled<BR>
+    <Label for="MEM">Memory, in MB, to indicate (leave blank for auto-detect): </Label>
+    <Input type="text" name="MEM" value=""><BR>
     SMP instance per:<BR>
     <Input type="radio" name="SMPCPUS" value="4" checked="true"> 4 CPUs<BR>
     <Input type="radio" name="SMPCPUS" value="2"> 2 CPUs<BR>

@@ -9,7 +9,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1
+	-rm -rf linux-2.6.24.3 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.7 glibc_src samba_extract samba-3.0.27a busybox-1.9.1 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -177,7 +177,7 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \
@@ -309,6 +309,32 @@ initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_32libs
 	cd busybox-1.9.1/networking && \
 	gcc -m32 -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi -L ../../glibc-32  httpd_indexcgi.c -lc -lc_nonshared
 
+### Additional libs ###
+initrd_dir/lib64/libbz2.so.1: glibc_64libs bzip2-1.0.5.tar.gz
+	tar xzf bzip2-1.0.5.tar.gz && \
+	cd bzip2-1.0.5 && \
+	gcc -shared -Wl,-soname -Wl,libbz2.so.1 -fpic -fPIC -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64 -o ../initrd_dir/lib64/libbz2.so.1 -L ../glibc-64 blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c -lc && \
+	strip ../initrd_dir/lib64/libbz2.so.1
+
+initrd_dir/lib64/libstdc++.so.6: initrd_dir/lib64/libgcc_s.so.1
+	$(MAKE) -C gcc-4.3.1 configure-target-libstdc++-v3 && \
+	$(MAKE) -C gcc-4.3.1/x86_64-unknown-linux-gnu/libstdc++-v3 && \
+	cp gcc-4.3.1/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64 && \
+	strip initrd_dir/lib64/libstdc++.so.6
+
+initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_64libs
+	$(MAKE) -C gcc-4.3.1 configure-target-libgcc && \
+	$(MAKE) -C gcc-4.3.1/x86_64-unknown-linux-gnu/libgcc libgcc_s.so && \
+	cp gcc-4.3.1/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64 && \
+	strip initrd_dir/lib64/libgcc_s.so.1
+
+gcc_source: gcc-core-4.3.1.tar.bz2 gcc-g++-4.3.1.tar.bz2
+	tar xjf gcc-core-4.3.1.tar.bz2 && \
+	tar xjf gcc-g++-4.3.1.tar.bz2 && \
+	cd gcc-4.3.1 && \
+	./configure --disable-bootstrap && \
+	touch ../gcc_source
+
 #### Glibc build targets ####
 glibc_32libs : glibc_src boot/kernel32
 	ln -s asm-x86 linux-2.6.24.3/include/asm && \
@@ -357,6 +383,8 @@ glibc_64libs : glibc_src boot/kernel64
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
 	cd ../resolv && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
+	cd ../dlfcn && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
 	cd $(CURDIR) && \
 	rm linux-2.6.24.3/include/asm && \
 	cp glibc-64/libc.so initrd_dir/lib64/libc.so.6 && \
@@ -367,6 +395,7 @@ glibc_64libs : glibc_src boot/kernel64
 	cp glibc-64/nss/libnss_files.so.2 initrd_dir/lib64 && \
 	cp glibc-64/resolv/libnss_dns.so.2 initrd_dir/lib64 && \
 	cp glibc-64/resolv/libresolv.so.2 initrd_dir/lib64 && \
+	cp glibc-64/dlfcn/libdl.so.2 initrd_dir/lib64 && \
 	touch glibc_64libs
 
 glibc_src : glibc-2.7.tar.bz2

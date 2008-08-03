@@ -25,6 +25,8 @@ nasm
 gawk
 zip
 mkisofs
+libmpfr-dev
+libgmp3-dev
 
 In addition a set of 32 bit C libraries is cross compiled to support the
 folding client and other binaries. This requires the additional tools:

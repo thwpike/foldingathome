@@ -1,3 +1,4 @@
+3 August 08: Add libraries for FahCore_a2.exe (SMP Gromacs CVS core). Add support for enabling -advmethods. Add support for setting memory size. Fix big packet options to match new choices in version 6 client. Minor fix on when to encrypt the proxy password.
 17 July 08: Change URL to released (i.e. non-beta) version of 6.02 client. Add support for specifying TFTP server IP if doing static IP config. Add support for specifying interface, if specified and DHCP it will retry continuously in the foreground and not round robin in the background. Add support for doing a login shell, note that this has very few commands available.
 24 June 08: Fix 1959158 - Add support for static network config.
 23 June 08: Fix 1853657 - Add support for proxy web access.
