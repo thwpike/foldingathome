@@ -149,13 +149,14 @@ folding.zip: disk diskless/kernel32 diskless/kernel64 diskless/initrd diskless/s
 	sudo cp diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt $(MOUNT) && \
 	sudo umount $(MOUNT) && \
 	sudo initrd_dir/bin/syslinux $(LOOPDEV) && \
-	sudo losetup -d $(LOOPDEV) && \
+	dosfsck -a $(LOOPDEV) ; \
+        sudo losetup -d $(LOOPDEV) && \
 	qemu-img convert disk -O vmdk folding.vmdk && \
         mv folding.vmdk folding && \
         zip folding.zip folding/folding.vmx folding/folding.vmdk
 
 disk: initrd_dir/bin/mbr.bin partition_table
-	dd if=/dev/zero of=outfile bs=524288 count=1024 && \
+	dd if=/dev/zero of=outfile bs=1024 count=1048576 && \
 	cat initrd_dir/bin/mbr.bin partition_table outfile > disk
 
 partition_table: part_gen

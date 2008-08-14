@@ -1,5 +1,5 @@
 #!/bin/sh
-# check_hang.sh - checks log files and kills the cores if hung at completion
+# check_hang.sh - checks log files and kills/continues the cores if hung at completion
 #
 
 while [ 1 ]
@@ -35,6 +35,23 @@ do
         kill_cores.sh $instance
       fi 
     fi
+
+    # Check for upload and not trying to download following
+    grep -E 'Number of Units Completed|Preparing to get new work unit' | tail -n 1 | grep -q 'Number of Units Completed'
+    if [ $?  -eq 0 ]
+    then
+      # Give the client a chance to continue
+      echo "Potential stop found, waiting to see if it clears..." >> /etc/folding/hanglog.txt
+
+      sleep 300
+      grep -E 'Number of Units Completed|Preparing to get new work unit' | tail -n 1 | grep -q 'Number of Units Completed'
+      if [ $?  -eq 0 ]
+      then
+        echo "Stop failed to clear, Continuing cores" >> /etc/folding/hanglog.txt
+        cont_cores.sh $instance
+      fi
+    fi
+
   instance=`expr $instance + 1`
   done
 done
