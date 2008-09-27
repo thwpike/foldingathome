@@ -3,6 +3,8 @@
 # Check for VMWare
 isVMWare
 noVMWare=$?
+isVPC
+noVPC=$?
 grep -q "QEMU Virtual CPU" /proc/cpuinfo
 noQEMU=$?
 
@@ -84,7 +86,7 @@ do
     fi
 
     # Backup to hard drive image if VMWare and booted by syslinux
-    if [ $noVMWare -eq 0 -o $noQEMU -eq 0 ] 
+    if [ $noVMWare -eq 0 -o $noQEMU -eq 0 -o $noVPC -eq 0 ] 
     then
       if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
       then

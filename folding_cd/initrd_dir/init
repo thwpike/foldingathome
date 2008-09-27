@@ -2,9 +2,9 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=080813
+VERSION=080926
 install() {
-  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt fold.txt ]
+  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
     if [ `cat version.txt` -ge $VERSION ]
     then
@@ -181,6 +181,14 @@ if [ -z "$SHELL" -o "$SHELL" != "yes" ]
 then
   SHELL=no
 fi
+
+# Check for VMs
+isVMWare
+noVMWare=$?
+isVPC
+noVPC=$?
+grep -q "QEMU Virtual CPU" /proc/cpuinfo
+noQEMU=$?
 
 # Set screen blank interval
 echo -e "\033[9;$BLANK]"
@@ -556,12 +564,6 @@ else
 fi
 
 # Check if this is running on the bare metal or a VM and do NTP if necessary
-isVMWare
-noVMWare=$?
-isVPC
-noVPC=$?
-grep -q "QEMU Virtual CPU" /proc/cpuinfo
-noQEMU=$?
 if [ $noVMWare -eq 0 ]
 then
   echo "Running under VMWare, not using NTP to sync time"
@@ -575,7 +577,7 @@ then
   echo "Running under QEMU or KVM, not using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>Running under QEMU or KVM, not using NTP to sync time</FONT></P>" >> index.backup
 else
-  echo "VMWare and VirtualPC not detected, using NTP to sync time"
+  echo "VMWare, VirtualPC, QEMU and KVM not detected, using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>VMWare and VirtualPC not detected, using NTP to sync time</FONT></P>" >> index.backup
   ntpd -A -g
 fi
@@ -603,7 +605,7 @@ fi
 echo
 echo "<P ALIGN=LEFT><FONT SIZE=3>Folding CD <A HREF="cd.html">Generator</A></FONT></P>" >> index.backup
 echo -n "<P ALIGN=LEFT><FONT SIZE=3><A HREF=\"reconfigure.html\">Reconfigure</A> " >> index.backup
-if [ $noVMWare -eq 0 -o $noQEMU -eq 0 ] 
+if [ $noVMWare -eq 0 -o $noQEMU -eq 0 -o $noVPC -eq 0 ] 
 then
   if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
   then 
@@ -611,6 +613,12 @@ then
   fi
 fi
 echo "any USB drives.</FONT></P>" >> index.backup
+
+# VM and USB updater link
+#if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
+#then
+#  echo "<P ALIGN=LEFT><FONT SIZE=3><A HREF="update.cgi">Check</A> for updates</FONT></P>" >> index.backup
+#fi
 
 # Setup webpage for each instance
 instance=1
@@ -733,8 +741,8 @@ EOF
     umount /usbb
   fi
 
-# Restore from hard drive image if VMWare and booted from syslinux
-  if [ $noVMWare -eq 0 -o $noQEMU -eq 0 ] 
+# Restore from hard drive image if VM and booted from syslinux
+  if [ $noVMWare -eq 0 -o $noQEMU -eq 0 -o $noVPC -eq 0 ] 
   then
     if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
     then
