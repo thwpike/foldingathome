@@ -37,17 +37,17 @@ do
     fi
 
     # Check for upload and not trying to download following
-    grep -E 'Number of Units Completed|Preparing to get new work unit' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -q 'Number of Units Completed'
+    grep -E 'Number of Units Completed|Preparing to get new work unit|Starting local stats count at' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -qE 'Number of Units Completed|Starting local stats count at'
     if [ $?  -eq 0 ]
     then
       # Give the client a chance to continue
       echo "Potential stop found, waiting to see if it clears..." >> /etc/folding/hanglog.txt
 
       sleep 300
-      grep -E 'Number of Units Completed|Preparing to get new work unit' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -q 'Number of Units Completed'
+      grep -E 'Number of Units Completed|Preparing to get new work unit|Starting local stats count at' /etc/folding/$instance/FAHlog.txt | tail -n 1 | grep -qE 'Number of Units Completed|Starting local stats count at'
       if [ $?  -eq 0 ]
       then
-        echo "Stop failed to clear, Continuing cores" >> /etc/folding/hanglog.txt
+        echo "Stop failed to clear, continuing cores" >> /etc/folding/hanglog.txt
         cont_cores.sh $instance
       fi
     fi
