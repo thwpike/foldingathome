@@ -1,3 +1,9 @@
+/*
+ * isVMWare.c - a program to detect the presence of VMWare.
+ * Exit code is 1 for no VMWare, 0 for VMWare detected
+ * Copyright Nicholas Reilly 2007
+ * Licensed under the GPL v2 or any later version
+ */
 #include <stdlib.h>
 #include <signal.h>
 

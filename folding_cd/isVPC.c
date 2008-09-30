@@ -1,3 +1,9 @@
+/*
+ * isVPC.c - a program to detect the presence of VirtualPC.
+ * Exit code is 1 for no VirtualPC, 0 for VirtualPC detected
+ * Copyright Nicholas Reilly 2007
+ * Licensed under the GPL v2 or any later version
+ */
 #include <stdlib.h>
 #include <signal.h>
 
