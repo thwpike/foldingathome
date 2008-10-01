@@ -1,5 +1,6 @@
 #!/bin/sh
 # check_hang.sh - checks log files and kills/continues the cores if hung at completion
+# Also does cleanup of stale files in the work directory
 #
 
 while [ 1 ]
@@ -52,6 +53,18 @@ do
       fi
     fi
 
-  instance=`expr $instance + 1`
+    # Clean up any stale files in the work directory
+    slot=0
+    while [ "$slot" -lt "10" ]
+    do
+      state=`queueinfo /etc/folding/$instance/queue.dat $slot`
+      if [ "$state" -eq "0" ]
+      then
+        rm -f /etc/folding/$instance/work/*_0$slot*
+      fi
+      slot=`expr $slot + 1`
+    done
+
+    instance=`expr $instance + 1`
   done
 done

@@ -1,6 +1,6 @@
 /*
  * queueinfo.c - a program to output the state of the work unit slots
- * Reads from queue.dat in the CWD.
+ * Reads from queue.dat in argv[1] the state of slot argv[2]
  * Copyright Nicholas Reilly 29 September 2008
  * Licensed under the GPL v2 or any later version
  */
@@ -15,9 +15,19 @@
 int main(int argc, char *argv[])
 {
   char *addr, *stat;
-  int fd, loop;
+  int fd, slot;
 
-  fd = open("queue.dat", O_RDONLY);
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s <queue.dat> <slot 0-9>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+  slot = atoi(argv[2]);
+  if ((slot < 0) || (slot > 9)) {
+    fprintf(stderr, "Usage: %s <queue.dat> <slot 0-9>\n", argv[0]);
+    return EXIT_FAILURE;
+  }
+
+  fd = open(argv[1], O_RDONLY);
   if (fd == -1) {
     perror("Failed to open queue.dat");
     return EXIT_FAILURE;
@@ -32,12 +42,9 @@ int main(int argc, char *argv[])
   /* Skip first 8 bytes (general stuff)*/
   stat = addr + 8;
 
-  for (loop = 0; loop < 10; loop++) {
-    /* Status is in next byte */
-    printf("%d %d\n", loop, *stat);
-    /* Each queue slot is 712 bytes */
-    stat += 712;
-  }
+  /* Each queue entry is 712 bytes long with status as first byte */
+  stat += (712 * slot);
+  printf("%d\n", *stat);
 
   (void)munmap(addr, SIZE);
   close(fd);
