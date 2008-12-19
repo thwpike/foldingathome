@@ -427,6 +427,7 @@ kernel_patch : linux-2.6.24.3.tar.bz2 patches/kernel_ioctl.patch patches/kernel3
 	tar xjf linux-2.6.24.3.tar.bz2 && \
 	cd linux-2.6.24.3 && \
 	patch -p1 < ../patches/kernel_ioctl.patch && \
+	patch -p1 < ../patches/kernel_gcc.patch && \
 	mkdir -p kernel_64 && \
 	cp ../patches/kernel64.config kernel_64/.config && \
 	mkdir -p kernel_32 && \
