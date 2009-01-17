@@ -1,74 +1,8 @@
-Index: sysdeps/i386/i586/memcpy_chk.S
-===================================================================
-RCS file: sysdeps/i386/i586/memcpy_chk.S
-diff -N sysdeps/i386/i586/memcpy_chk.S
---- /dev/null	1 Jan 1970 00:00:00 -0000
-+++ sysdeps/i386/i586/memcpy_chk.S	13 Nov 2007 01:56:18 -0000	1.1
-@@ -0,0 +1 @@
-+#include <sysdeps/i386/i686/memcpy_chk.S>
-Index: sysdeps/i386/i586/mempcpy_chk.S
-===================================================================
-RCS file: sysdeps/i386/i586/mempcpy_chk.S
-diff -N sysdeps/i386/i586/mempcpy_chk.S
---- /dev/null	1 Jan 1970 00:00:00 -0000
-+++ sysdeps/i386/i586/mempcpy_chk.S	13 Nov 2007 01:56:18 -0000	1.1
-@@ -0,0 +1 @@
-+#include <sysdeps/i386/i686/mempcpy_chk.S>
-Index: sysdeps/i386/i586/memset_chk.S
-===================================================================
-RCS file: sysdeps/i386/i586/memset_chk.S
-diff -N sysdeps/i386/i586/memset_chk.S
---- /dev/null	1 Jan 1970 00:00:00 -0000
-+++ sysdeps/i386/i586/memset_chk.S	13 Nov 2007 01:56:18 -0000	1.1
-@@ -0,0 +1 @@
-+#include <sysdeps/i386/i686/memset_chk.S>
-Index: configure
-===================================================================
-RCS file: configure
-diff -u -r1.462 -r1.463
---- configure	2008/01/24 20:21:23	1.462
-+++ configure	2008/02/01 00:20:07	1.463
-@@ -5062,8 +5062,12 @@
- # header directory and add that to the list.  NOTE: Only does the right
- # thing on a system that doesn't need fixincludes.  (Not presently a problem.)
- if test -n "$sysheaders"; then
--  ccheaders=`$CC -print-file-name=include`
--  SYSINCLUDES="-nostdinc -isystem $ccheaders \
-+  SYSINCLUDES=-nostdinc
-+  for d in include include-fixed; do
-+    i=`$CC -print-file-name="$d"` && test "x$i" != "x$d" &&
-+    SYSINCLUDES="$SYSINCLUDES -isystem $i"
-+  done
-+  SYSINCLUDES="$SYSINCLUDES \
- -isystem `echo $sysheaders | sed 's/:/ -isystem /g'`"
-   if test -n "$CXX"; then
-     cxxversion=`$CXX -dumpversion 2>&5` &&
-Index: configure.in
-===================================================================
-RCS file: configure.in
-diff -u -r1.472 -r1.473
---- configure.in	2008/01/24 20:21:23	1.472
-+++ configure.in	2008/02/01 00:20:07	1.473
-@@ -911,8 +911,12 @@
- # header directory and add that to the list.  NOTE: Only does the right
- # thing on a system that doesn't need fixincludes.  (Not presently a problem.)
- if test -n "$sysheaders"; then
--  ccheaders=`$CC -print-file-name=include`
--  SYSINCLUDES="-nostdinc -isystem $ccheaders \
-+  SYSINCLUDES=-nostdinc
-+  for d in include include-fixed; do
-+    i=`$CC -print-file-name="$d"` && test "x$i" != x && test "x$i" != "x$d" &&
-+    SYSINCLUDES="$SYSINCLUDES -isystem $i"
-+  done
-+  SYSINCLUDES="$SYSINCLUDES \
- -isystem `echo $sysheaders | sed 's/:/ -isystem /g'`"
-   if test -n "$CXX"; then
-     cxxversion=`$CXX -dumpversion 2>&AS_MESSAGE_LOG_FD` &&
 Index: Makeconfig
 ===================================================================
 --- Makeconfig	2008-12-18 23:34:16.000000000 -0500
 +++ Makeconfig	2008-12-18 23:34:52.000000000 -0500
-@@ -573,9 +573,9 @@
+@@ -574,9 +574,9 @@
  
  # Extra flags to pass to GCC.
  ifeq ($(all-warnings),yes)
@@ -106,17 +40,4 @@ Index: debug/readlinkat_chk.c
  		  size_t buflen)
  {
    if (len > buflen)
-Index: sysdeps/i386/fpu/ftestexcept.c
-===================================================================
---- sysdeps/i386/fpu/ftestexcept.c.foo	2004-03-05 02:14:48.000000000 -0800
-+++ sysdeps/i386/fpu/ftestexcept.c	2008-01-12 07:36:22.000000000 -0800
-@@ -26,7 +26,7 @@
- int
- fetestexcept (int excepts)
- {
--  int temp;
-+  short temp;
-   int xtemp = 0;
- 
-   /* Get current exceptions.  */
 

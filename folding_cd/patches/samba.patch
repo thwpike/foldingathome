@@ -1,0 +1,33 @@
+--- source.orig/configure	2009-01-06 20:49:36.000000000 -0500
++++ source/configure	2009-01-06 20:52:46.000000000 -0500
+@@ -43617,7 +43617,7 @@
+ 
+ 
+ 
+-for ac_header in linux/inotify.h asm/unistd.h
++for ac_header in sys/inotify.h asm/unistd.h
+ do
+ as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+--- source.orig/configure.in	2009-01-06 20:49:36.000000000 -0500
++++ source/configure.in	2009-01-06 20:53:23.000000000 -0500
+@@ -2540,7 +2540,7 @@
+ fi
+ 
+ AC_CACHE_CHECK([for inotify support],samba_cv_HAVE_INOTIFY,[
+-AC_CHECK_HEADERS(linux/inotify.h asm/unistd.h)
++AC_CHECK_HEADERS(sys/inotify.h asm/unistd.h)
+ AC_CHECK_FUNC(inotify_init)
+ AC_HAVE_DECL(__NR_inotify_init, [#include <asm/unistd.h>])
+ ],
+--- source.orig/smbd/notify_inotify.c	2009-01-06 20:50:32.000000000 -0500
++++ source/smbd/notify_inotify.c	2009-01-06 20:52:24.000000000 -0500
+@@ -30,7 +30,7 @@
+ #include <asm/types.h>
+ #endif
+ 
+-#include <linux/inotify.h>
++#include <sys/inotify.h>
+ #include <asm/unistd.h>
+ 
+ #ifndef HAVE_INOTIFY_INIT

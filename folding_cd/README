@@ -28,12 +28,15 @@ mkisofs
 libmpfr-dev
 libgmp3-dev
 
+Note that Ubuntu 8.10 installs gcc-4.3 which is broken (builds but
+busybox SEGV's), change the symlink /usr/bin/gcc to point to gcc-4.2.
+
 In addition a set of 32 bit C libraries is cross compiled to support the
 folding client and other binaries. This requires the additional tools:
 ia32-libs
 libc6-dev-i386
 lib32gcc1
-gcc-multilib (Ubuntu 7.10, not required on Ubuntu 7.04)
+gcc-multilib
 
 To completely build and install requires the building of a Windows version of
 syslinux, this requires the mingw compiler available through the following
