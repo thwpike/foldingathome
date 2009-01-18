@@ -31,7 +31,7 @@ do
       new=A
     fi
 
-    tar cf backup.$myip.$new.$instance machinedependent.dat queue.dat unitinfo.txt work > /dev/null 2>&1
+    tar cf backup.$myip.$new.$instance machinedependent.dat queue.dat work > /dev/null 2>&1
     rm -f latest.$myip.$instance
     echo $new > latest.$myip.$instance
     # If tftpserverip exists then do a TFTP backup
@@ -52,7 +52,7 @@ do
       # Make any directories necessary
       mkdir -p /usba/folding/$instance/work
       # Copy across any files that are newer than what is on the USB drive
-      for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
+      for name in machinedependent.dat queue.dat `find work -type f`
       do
         if [ ! -f /usba/folding/$instance/$name ]
         then
@@ -72,7 +72,7 @@ do
       # Make any directories necessary
       mkdir -p /usbb/folding/$instance/work
       # Copy across any files that are newer than what is on the USB drive
-      for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
+      for name in machinedependent.dat queue.dat `find work -type f`
       do
         if [ ! -f /usbb/folding/$instance/$name ]
         then
@@ -96,7 +96,7 @@ do
           # Make any directories necessary
           mkdir -p /hda/folding/$instance/work
           # Copy across any files that are newer than what is on the hard drive image
-          for name in machinedependent.dat queue.dat unitinfo.txt `find work -type f`
+          for name in machinedependent.dat queue.dat `find work -type f`
           do
             if [ ! -f /hda/folding/$instance/$name ]
             then

@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=081114
+VERSION=090117
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -208,6 +208,7 @@ printcap name = /dev/null
 path = /
 guest ok = yes
 guest only = yes
+read only = no
 EOF
 if [ $SAMBA -eq 2 ]
 then
@@ -364,11 +365,18 @@ EOF
     echo "    SMP instance per:<BR>" >> cd.html
     if [ "$SMPCPUS" = "4" ]
     then
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\"> 8 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\" checked=\"true\"> 4 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
-    else
+    elif [ "$SMPCPUS" = "2" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\"> 8 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\" checked=\"true\"> 2 CPUs<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\" checked=\"true\"> 8 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
     fi
     echo "    Remote Reboot:<BR>" >> cd.html
     if [ "$REBOOT" = "enabled" ]
@@ -765,12 +773,12 @@ EOF
 # Start up the client
   ln -s /etc/folding/fah6 .
   ln -s /etc/folding/mpiexec .
-  if [ $smp -eq 1 ]
-  then
-    ./fah6 -local -forceasm -verbosity 9 -smp > /dev/null 2>&1 &
-  else
-    ./fah6 -local -forceasm -verbosity 9 > /dev/null 2>&1 &
-  fi
+#  if [ $smp -eq 1 ]
+#  then
+#    ./fah6 -local -forceasm -verbosity 9 -smp $SMPCPUS > /dev/null 2>&1 &
+#  else
+#    ./fah6 -local -forceasm -verbosity 9 > /dev/null 2>&1 &
+#  fi
 
   numprocs=`expr $numprocs - 1`
   cd /etc/folding
