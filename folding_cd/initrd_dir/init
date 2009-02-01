@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=090117
+VERSION=090201
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -528,7 +528,7 @@ EOF
   cat << EOF > /bin/do_reboot.sh
 #!/bin/sh
 sleep 1
-reboot
+reboot -f
 EOF
   chmod 755 /bin/do_reboot.sh
   cat << EOF > cgi-bin/reboot.cgi
