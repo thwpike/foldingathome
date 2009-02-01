@@ -6,10 +6,9 @@ MOUNT = /mnt
 all : folding_cd.iso diskless.zip usb.zip
 
 .PHONY : clean install_net install_web
-.NOTPARALLEL : glibc_32libs glibc64_libs
 
 clean:
-	-rm -rf linux-2.6.27.10 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.8 glibc_src samba_extract samba-3.0.27a busybox-1.13.2 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1 initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	-rm -rf linux-2.6.28.2 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.8 glibc_src samba_extract samba-3.0.27a busybox-1.13.2 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1 initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -275,7 +274,7 @@ initrd_dir/bin/nmbd : samba_extract glibc_32libs
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/nmbd && \
 	cp bin/nmbd ../../initrd_dir/bin/nmbd 
 
-samba_extract : samba-3.0.27a.tar.gz patches/samba.patch
+samba_extract : samba-3.0.27a.tar.gz patches/samba.patch glibc_32libs
 	tar xzf samba-3.0.27a.tar.gz samba-3.0.27a/source && \
 	cd samba-3.0.27a/source && \
 	patch -p1 < ../../patches/samba.patch && \
@@ -342,10 +341,9 @@ gcc_source: gcc-core-4.3.1.tar.bz2 gcc-g++-4.3.1.tar.bz2
 
 #### Glibc build targets ####
 glibc_32libs : glibc_src boot/kernel32
-	ln -s asm-x86 linux-2.6.27.10/include/asm && \
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
-	../glibc-2.8/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.27.10/include:$(CURDIR)/linux-2.6.27.10/kernel_32/include --enable-kernel=2.6.27 --disable-profile --host=i586-linux && \
+	../glibc-2.8/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.28.2/include:$(CURDIR)/linux-2.6.28.2/kernel_32/include:$(CURDIR)/linux-2.6.28.2/arch/x86/include --enable-kernel=2.6.28 --disable-profile --host=i586-linux && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" lib && \
 	cd ../glibc-2.8/math && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
@@ -360,7 +358,6 @@ glibc_32libs : glibc_src boot/kernel32
 	cd ../nis && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-32 && \
 	cd $(CURDIR) && \
-	rm linux-2.6.27.10/include/asm && \
 	cp glibc-32/libc.so initrd_dir/lib/libc.so.6 && \
 	cp glibc-32/elf/ld-linux.so.2 initrd_dir/lib && \
 	cp glibc-32/nptl/libpthread.so.0 initrd_dir/lib && \
@@ -373,10 +370,9 @@ glibc_32libs : glibc_src boot/kernel32
 	touch glibc_32libs
 
 glibc_64libs : glibc_src boot/kernel64
-	ln -s asm-x86 linux-2.6.27.10/include/asm && \
 	mkdir -p glibc-64 && \
 	cd glibc-64 && \
-	../glibc-2.8/configure CFLAGS="-O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.27.10/include:$(CURDIR)/linux-2.6.27.10/kernel_64/include --enable-kernel=2.6.27 --disable-profile && \
+	../glibc-2.8/configure CFLAGS="-O2 -fno-stack-protector" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.28.2/include:$(CURDIR)/linux-2.6.28.2/kernel_64/include:$(CURDIR)/linux-2.6.28.2/arch/x86/include --enable-kernel=2.6.28 --disable-profile && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" lib && \
         cd ../glibc-2.8/math && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
@@ -391,7 +387,6 @@ glibc_64libs : glibc_src boot/kernel64
 	cd ../dlfcn && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector" -r srcdir=.. objdir=../../glibc-64 && \
 	cd $(CURDIR) && \
-	rm linux-2.6.27.10/include/asm && \
 	cp glibc-64/libc.so initrd_dir/lib64/libc.so.6 && \
 	cp glibc-64/elf/ld-linux-x86-64.so.2 initrd_dir/lib64 && \
 	cp glibc-64/rt/librt.so.1 initrd_dir/lib64 && \
@@ -407,7 +402,6 @@ glibc_src : glibc-2.8.tar.bz2
 	tar xjf glibc-2.8.tar.bz2 && \
 	cd glibc-2.8 && \
 	patch -p0  < ../patches/glibc.patch && \
-	rm sysdeps/x86_64/hp-timing.h && \
 	touch ../glibc_src
 
 #### Kernel build targets ####
@@ -418,16 +412,16 @@ initrd_dir/etc/folding/cgi-bin/kernel64 : boot/kernel64
 	cp boot/kernel64 initrd_dir/etc/folding/cgi-bin/kernel64
 
 boot/kernel32 : kernel_patch
-	$(MAKE) -C linux-2.6.27.10 O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
-	cp linux-2.6.27.10/kernel_32/arch/i386/boot/bzImage boot/kernel32
+	$(MAKE) -C linux-2.6.28.2 O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
+	cp linux-2.6.28.2/kernel_32/arch/i386/boot/bzImage boot/kernel32
 
 boot/kernel64 : kernel_patch
-	$(MAKE) -C linux-2.6.27.10 O=kernel_64 && \
-	cp linux-2.6.27.10/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
+	$(MAKE) -C linux-2.6.28.2 O=kernel_64 && \
+	cp linux-2.6.28.2/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
 
-kernel_patch : linux-2.6.27.10.tar.bz2 patches/kernel_ioctl.patch patches/kernel32.config patches/kernel64.config
-	tar xjf linux-2.6.27.10.tar.bz2 && \
-	cd linux-2.6.27.10 && \
+kernel_patch : linux-2.6.28.2.tar.bz2 patches/kernel_ioctl.patch patches/kernel32.config patches/kernel64.config
+	tar xjf linux-2.6.28.2.tar.bz2 && \
+	cd linux-2.6.28.2 && \
 	patch -p1 < ../patches/kernel_ioctl.patch && \
 	mkdir -p kernel_64 && \
 	cp ../patches/kernel64.config kernel_64/.config && \
