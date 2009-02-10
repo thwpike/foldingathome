@@ -1,4 +1,4 @@
-1 February 09: Make Windows Share writeable. Support -smp 8 option. Remove unitinfo.txt from backup (can be giant). Update busybox, glibc and kernel.
+9 February 09: Make Windows Share writeable. Support -smp 8 option. Remove unitinfo.txt from backup (can be giant). Update busybox, glibc and kernel.
 14 November 08: Delete leftover files in work directory.
 28 September 08: Fix hang check for core_a2 on first WU.
 26 September 08: Fix bug in hang check for core_a2 (would stop all hang checks). Fix bug in install (error messages about "sh: fold.txt: unknown operand"). If running in VM but booted from CDROM or PXE then upgrade the virtual disk image.

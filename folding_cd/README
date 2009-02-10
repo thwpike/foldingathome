@@ -28,8 +28,8 @@ mkisofs
 libmpfr-dev
 libgmp3-dev
 
-Note that Ubuntu 8.10 installs gcc-4.3 which is broken (builds but
-busybox SEGV's), change the symlink /usr/bin/gcc to point to gcc-4.2.
+Note that Ubuntu 8.10 installs gcc-4.3 which is broken (problems
+building glibc), change the symlink /usr/bin/gcc to point to gcc-4.2.
 
 In addition a set of 32 bit C libraries is cross compiled to support the
 folding client and other binaries. This requires the additional tools:
@@ -48,7 +48,7 @@ with the Folding@Home license.
 
 Folding CD is:
 
-   Copyright 2006-2008 Nick Reilly - All Rights Reserved
+   Copyright 2006-2009 Nick Reilly - All Rights Reserved
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

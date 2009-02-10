@@ -206,55 +206,41 @@ initrd_dir/bin/genisoimage : glibc_32libs cdrkit-1.1.7.1.tar.gz patches/genisoim
 
 
 #### isolinux, pxelinux, syslinux ####
+diskless/syslinux.exe : diskless/syslinux.com
+	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-3.51/win32 syslinux.exe && \
+	cp syslinux-3.51/win32/syslinux.exe diskless/syslinux.exe
+
+diskless/syslinux.com : initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/dos syslinux.com && \
+	cp syslinux-3.51/dos/syslinux.com diskless/syslinux.com
+
 initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
 	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
-boot/isolinux.bin : syslinux_src
+boot/isolinux.bin : diskless/pxelinux.0
 	cd syslinux-3.51 && \
 	$(MAKE) isolinux.bin && \
 	cp isolinux.bin ../boot
 
-diskless/pxelinux.0 : syslinux_src
+diskless/pxelinux.0 : initrd_dir/bin/mbr.bin
 	cd syslinux-3.51 && \
 	$(MAKE) pxelinux.0 && \
 	cp pxelinux.0 ../diskless
 
-initrd_dir/bin/mbr.bin : syslinux_src
+initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
 	cd syslinux-3.51 && \
+	$(MAKE) CC="gcc -m32" mbr_bin.c && \
 	$(MAKE) mbr/mbr.bin && \
         cp mbr/mbr.bin ../initrd_dir/bin/mbr.bin
 
-diskless/syslinux.exe : syslinux-3.51/mbr_bin.c syslinux-3.51/bootsect_bin.c syslinux-3.51/ldlinux_bin.c
-	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-3.51/win32 syslinux.exe && \
-	cp syslinux-3.51/win32/syslinux.exe diskless/syslinux.exe
-
-diskless/syslinux.com : syslinux-3.51/mbr_bin.c syslinux-3.51/bootsect_bin.c syslinux-3.51/ldlinux_bin.c
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/dos syslinux.com && \
-	cp syslinux-3.51/dos/syslinux.com diskless/syslinux.com
-
-initrd_dir/bin/syslinux : syslinux-3.51/unix/syslinux.o syslinux-3.51/unix/syslxmod.o syslinux-3.51/unix/bootsect_bin.o syslinux-3.51/unix/ldlinux_bin.o glibc_32libs
+initrd_dir/bin/syslinux : syslinux_src glibc_32libs
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51 ldlinux_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51 bootsect_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslinux.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslxmod.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix bootsect_bin.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix ldlinux_bin.o && \
 	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-3.51/unix/syslinux.o syslinux-3.51/unix/syslxmod.o syslinux-3.51/unix/bootsect_bin.o syslinux-3.51/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
-
-syslinux-3.51/unix/syslinux.o : syslinux_src
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslinux.o
-
-syslinux-3.51/unix/syslxmod.o : syslinux_src
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslxmod.o
-
-syslinux-3.51/unix/bootsect_bin.o : syslinux-3.51/bootsect_bin.c
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix bootsect_bin.o
-
-syslinux-3.51/unix/ldlinux_bin.o : syslinux-3.51/ldlinux_bin.c
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix ldlinux_bin.o
-
-syslinux-3.51/bootsect_bin.c : syslinux_src
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51 bootsect_bin.c
-
-syslinux-3.51/ldlinux_bin.c : syslinux_src
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51 ldlinux_bin.c
-
-syslinux-3.51/mbr_bin.c : syslinux_src
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51 mbr_bin.c
 
 syslinux_src :
 	tar xjf syslinux-3.51.tar.bz2 && \

@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=090201
+VERSION=090209
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -64,6 +64,7 @@ mknod /dev/rtc c 10 135
 mount -n -t proc proc /proc
 stty -echo
 ifconfig lo 127.0.0.1
+ulimit -c unlimited
 
 if [ -z "$IP" ]
 then
@@ -773,12 +774,12 @@ EOF
 # Start up the client
   ln -s /etc/folding/fah6 .
   ln -s /etc/folding/mpiexec .
-#  if [ $smp -eq 1 ]
-#  then
-#    ./fah6 -local -forceasm -verbosity 9 -smp $SMPCPUS > /dev/null 2>&1 &
-#  else
-#    ./fah6 -local -forceasm -verbosity 9 > /dev/null 2>&1 &
-#  fi
+  if [ $smp -eq 1 ]
+  then
+    ./fah6 -local -forceasm -smp $SMPCPUS > /dev/null 2>&1 &
+  else
+    ./fah6 -local -forceasm > /dev/null 2>&1 &
+  fi
 
   numprocs=`expr $numprocs - 1`
   cd /etc/folding
