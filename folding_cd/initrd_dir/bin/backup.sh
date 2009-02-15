@@ -106,6 +106,19 @@ do
               cp /etc/folding/$instance/$name /hda/folding/$instance/$name
             fi
           done
+
+          # Clean up any stale files in the work directory
+          slot=0
+          while [ "$slot" -lt "10" ]
+          do
+            state=`queueinfo /hda/folding/$instance/queue.dat $slot`
+            if [ "$state" -eq "0" ]
+            then
+              rm -f /hda/folding/$instance/work/*_0$slot*
+            fi
+            slot=`expr $slot + 1`
+          done
+
           umount /hda
         fi
       else
