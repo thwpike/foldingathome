@@ -62,6 +62,19 @@ do
           cp /etc/folding/$instance/$name /usba/folding/$instance/$name
         fi
       done
+
+      # Clean up any stale files in the work directory
+      slot=0
+      while [ "$slot" -lt "10" ]
+      do
+        state=`queueinfo /usba/folding/$instance/queue.dat $slot`
+        if [ "$state" -eq "0" ]
+        then
+          rm -f /usba/folding/$instance/work/*_0$slot*
+        fi
+        slot=`expr $slot + 1`
+      done
+
       umount /usba
     fi
 
@@ -82,6 +95,19 @@ do
           cp /etc/folding/$instance/$name /usbb/folding/$instance/$name
         fi
       done
+
+      # Clean up any stale files in the work directory
+      slot=0
+      while [ "$slot" -lt "10" ]
+      do
+        state=`queueinfo /usbb/folding/$instance/queue.dat $slot`
+        if [ "$state" -eq "0" ]
+        then
+          rm -f /usbb/folding/$instance/work/*_0$slot*
+        fi
+        slot=`expr $slot + 1`
+      done
+
       umount /usbb
     fi
 
