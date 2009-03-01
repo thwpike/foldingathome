@@ -1,3 +1,4 @@
+1 March 09: Add "sensors" to output Intel Core and AMD K8 temperature sensors.
 15 February 09: Clean up backup work directory when running under VM.
 9 February 09: Make Windows Share writeable. Support -smp 8 option. Remove unitinfo.txt from backup (can be giant). Update busybox, glibc and kernel.
 14 November 08: Delete leftover files in work directory.

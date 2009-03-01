@@ -1,0 +1,38 @@
+#!/bin/sh
+# Sensors - a program to display CPU temperatures
+# Copyright Nicholas Reilly 1 Mar 2009
+# Licensed under the GPL v2 or any later version
+
+# Intel Core series
+for sensor in /sys/devices/platform/coretemp*
+do
+  if [ -e $sensor/temp1_input ]
+  then
+    echo `cat $sensor/temp1_label` `sed -e 's/000$/C/' $sensor/temp1_input`
+  fi
+done
+
+# AMD K8 Series
+cpu=0
+for sensor in /sys/bus/pci/drivers/k8temp/0*
+do
+  if [ -e $sensor/temp1_input ]
+  then
+    echo "Processor $cpu"
+    echo "Core 0 Sensor 0" `sed -e 's/000$/C/' $sensor/temp1_input`
+  fi
+  if [ -e $sensor/temp2_input ]
+  then 
+    echo "Core 0 Sensor 1" `sed -e 's/000$/C/' $sensor/temp2_input`
+  fi
+  if [ -e $sensor/temp3_input ]
+  then 
+    echo "Core 1 Sensor 0" `sed -e 's/000$/C/' $sensor/temp3_input`
+  fi
+  if [ -e $sensor/temp4_input ]
+  then 
+    echo "Core 1 Sensor 1" `sed -e 's/000$/C/' $sensor/temp4_input`
+  fi
+  cpu=`expr $cpu + 1`
+done
+

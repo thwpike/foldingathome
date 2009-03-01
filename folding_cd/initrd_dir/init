@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=090215
+VERSION=090301
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -62,6 +62,7 @@ mknod /dev/tty1 c 4 1
 mknod /dev/rtc c 10 135
 
 mount -n -t proc proc /proc
+mount -n -t sysfs sysfs /sys
 stty -echo
 ifconfig lo 127.0.0.1
 ulimit -c unlimited
@@ -622,6 +623,8 @@ then
   fi
 fi
 echo "any USB drives.</FONT></P>" >> index.backup
+
+echo "<P ALIGN=LEFT><FONT SIZE=3>Processor <A HREF=\"cgi-bin/sensors.cgi\">temperatures</A> (Intel Core and AMD K8)</FONT></P>" >> index.backup
 
 # VM and USB updater link
 #if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
