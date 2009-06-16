@@ -264,7 +264,7 @@ samba_extract : samba-3.0.27a.tar.gz patches/samba.patch glibc_32libs
 	tar xzf samba-3.0.27a.tar.gz samba-3.0.27a/source && \
 	cd samba-3.0.27a/source && \
 	patch -p1 < ../../patches/samba.patch && \
-	./configure CC="gcc -m32 -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" --with-lockdir=/tmp --with-piddir=/tmp --with-configdir=/etc --with-privatedir=/tmp --with-logfilebase=/tmp && \
+	./configure CC="gcc -m32 -nodefaultlibs -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" --with-lockdir=/tmp --with-piddir=/tmp --with-configdir=/etc --with-privatedir=/tmp --with-logfilebase=/tmp --with-included-popt && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" include/proto.h
 	cd $(CURDIR) && \
 	touch samba_extract
