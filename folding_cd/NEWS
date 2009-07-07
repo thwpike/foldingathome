@@ -1,3 +1,4 @@
+6 July 09: Add a link to restart with "-oneunit" flag. Also bump VM memory to 1GB.
 2 March 09: Add support for passkey.
 1 March 09: Add "sensors" to output Intel Core and AMD K8 temperature sensors.
 15 February 09: Clean up backup work directory when running under VM.

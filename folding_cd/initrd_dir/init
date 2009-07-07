@@ -516,6 +516,7 @@ cat << EOF > index.backup
 <P ALIGN=LEFT><FONT SIZE=3>Core checkpoint every $CHECKPOINT minutes</FONT></P>
 EOF
 
+echo "<P ALIGN=LEFT><FONT SIZE=3>Restart running with <a href=\"cgi-bin/oneunit.cgi\">oneunit</a> flag</FONT></P>" >> index.backup
 # Do remote reboot setup
 if [ "$REBOOT" = "enabled" ]
 then

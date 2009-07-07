@@ -10,7 +10,7 @@ virtualHW.version = "4"
 numvcpus = "2"
 
 # Memory
-memsize = "640"
+memsize = "1024"
 
 # Selected operating system for your virtual machine
 guestOS = "other-64"
