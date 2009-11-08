@@ -11,7 +11,7 @@ Download the <A HREF="folding.zip">files</A>(16MB) and unzip them. A new directo
 <LI>folding.vmdk - VMWare Virtual Disk Image file
 </UL>
 To run in a <a href="http://www.vmware.com/products/server/" target="_blank">VMware Server</a> virtual machine, just point VMware at the folding.vmx file.<BR>
-To run under KVM, first setup your network to run as bridged networking, then "sudo kvm -net nic -net tap -m 640 -smp 2 folding.vmdk" and change the memory and SMP option to however many you need.<BR>
+To run under KVM, first setup your network to run as bridged networking, then "sudo kvm -net nic -net tap -m 1024 -smp 2 folding.vmdk" and change the memory and SMP option to however many you need.<BR>
 The system will start up and run with default settings, point a web browser at the specified IP address and hit the "Reconfigure this host and any USB drives." link to reconfigure it and then hit the "Remote reboot: enabled" link to get it to pick up the new configuration.<BR>
 <B>N.B.</B> Please comply with the F@H terms of service and only use this on
 computers you own / have permission. Law enforcement agencies have been

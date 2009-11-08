@@ -57,3 +57,7 @@ ide0:0.present = "TRUE"
 ide0:0.fileName = "folding.vmdk"
 
 ide0:0.redo = ""
+
+# Clock is in UTC
+rtc.diffFromUTC = 0
+
