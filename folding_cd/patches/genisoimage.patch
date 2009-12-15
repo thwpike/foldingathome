@@ -657,3 +657,151 @@
  		xfwrite(buffer, HFS_BLOCKSZ, HFS_BLK_CONV - r, outfile, 0, FALSE);
  		n++;
  	}
+--- cdrkit-1.1.9.orig/wodim/cue.c
++++ cdrkit-1.1.9/wodim/cue.c
+@@ -253,7 +253,7 @@
+ static	char	*peekword(void);
+ static	char	*lineend(void);
+ static	char	*markword(char *delim);
+-static	char	getdelim(void);
++static	char	get_delim(void);
+ static	char	*getnextitem(char *delim);
+ static	char	*neednextitem(char *delim);
+ static	char	*nextword(void);
+@@ -746,7 +746,7 @@
+ 	if (kp == NULL)
+ 		cueabort("Unknown filetype '%s'", word);
+ 
+-	if (getdelim() == '/') {
++	if (get_delim() == '/') {
+ 		word = needitem();
+ 		if (*astol(++word, &secsize) != '\0')
+ 			cueabort("Not a number '%s'", word);
+@@ -1128,7 +1128,7 @@
+ }
+ 
+ static char 
+-getdelim()
++get_delim()
+ {
+ 	return (wordendc);
+ }
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/libusal/scsitransp.c
++++ cdrkit-1.1.9/libusal/scsitransp.c
+@@ -301,7 +301,7 @@
+ 
+ 	printf("%s", msg);
+ 	flush();
+-	if (getline(okbuf, sizeof (okbuf)) == EOF)
++	if (get_line(okbuf, sizeof (okbuf)) == EOF)
+ 		exit(EX_BAD);
+ 	if (streql(okbuf, "y") || streql(okbuf, "yes") ||
+ 	    streql(okbuf, "Y") || streql(okbuf, "YES"))
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/readom/readom.c
++++ cdrkit-1.1.9/readom/readom.c
+@@ -1605,7 +1605,7 @@
+ 		fprintf(stderr, "Copy from SCSI (%d,%d,%d) disk to file\n",
+ 					usal_scsibus(usalp), usal_target(usalp), usal_lun(usalp));
+ 		fprintf(stderr, "Enter filename [%s]: ", defname); flush();
+-		(void) getline(filename, sizeof (filename));
++		(void) get_line(filename, sizeof (filename));
+ 	}
+ 
+ 	if (askrange) {
+@@ -1772,7 +1772,7 @@
+ 		fprintf(stderr, "Copy from file to SCSI (%d,%d,%d) disk\n",
+ 					usal_scsibus(usalp), usal_target(usalp), usal_lun(usalp));
+ 		fprintf(stderr, "Enter filename [%s]: ", defname); flush();
+-		(void) getline(filename, sizeof (filename));
++		(void) get_line(filename, sizeof (filename));
+ 		fprintf(stderr, "Notice: reading from file always starts at file offset 0.\n");
+ 
+ 		getlong("Enter starting sector for copy:", &addr, 0L, end-1);
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/readom/io.c
++++ cdrkit-1.1.9/readom/io.c
+@@ -130,7 +130,7 @@
+ 		(*prt)(s, *lp, mini, maxi, dp);
+ 		flush();
+ 		line[0] = '\0';
+-		if (getline(line, 80) == EOF)
++		if (get_line(line, 80) == EOF)
+ 			exit(EX_BAD);
+ 
+ 		linep = skipwhite(line);
+@@ -178,7 +178,7 @@
+ 	vprintf(form, args);
+ 	va_end(args);
+ 	flush();
+-	if (getline(okbuf, sizeof(okbuf)) == EOF)
++	if (get_line(okbuf, sizeof(okbuf)) == EOF)
+ 		exit(EX_BAD);
+ 	if (okbuf[0] == '?') {
+ 		printf("Enter 'y', 'Y', 'yes' or 'YES' if you agree with the previous asked question.\n");
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/librols/fexec.c
++++ cdrkit-1.1.9/librols/fexec.c
+@@ -170,7 +170,7 @@
+ 	} while (p != NULL);
+ 	va_end(args);
+ 
+-	ret = fexecve(name, in, out, err, av, env);
++	ret = f_execve(name, in, out, err, av, env);
+ 	if (av != xav)
+ 		free(av);
+ 	return (ret);
+@@ -184,11 +184,11 @@
+ 	char *av[];
+ {
+ 	av[ac] = NULL;			/*  force list to be null terminated */
+-	return (fexecve(name, in, out, err, av, environ));
++	return (f_execve(name, in, out, err, av, environ));
+ }
+ 
+ EXPORT int
+-fexecve(name, in, out, err, av, env)
++f_execve(name, in, out, err, av, env)
+ 	const char *name;
+ 	FILE *in, *out, *err;
+ 	char * const av[], * const env[];
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/librols/stdio/fgetline.c
++++ cdrkit-1.1.9/librols/stdio/fgetline.c
+@@ -76,7 +76,7 @@
+ }
+ 
+ EXPORT int
+-getline(buf, len)
++get_line(buf, len)
+ 	char	*buf;
+ 	int	len;
+ {
+only in patch2:
+unchanged:
+--- cdrkit-1.1.9.orig/include/schily.h
++++ cdrkit-1.1.9/include/schily.h
+@@ -116,7 +116,7 @@
+ extern	int	fexecle(const char *, FILE *, FILE *, FILE *, const char *, ...);
+ 		/* 6th arg not const, fexecv forces av[ac] = NULL */
+ extern	int	fexecv(const char *, FILE *, FILE *, FILE *, int, char **);
+-extern	int	fexecve(const char *, FILE *, FILE *, FILE *, char * const *, 
++extern	int	f_execve(const char *, FILE *, FILE *, FILE *, char * const *, 
+ 							  char * const *);
+ extern	int	fspawnv(FILE *, FILE *, FILE *, int, char * const *);
+ extern	int	fspawnl(FILE *, FILE *, FILE *, const char *, const char *, ...);
+@@ -190,7 +190,7 @@
+ extern	char	*fillbytes(void *, int, char);
+ extern	char	*findbytes(const void *, int, char);
+ extern	int	findline(const char *, char, const char *, int, char **, int);
+-extern	int	getline(char *, int);
++extern	int	get_line(char *, int);
+ extern	int	getstr(char *, int);
+ extern	int	breakline(char *, char, char **, int);
+ extern	int	getallargs(int *, char * const**, const char *, ...);
