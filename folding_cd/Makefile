@@ -8,7 +8,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .PHONY : clean install_net install_web
 
 clean:
-	-rm -rf linux-2.6.33-rc6 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.11 glibc_src samba_extract samba-3.0.37 busybox-1.13.2 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1 initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	-rm -rf linux-2.6.33-rc6 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.11 glibc_src samba_extract samba-3.0.37 busybox-1.16.0 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1 initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -177,17 +177,14 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/cpio-o initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \
-	bin/cpio-o < etc/manifest | gzip -9 > ../boot/initrd
+	bin/busybox cpio -o -H newc < etc/manifest | gzip -9 > ../boot/initrd
 
 initrd_dir/bin/queueinfo : glibc_32libs queueinfo.c
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/queueinfo queueinfo.c -lc -lc_nonshared glibc-32/elf/ld.so
-
-initrd_dir/bin/cpio-o : glibc_32libs cpio-o.c
-	gcc -m32 -L glibc-32 -o initrd_dir/bin/cpio-o cpio-o.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 initrd_dir/bin/encode : glibc_32libs encode.c
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/encode encode.c -lc -lc_nonshared glibc-32/elf/ld.so
@@ -288,16 +285,16 @@ initrd_dir/bin/ntpd : glibc_32libs
 	cp ntpd ../../initrd_dir/bin
 
 #### Busybox ####
-initrd_dir/bin/busybox : glibc_32libs patches/busybox.config
-	tar xjf busybox-1.13.2.tar.bz2 && \
-	cd busybox-1.13.2 && \
+initrd_dir/bin/busybox : glibc_32libs patches/busybox.config patches/busybox.patch
+	tar xzf busybox-1.16.0.tar.gz && \
+	cd busybox-1.16.0 && \
 	cp ../patches/busybox.config .config && \
-	patch < ../patches/busybox.patch && \
+	patch -p0 < ../patches/busybox.patch && \
 	$(MAKE) CC="gcc -m32 -L../glibc-32" busybox && \
 	cp busybox ../initrd_dir/bin
 
 initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_32libs
-	cd busybox-1.13.2/networking && \
+	cd busybox-1.16.0/networking && \
 	gcc -m32 -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi -L ../../glibc-32  httpd_indexcgi.c -lc -lc_nonshared
 
 ### Additional libs ###

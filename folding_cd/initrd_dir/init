@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=090706
+VERSION=100208
 install() {
   if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -42,7 +42,7 @@ LABEL benchmark64
 EOF
   savedir=`pwd`
   cd /
-  cpio-o < /etc/manifest | gzip -9 > $savedir/initrd
+  cpio -o -H newc < /etc/manifest | gzip -9 > $savedir/initrd
   cd $savedir
   echo $VERSION > version.txt
   return 0

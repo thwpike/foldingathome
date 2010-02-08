@@ -43,7 +43,7 @@ then
   cp initrd $dir/cd/isolinux
 else
   cd /
-  cpio-o < /etc/manifest | gzip -9 > $dir/cd/isolinux/initrd
+  cpio -o -H newc < /etc/manifest | gzip -9 > $dir/cd/isolinux/initrd
 fi
 cat <<_EndOfIsolinux.cfg_ > $dir/cd/isolinux/isolinux.cfg
 PROMPT 1

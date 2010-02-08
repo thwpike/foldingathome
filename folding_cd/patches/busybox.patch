@@ -1,6 +1,6 @@
 --- Makefile.bak	2008-03-04 21:21:53.000000000 -0500
 +++ Makefile	2008-03-04 21:22:09.000000000 -0500
-@@ -580,14 +580,7 @@
+@@ -590,14 +590,7 @@
  # Rule to link busybox - also used during CONFIG_KALLSYMS
  # May be overridden by arch/$(ARCH)/Makefile
  quiet_cmd_busybox__ ?= LINK    $@
@@ -16,3 +16,15 @@
  
  # Generate System.map
  quiet_cmd_sysmap = SYSMAP
+
+--- networking/httpd_indexcgi.c.bak	2010-02-08 15:08:27.000000000 -0500
++++ networking/httpd_indexcgi.c	2010-02-08 15:07:03.000000000 -0500
+@@ -315,7 +315,7 @@
+ 		if (S_ISREG(cdir->dl_mode))
+ 			fmt_ull(cdir->dl_size);
+ 		fmt_str("<td class=dt>");
+-		tm = gmtime(&cdir->dl_mtime);
++		ptm = gmtime(&cdir->dl_mtime);
+ 		fmt_04u(1900 + ptm->tm_year); *dst++ = '-';
+ 		fmt_02u(ptm->tm_mon + 1); *dst++ = '-';
+ 		fmt_02u(ptm->tm_mday); *dst++ = ' ';
