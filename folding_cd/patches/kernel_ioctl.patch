@@ -1,20 +1,20 @@
 --- linux/fs/compat_ioctl.c	2008-02-25 19:20:20.000000000 -0500
 +++ linux-2.6.24.3/fs/compat_ioctl.c	2008-03-09 13:21:12.000000000 -0400
-@@ -110,6 +110,8 @@
- #include <linux/dvb/frontend.h>
- #include <linux/dvb/video.h>
+@@ -113,6 +113,8 @@
  
+ #include <linux/sort.h>
+
 +#include <linux/msdos_fs.h>
 +
  #ifdef CONFIG_SPARC
  #include <asm/fbio.h>
  #endif
-@@ -2707,6 +2709,8 @@
+@@ -1504,6 +1504,8 @@
  
  IGNORE_IOCTL(VFAT_IOCTL_READDIR_BOTH32)
  IGNORE_IOCTL(VFAT_IOCTL_READDIR_SHORT32)
 +COMPATIBLE_IOCTL(FAT_IOCTL_GET_ATTRIBUTES)
 +COMPATIBLE_IOCTL(FAT_IOCTL_SET_ATTRIBUTES)
  
- /* loop */
- IGNORE_IOCTL(LOOP_CLR_FD)
+ #ifdef CONFIG_SPARC
+ /* Sparc framebuffers, handled in sbusfb_compat_ioctl() */
