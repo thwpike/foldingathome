@@ -303,7 +303,15 @@ then
     echo "Proxy is $http_proxy"
   fi
 fi
-wget http://www.stanford.edu/group/pandegroup/folding/release/FAH6.02-Linux.tgz
+
+if [ "$arch" = "x86_64" -a $numprocs -gt 1 ]
+then
+  DOWNLOAD=FAH6.29-Linux.tgz
+else
+  DOWNLOAD=FAH6.02-Linux.tgz
+fi
+
+wget http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD
 if [ $? -eq 1 ]
 then
   echo -e "\n\n\nFailed to download the client from Stanford's website:"
@@ -317,7 +325,7 @@ then
     sleep 86400
   done
 fi
-tar xzf FAH6.02-Linux.tgz
+tar xzf $DOWNLOAD
 
 # Create a CD generator link
 cat << EOF > cd.html
