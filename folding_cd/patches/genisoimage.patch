@@ -805,3 +805,21 @@ unchanged:
  extern	int	getstr(char *, int);
  extern	int	breakline(char *, char, char **, int);
  extern	int	getallargs(int *, char * const**, const char *, ...);
+--- cdrkit-1.1.7.1/include/CMakeLists.txt	2007-05-30 13:55:02.000000000 -0400
++++ cdrkit-new/include/CMakeLists.txt	2010-06-30 21:10:47.000000000 -0400
+@@ -20,7 +20,7 @@
+ MATH(EXPR DOUBLELESS ${SIZE_DOUBLE}-1)
+ CHECK_TYPE_SIZE("char*" SIZE_PTR)
+ MATH(EXPR PTRLESS ${SIZE_PTR}-1)
+-CONFIGURE_FILE( align.h.in align.h)
++CONFIGURE_FILE( align.h.in ${CMAKE_SOURCE_DIR}/include/align.h)
+ #SET_SOURCE_FILES_PROPERTIES(align.h PROPERTIES GENERATED 1)
+ 
+ TRY_COMPILE(VA_LIST_IS_ARRAY ${CMAKE_BINARY_DIR}  ${CMAKE_CURRENT_SOURCE_DIR}/test_VA_LIST_IS_ARRAY.c)
+@@ -166,5 +166,5 @@
+ ")
+ CHECK_C_SOURCE_COMPILES("${TESTSRC}" HAVE_DYN_ARRAYS)
+ 
+-CONFIGURE_FILE( xconfig.h.in xconfig.h)
++CONFIGURE_FILE( xconfig.h.in ${CMAKE_SOURCE_DIR}/include/xconfig.h)
+ 
