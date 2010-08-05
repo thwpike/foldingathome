@@ -1,3 +1,4 @@
+4 August 10: Upgrade to busybox 1.16.2 to fix cgi hangs.
 1 June 10: Upgrade to kernel 2.6.33, Folding 6.29 + build and other minor fixes.
 8 November 09: Upgrade to kernel 2.6.30.1 and add VM time offset of 0.
 6 July 09: Add a link to restart with "-oneunit" flag. Also bump VM memory to 1GB.
