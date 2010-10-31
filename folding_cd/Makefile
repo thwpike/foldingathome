@@ -3,12 +3,23 @@ CGIDIR = /usr/lib/cgi-bin
 LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
+# Program Versions
+KERNEL_VERSION = $(KERNEL_VERSION)
+GLIBC_VERSION = $(GLIBC_VERSION)
+BUSYBOX_VERSION = $(BUSYBOX_VERSION)
+SAMBA_VERSION = $(SAMBA_VERSION)
+SYSLINUX_VERSION = $(SYSLINUX_VERSION)
+NTP_VERSION = $(NTP_VERSION)
+BZIP_VERSION = $(BZIP_VERSION)
+CDRKIT_VERSION = $(CDRKIT_VERSION)
+GCC_VERSION = $(GCC_VERSION)
+
 all : folding_cd.iso diskless.zip usb.zip
 
 .PHONY : clean install_net install_web
 
 clean:
-	-rm -rf linux-2.6.33 glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-2.11 glibc_src samba_extract samba-3.0.37 busybox-1.16.2 syslinux-3.51 syslinux_src ntp-4.2.2p3 bzip2-1.0.5 boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-1.1.7.1 gcc_source gcc-4.3.1 initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	-rm -rf linux-$(KERNEL_VERSION) glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src ntp-$(NTP_VERSION) bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -192,9 +203,9 @@ initrd_dir/bin/encode : glibc_32libs encode.c
 initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
 	cp patches/fold.txt initrd_dir/etc/folding/cgi-bin
 
-initrd_dir/bin/genisoimage : glibc_32libs cdrkit-1.1.7.1.tar.gz patches/genisoimage.patch
-	tar xzf cdrkit-1.1.7.1.tar.gz && \
-	cd cdrkit-1.1.7.1 && \
+initrd_dir/bin/genisoimage : glibc_32libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/genisoimage.patch
+	tar xzf cdrkit-$(CDRKIT_VERSION).tar.gz && \
+	cd cdrkit-$(CDRKIT_VERSION) && \
 	patch -p1 < ../patches/genisoimage.patch && \
 	$(MAKE) CC="gcc -m32" build/Makefile && \
 	cd build && \
@@ -204,62 +215,62 @@ initrd_dir/bin/genisoimage : glibc_32libs cdrkit-1.1.7.1.tar.gz patches/genisoim
 
 #### isolinux, pxelinux, syslinux ####
 diskless/syslinux.exe : diskless/syslinux.com
-	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-3.51/win32 syslinux.exe && \
-	cp syslinux-3.51/win32/syslinux.exe diskless/syslinux.exe
+	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-$(SYSLINUX_VERSION)/win32 syslinux.exe && \
+	cp syslinux-$(SYSLINUX_VERSION)/win32/syslinux.exe diskless/syslinux.exe
 
 diskless/syslinux.com : initrd_dir/etc/folding/cgi-bin/isolinux.bin
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/dos syslinux.com && \
-	cp syslinux-3.51/dos/syslinux.com diskless/syslinux.com
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/dos syslinux.com && \
+	cp syslinux-$(SYSLINUX_VERSION)/dos/syslinux.com diskless/syslinux.com
 
 initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
 	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 boot/isolinux.bin : diskless/pxelinux.0
-	cd syslinux-3.51 && \
+	cd syslinux-$(SYSLINUX_VERSION) && \
 	$(MAKE) isolinux.bin && \
 	cp isolinux.bin ../boot
 
 diskless/pxelinux.0 : initrd_dir/bin/mbr.bin
-	cd syslinux-3.51 && \
+	cd syslinux-$(SYSLINUX_VERSION) && \
 	$(MAKE) pxelinux.0 && \
 	cp pxelinux.0 ../diskless
 
 initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
-	cd syslinux-3.51 && \
+	cd syslinux-$(SYSLINUX_VERSION) && \
 	$(MAKE) CC="gcc -m32" mbr_bin.c && \
 	$(MAKE) mbr/mbr.bin && \
         cp mbr/mbr.bin ../initrd_dir/bin/mbr.bin
 
 initrd_dir/bin/syslinux : syslinux_src glibc_32libs
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51 ldlinux_bin.c && \
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51 bootsect_bin.c && \
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslinux.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix syslxmod.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix bootsect_bin.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-3.51/unix ldlinux_bin.o && \
-	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-3.51/unix/syslinux.o syslinux-3.51/unix/syslxmod.o syslinux-3.51/unix/bootsect_bin.o syslinux-3.51/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION) ldlinux_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION) bootsect_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix syslinux.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix syslxmod.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix bootsect_bin.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix ldlinux_bin.o && \
+	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/unix/syslinux.o syslinux-$(SYSLINUX_VERSION)/unix/syslxmod.o syslinux-$(SYSLINUX_VERSION)/unix/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
 
 syslinux_src :
-	tar xjf syslinux-3.51.tar.bz2 && \
-	cd syslinux-3.51 && \
-	patch -p1 < ../patches/syslinux-3.51-64bit.patch && \
+	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2 && \
+	cd syslinux-$(SYSLINUX_VERSION) && \
+	patch -p1 < ../patches/syslinux-$(SYSLINUX_VERSION)-64bit.patch && \
 	cd $(CURDIR) && \
 	touch syslinux_src
 
 #### Samba ####
 initrd_dir/bin/smbd : samba_extract glibc_32libs
-	cd samba-3.0.37/source && \
+	cd samba-$(SAMBA_VERSION)/source && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/smbd && \
 	cp bin/smbd ../../initrd_dir/bin/smbd
 
 initrd_dir/bin/nmbd : samba_extract glibc_32libs
-	cd samba-3.0.37/source && \
+	cd samba-$(SAMBA_VERSION)/source && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/nmbd && \
 	cp bin/nmbd ../../initrd_dir/bin/nmbd 
 
-samba_extract : samba-3.0.37.tar.gz glibc_32libs
-	tar xzf samba-3.0.37.tar.gz samba-3.0.37/source && \
-	cd samba-3.0.37/source && \
+samba_extract : samba-$(SAMBA_VERSION).tar.gz glibc_32libs
+	tar xzf samba-$(SAMBA_VERSION).tar.gz samba-$(SAMBA_VERSION)/source && \
+	cd samba-$(SAMBA_VERSION)/source && \
 	patch -p0 < ../../patches/samba.patch && \
 	./configure CC="gcc -m32 -nodefaultlibs -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" --with-lockdir=/tmp --with-piddir=/tmp --with-configdir=/etc --with-privatedir=/tmp --with-logfilebase=/tmp --with-included-popt && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="-lc -lc_nonshared ../../glibc-32/elf/ld.so" include/proto.h
@@ -275,8 +286,8 @@ initrd_dir/bin/isVPC : glibc_32libs
 
 #### ntpd ####
 initrd_dir/bin/ntpd : glibc_32libs
-	tar xzf ntp-4.2.2p3.tar.gz && \
-	cd ntp-4.2.2p3 && \
+	tar xzf ntp-$(NTP_VERSION).tar.gz && \
+	cd ntp-$(NTP_VERSION) && \
 	patch -p0 < ../patches/ntpd.patch && \
 	./configure CC="gcc -m32" --prefix=/ --disable-clockctl --disable-linuxcaps --disable-debugging --disable-all-clocks --disable-ipv6 --without-binsub --without-crypto --without-sntp && \
 	cd ntpd && \
@@ -286,40 +297,40 @@ initrd_dir/bin/ntpd : glibc_32libs
 
 #### Busybox ####
 initrd_dir/bin/busybox : glibc_32libs patches/busybox.config patches/busybox.patch
-	tar xjf busybox-1.16.2.tar.bz2 && \
-	cd busybox-1.16.2 && \
+	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
+	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
 	patch -p0 < ../patches/busybox.patch && \
 	$(MAKE) CC="gcc -m32 -L../glibc-32" busybox && \
 	cp busybox ../initrd_dir/bin
 
 initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_32libs
-	cd busybox-1.16.2/networking && \
+	cd busybox-$(BUSYBOX_VERSION)/networking && \
 	gcc -m32 -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi -L ../../glibc-32  httpd_indexcgi.c -lc -lc_nonshared
 
 ### Additional libs ###
-initrd_dir/lib64/libbz2.so.1: glibc_64libs bzip2-1.0.5.tar.gz
-	tar xzf bzip2-1.0.5.tar.gz && \
-	cd bzip2-1.0.5 && \
+initrd_dir/lib64/libbz2.so.1: glibc_64libs bzip2-$(BZIP_VERSION).tar.gz
+	tar xzf bzip2-$(BZIP_VERSION).tar.gz && \
+	cd bzip2-$(BZIP_VERSION) && \
 	gcc -shared -Wl,-soname -Wl,libbz2.so.1 -fpic -fPIC -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64 -o ../initrd_dir/lib64/libbz2.so.1 -L ../glibc-64 blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c -lc && \
 	strip ../initrd_dir/lib64/libbz2.so.1
 
 initrd_dir/lib64/libstdc++.so.6: initrd_dir/lib64/libgcc_s.so.1
-	$(MAKE) -C gcc-4.3.1 configure-target-libstdc++-v3 && \
-	$(MAKE) -C gcc-4.3.1/x86_64-unknown-linux-gnu/libstdc++-v3 && \
-	cp gcc-4.3.1/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64 && \
+	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libstdc++-v3 && \
+	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3 && \
+	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64 && \
 	strip initrd_dir/lib64/libstdc++.so.6
 
 initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_64libs
-	$(MAKE) -C gcc-4.3.1 configure-target-libgcc && \
-	$(MAKE) -C gcc-4.3.1/x86_64-unknown-linux-gnu/libgcc libgcc_s.so && \
-	cp gcc-4.3.1/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64 && \
+	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libgcc && \
+	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc libgcc_s.so && \
+	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64 && \
 	strip initrd_dir/lib64/libgcc_s.so.1
 
-gcc_source: gcc-core-4.3.1.tar.bz2 gcc-g++-4.3.1.tar.bz2
-	tar xjf gcc-core-4.3.1.tar.bz2 && \
-	tar xjf gcc-g++-4.3.1.tar.bz2 && \
-	cd gcc-4.3.1 && \
+gcc_source: gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+	tar xjf gcc-core-$(GCC_VERSION).tar.bz2 && \
+	tar xjf gcc-g++-$(GCC_VERSION).tar.bz2 && \
+	cd gcc-$(GCC_VERSION) && \
 	./configure --disable-bootstrap && \
 	touch ../gcc_source
 
@@ -327,9 +338,9 @@ gcc_source: gcc-core-4.3.1.tar.bz2 gcc-g++-4.3.1.tar.bz2
 glibc_32libs : glibc_src boot/kernel32
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
-	../glibc-2.11/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.33/include:$(CURDIR)/linux-2.6.33/kernel_32/include:$(CURDIR)/linux-2.6.33/arch/x86/include --enable-kernel=2.6.33 --disable-profile --host=i586-linux && \
+	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i586-linux && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
-	cd ../glibc-2.11/math && \
+	cd ../glibc-$(GLIBC_VERSION)/math && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../nptl && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
@@ -356,9 +367,9 @@ glibc_32libs : glibc_src boot/kernel32
 glibc_64libs : glibc_src boot/kernel64
 	mkdir -p glibc-64 && \
 	cd glibc-64 && \
-	../glibc-2.11/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-2.6.33/include:$(CURDIR)/linux-2.6.33/kernel_64/include:$(CURDIR)/linux-2.6.33/arch/x86/include --enable-kernel=2.6.33 --disable-profile && \
+	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
-        cd ../glibc-2.11/math && \
+        cd ../glibc-$(GLIBC_VERSION)/math && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-64 && \
 	cd ../nptl && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-64 && \
@@ -382,8 +393,8 @@ glibc_64libs : glibc_src boot/kernel64
 	cp glibc-64/dlfcn/libdl.so.2 initrd_dir/lib64 && \
 	touch glibc_64libs
 
-glibc_src : glibc-2.11.tar.bz2
-	tar xjf glibc-2.11.tar.bz2 && \
+glibc_src : glibc-$(GLIBC_VERSION).tar.bz2
+	tar xjf glibc-$(GLIBC_VERSION).tar.bz2 && \
 	touch glibc_src
 
 #### Kernel build targets ####
@@ -394,18 +405,18 @@ initrd_dir/etc/folding/cgi-bin/kernel64 : boot/kernel64
 	cp boot/kernel64 initrd_dir/etc/folding/cgi-bin/kernel64
 
 boot/kernel32 : kernel_patch
-	$(MAKE) -C linux-2.6.33 O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
-	cp linux-2.6.33/kernel_32/arch/i386/boot/bzImage boot/kernel32
+	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
+	cp linux-$(KERNEL_VERSION)/kernel_32/arch/i386/boot/bzImage boot/kernel32
 
 boot/kernel64 : kernel_patch
-	$(MAKE) -C linux-2.6.33 O=kernel_64 && \
-	cp linux-2.6.33/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
+	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_64 && \
+	cp linux-$(KERNEL_VERSION)/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
 
-kernel_patch : linux-2.6.33.tar.bz2 patches/kernel_ioctl.patch patches/kernel32.config patches/kernel64.config
-	tar xjf linux-2.6.33.tar.bz2 && \
-	cd linux-2.6.33 && \
+kernel_patch : linux-$(KERNEL_VERSION).tar.bz2 patches/kernel_ioctl.patch patches/kernel32.config patches/kernel64.config
+	tar xjf linux-$(KERNEL_VERSION).tar.bz2 && \
+	cd linux-$(KERNEL_VERSION) && \
 	patch -p1 < ../patches/kernel_ioctl.patch && \
-	patch -p1 < ../patches/2.6.33-sched-bfs-315.patch && \
+	patch -p1 < ../patches/$(KERNEL_VERSION)-sched-bfs-315.patch && \
 	mkdir -p kernel_64 && \
 	cp ../patches/kernel64.config kernel_64/.config && \
 	mkdir -p kernel_32 && \
