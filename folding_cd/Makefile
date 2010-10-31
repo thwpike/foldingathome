@@ -5,7 +5,7 @@ MOUNT = /mnt
 
 # Program Versions
 KERNEL_VERSION = 2.6.33
-GLIBC_VERSION = 2.11
+GLIBC_VERSION = 2.11.2
 BUSYBOX_VERSION = 1.16.2
 SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.51
@@ -338,20 +338,20 @@ gcc_source: gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 glibc_32libs : glibc_src boot/kernel32
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
-	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i586-linux && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
+	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i686-linux && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
 	cd ../glibc-$(GLIBC_VERSION)/math && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../nptl && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../nss && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../resolv && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
         cd ../crypt && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd ../nis && \
-	$(MAKE) CC="gcc -m32" CFLAGS="-march=i586 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
+	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
 	cd $(CURDIR) && \
 	cp glibc-32/libc.so initrd_dir/lib/libc.so.6 && \
 	cp glibc-32/elf/ld-linux.so.2 initrd_dir/lib && \
