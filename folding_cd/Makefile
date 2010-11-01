@@ -451,14 +451,14 @@ boot/kernel64 : kernel_patch
 	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_64 && \
 	cp linux-$(KERNEL_VERSION)/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
 
-kernel_patch : linux-$(KERNEL_VERSION).tar.bz2 patches/kernel_ioctl.patch patches/kernel32.config patches/kernel64.config
+kernel_patch : linux-$(KERNEL_VERSION).tar.bz2 patches/kernel_ioctl.patch patches/kernel32-$(KERNEL_VERSION).config patches/kernel64-$(KERNEL_VERSION).config
 	tar xjf linux-$(KERNEL_VERSION).tar.bz2 && \
 	cd linux-$(KERNEL_VERSION) && \
 	patch -p1 < ../patches/kernel_ioctl.patch && \
 	patch -p1 < ../patches/$(KERNEL_VERSION)-sched-bfs-315.patch && \
 	mkdir -p kernel_64 && \
-	cp ../patches/kernel64.config kernel_64/.config && \
+	cp ../patches/kernel64-$(KERNEL_VERSION).config kernel_64/.config && \
 	mkdir -p kernel_32 && \
-	cp ../patches/kernel32.config kernel_32/.config && \
+	cp ../patches/kernel32-$(KERNEL_VERSION).config kernel_32/.config && \
 	cd .. && \
 	touch kernel_patch
