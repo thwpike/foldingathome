@@ -5,7 +5,7 @@ MOUNT = /mnt
 
 # Program Versions
 KERNEL_VERSION = 2.6.33
-GLIBC_VERSION = 2.11.2
+GLIBC_VERSION = 2.11
 BUSYBOX_VERSION = 1.16.2
 SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.51
@@ -395,6 +395,9 @@ glibc_64libs : glibc_src boot/kernel64
 
 glibc_src : glibc-$(GLIBC_VERSION).tar.bz2
 	tar xjf glibc-$(GLIBC_VERSION).tar.bz2 && \
+	cd glibc-$(GLIBC_VERSION) && \
+	patch -p0 < ../patches/glibc-32-bit-cross-compile.patch && \
+	cd ../ && \
 	touch glibc_src
 
 #### Kernel build targets ####
