@@ -16,7 +16,10 @@ GCC_VERSION = 4.3.1
 
 all : folding_cd.iso diskless.zip usb.zip
 
-.PHONY : clean install_net install_web
+.PHONY : prefetch distclean clean install_net install_web
+
+distclean: clean
+	-rm -rf linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 ntp-$(NTP_VERSION).tar.gz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 clean:
 	-rm -rf linux-$(KERNEL_VERSION) glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src ntp-$(NTP_VERSION) bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
@@ -118,6 +121,39 @@ install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/ke
 /var/lib/tftpboot/PXEClient/fold.txt : boot/fold.txt
 	cp boot/fold.txt /var/lib/tftpboot/PXEClient/fold.txt
 
+# Download source archives if required.
+
+prefetch : linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 ntp-$(NTP_VERSION).tar.gz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+
+linux-$(KERNEL_VERSION).tar.bz2 :
+	wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-$(KERNEL_VERSION).tar.bz2
+
+glibc-$(GLIBC_VERSION).tar.bz2 :
+	wget http://ftp.gnu.org/gnu/glibc/glibc-$(GLIBC_VERSION).tar.bz2
+	
+samba-$(SAMBA_VERSION).tar.gz :
+	wget http://www.samba.org/samba/ftp/stable/samba-$(SAMBA_VERSION).tar.gz
+
+busybox-$(BUSYBOX_VERSION).tar.bz2 :
+	wget http://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
+
+syslinux-$(SYSLINUX_VERSION).tar.bz2 :
+	wget http://www.kernel.org/pub/linux/utils/boot/syslinux/3.xx/syslinux-$(SYSLINUX_VERSION).tar.bz2
+
+ntp-$(NTP_VERSION).tar.gz :
+	wget http://archive.ntp.org/ntp4/ntp-4.2/ntp-$(NTP_VERSION).tar.gz
+
+bzip2-$(BZIP_VERSION).tar.gz :
+	wget http://www.bzip.org/$(BZIP_VERSION)/bzip2-$(BZIP_VERSION).tar.gz
+
+cdrkit-$(CDRKIT_VERSION).tar.gz :
+	wget http://cdrkit.org/releases/cdrkit-$(CDRKIT_VERSION).tar.gz
+
+gcc-core-$(GCC_VERSION).tar.bz2 :
+	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-core-$(GCC_VERSION).tar.bz2
+
+gcc-g++-$(GCC_VERSION).tar.bz2 :
+	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-g++-$(GCC_VERSION).tar.bz2
 
 ### diskless.zip ###
 diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt
