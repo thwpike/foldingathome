@@ -250,7 +250,7 @@ initrd_dir/bin/syslinux : syslinux_src glibc_32libs
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix ldlinux_bin.o && \
 	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/unix/syslinux.o syslinux-$(SYSLINUX_VERSION)/unix/syslxmod.o syslinux-$(SYSLINUX_VERSION)/unix/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
 
-syslinux_src :
+syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.bz2
 	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2 && \
 	cd syslinux-$(SYSLINUX_VERSION) && \
 	patch -p1 < ../patches/syslinux-$(SYSLINUX_VERSION)-64bit.patch && \
@@ -285,7 +285,7 @@ initrd_dir/bin/isVPC : glibc_32libs
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVPC isVPC.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 #### ntpd ####
-initrd_dir/bin/ntpd : glibc_32libs
+initrd_dir/bin/ntpd : ntp-$(NTP_VERSION).tar.gz glibc_32libs
 	tar xzf ntp-$(NTP_VERSION).tar.gz && \
 	cd ntp-$(NTP_VERSION) && \
 	patch -p0 < ../patches/ntpd.patch && \
@@ -296,7 +296,7 @@ initrd_dir/bin/ntpd : glibc_32libs
 	cp ntpd ../../initrd_dir/bin
 
 #### Busybox ####
-initrd_dir/bin/busybox : glibc_32libs patches/busybox.config patches/busybox.patch
+initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_32libs patches/busybox.config patches/busybox.patch
 	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
