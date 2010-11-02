@@ -12,7 +12,7 @@ SYSLINUX_VERSION = 3.51
 NTP_VERSION = 4.2.2p3
 BZIP_VERSION = 1.0.5
 CDRKIT_VERSION = 1.1.7.1
-GCC_VERSION = 4.3.1
+GCC_VERSION = 4.4.5
 
 all : folding_cd.iso diskless.zip usb.zip
 
