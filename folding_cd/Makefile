@@ -455,7 +455,7 @@ kernel_patch : linux-$(KERNEL_VERSION).tar.bz2 patches/kernel_ioctl.patch patche
 	tar xjf linux-$(KERNEL_VERSION).tar.bz2 && \
 	cd linux-$(KERNEL_VERSION) && \
 	patch -p1 < ../patches/kernel_ioctl.patch && \
-	patch -p1 < ../patches/$(KERNEL_VERSION)-sched-bfs-315.patch && \
+	patch -p1 < ../patches/$(KERNEL_VERSION)-sched-bfs.patch && \
 	mkdir -p kernel_64 && \
 	cp ../patches/kernel64-$(KERNEL_VERSION).config kernel_64/.config && \
 	mkdir -p kernel_32 && \
