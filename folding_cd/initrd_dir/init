@@ -221,6 +221,13 @@ then
   smbd -D
 fi
 
+# Tune the Kernel for Maximum throughput
+echo "Tuning BFS parameters"
+if [ -e /proc/sys/kernel/rr_interval ];
+then
+  echo "300" > /proc/sys/kernel/rr_interval;
+fi
+
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
 sleep 10
