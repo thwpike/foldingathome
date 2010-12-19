@@ -8,7 +8,7 @@ KERNEL_VERSION = 2.6.36.2
 GLIBC_VERSION = 2.12.2
 BUSYBOX_VERSION = 1.16.2
 SAMBA_VERSION = 3.0.37
-SYSLINUX_VERSION = 3.51
+SYSLINUX_VERSION = 3.86
 NTP_VERSION = 4.2.2p3
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
@@ -25,7 +25,7 @@ clean:
 	-rm -rf linux-$(KERNEL_VERSION) glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src ntp-$(NTP_VERSION) bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
-install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
+install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt $(CGIDIR)/ifcpu.32
 
 $(WEBDIR)/folding.zip : folding.zip
 	cp folding.zip $(WEBDIR)
@@ -66,6 +66,9 @@ $(CGIDIR)/isolinux.bin : boot/isolinux.bin
 $(CGIDIR)/fold.txt : boot/fold.txt
 	sudo cp boot/fold.txt $(CGIDIR)
 
+$(CGIDIR)/ifcpu.32 : boot/ifcpu.32
+	sudo cp boot/ifcpu.32 $(CGIDIR)
+
 $(WEBDIR)/benchmark.html : web/benchmark.html
 	cp web/benchmark.html $(WEBDIR)
 
@@ -101,7 +104,7 @@ $(WEBDIR)/diskless.html : NEWS web/diskless.html
 
 
 ### install_net ###
-install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0 /var/lib/tftpboot/PXEClient/fold.txt
+install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0 /var/lib/tftpboot/PXEClient/fold.txt /var/lib/tftpboot/PXEClient/ifcpu.32
 
 /var/lib/tftpboot/PXEClient/kernel32 : boot/kernel32
 	cp boot/kernel32 /var/lib/tftpboot/PXEClient/kernel32
@@ -120,6 +123,9 @@ install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/ke
 
 /var/lib/tftpboot/PXEClient/fold.txt : boot/fold.txt
 	cp boot/fold.txt /var/lib/tftpboot/PXEClient/fold.txt
+
+/var/lib/tftpboot/PXEClient/ifcpu.32 : boot/ifcpu.32
+	cp boot/ifcpu.32 /var/lib/tftpboot/PXEClient/ifcpu.32
 
 # Download source archives if required.
 
@@ -156,9 +162,9 @@ gcc-g++-$(GCC_VERSION).tar.bz2 :
 	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-g++-$(GCC_VERSION).tar.bz2
 
 ### diskless.zip ###
-diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt
+diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt diskless/ifcpu.32
 	cd diskless && \
-	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default fold.txt
+	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default fold.txt ifcpu.32
 
 diskless/kernel32 : boot/kernel32
 	cp boot/kernel32 diskless/kernel32
@@ -176,10 +182,13 @@ diskless/pxelinux.cfg/default : boot/isolinux.cfg
 diskless/fold.txt : boot/fold.txt
 	cp boot/fold.txt diskless/fold.txt
 
+diskless/ifcpu.32 : boot/ifcpu.32
+	cp boot/ifcpu.32 diskless/ifcpu.32
+
 ### usb.zip ###
-usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt
+usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt diskless/ifcpu.32
 	cd diskless && \
-	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt fold.txt
+	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt fold.txt ifcpu.32
 
 diskless/syslinux.cfg : boot/isolinux.cfg
 	cp boot/isolinux.cfg diskless/syslinux.cfg
@@ -250,6 +259,9 @@ initrd_dir/bin/genisoimage : glibc_32libs cdrkit-$(CDRKIT_VERSION).tar.gz patche
 
 
 #### isolinux, pxelinux, syslinux ####
+boot/ifcpu.32: syslinux-$(SYSLINUX_VERSION)/com32/modules/ifcpu.c32
+	cp syslinux-$(SYSLINUX_VERSION)/com32/modules/ifcpu.c32 boot/ifcpu.32
+
 diskless/syslinux.exe : diskless/syslinux.com
 	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-$(SYSLINUX_VERSION)/win32 syslinux.exe && \
 	cp syslinux-$(SYSLINUX_VERSION)/win32/syslinux.exe diskless/syslinux.exe
@@ -262,34 +274,30 @@ initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
 	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 boot/isolinux.bin : diskless/pxelinux.0
-	cd syslinux-$(SYSLINUX_VERSION) && \
-	$(MAKE) isolinux.bin && \
-	cp isolinux.bin ../boot
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/core isolinux.bin && \
+	cp syslinux-$(SYSLINUX_VERSION)/core/isolinux.bin boot/
 
 diskless/pxelinux.0 : initrd_dir/bin/mbr.bin
-	cd syslinux-$(SYSLINUX_VERSION) && \
-	$(MAKE) pxelinux.0 && \
-	cp pxelinux.0 ../diskless
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/core pxelinux.0 && \
+	cp syslinux-$(SYSLINUX_VERSION)/core/pxelinux.0 diskless/
 
-initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
-	cd syslinux-$(SYSLINUX_VERSION) && \
-	$(MAKE) CC="gcc -m32" mbr_bin.c && \
-	$(MAKE) mbr/mbr.bin && \
-        cp mbr/mbr.bin ../initrd_dir/bin/mbr.bin
+initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux boot/ifcpu.32
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/mbr mbr_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/mbr mbr.bin && \
+        cp syslinux-$(SYSLINUX_VERSION)/mbr/mbr.bin initrd_dir/bin/mbr.bin
 
 initrd_dir/bin/syslinux : syslinux_src glibc_32libs
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION) ldlinux_bin.c && \
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION) bootsect_bin.c && \
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix syslinux.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix syslxmod.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix bootsect_bin.o && \
-	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/unix ldlinux_bin.o && \
-	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/unix/syslinux.o syslinux-$(SYSLINUX_VERSION)/unix/syslxmod.o syslinux-$(SYSLINUX_VERSION)/unix/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/unix/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/libinstaller ldlinux_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/libinstaller bootsect_bin.c && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/linux syslinux.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/linux syslxmod.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/linux bootsect_bin.o && \
+	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/linux ldlinux_bin.o && \
+	gcc -m32 -s -L glibc-32 -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/linux/syslinux.o syslinux-$(SYSLINUX_VERSION)/linux/syslxmod.o syslinux-$(SYSLINUX_VERSION)/linux/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/linux/ldlinux_bin.o -lc -lc_nonshared glibc-32/elf/ld.so
 
 syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.bz2
 	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2 && \
 	cd syslinux-$(SYSLINUX_VERSION) && \
-	patch -p1 < ../patches/syslinux-$(SYSLINUX_VERSION)-64bit.patch && \
 	cd $(CURDIR) && \
 	touch syslinux_src
 
