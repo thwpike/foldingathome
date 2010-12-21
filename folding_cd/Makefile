@@ -28,75 +28,95 @@ clean:
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt $(CGIDIR)/ifcpu.32
 
 $(WEBDIR)/folding.zip : folding.zip
+	mkdir -p $(WEBDIR)
 	cp folding.zip $(WEBDIR)
 
 $(WEBDIR)/diskless.zip : diskless.zip
+	mkdir -p $(WEBDIR)
 	cp diskless.zip $(WEBDIR)
 
 $(WEBDIR)/index.html : web/index.html
+	mkdir -p $(WEBDIR)
 	cp web/index.html $(WEBDIR)
 
 $(WEBDIR)/syslinux : initrd_dir/bin/syslinux
+	mkdir -p $(WEBDIR)
 	cp initrd_dir/bin/syslinux $(WEBDIR)
 
 $(WEBDIR)/syslinux.com : diskless/syslinux.com
+	mkdir -p $(WEBDIR)
 	cp diskless/syslinux.com $(WEBDIR)
 
 $(WEBDIR)/syslinux.exe : diskless/syslinux.exe
+	mkdir -p $(WEBDIR)
 	cp diskless/syslinux.exe $(WEBDIR)
 
 $(WEBDIR)/usb.zip : usb.zip
+	mkdir -p $(WEBDIR)
 	cp usb.zip $(WEBDIR)
 
 $(CGIDIR)/fold.iso : initrd_dir/etc/folding/cgi-bin/fold.iso
+	sudo mkdir -p $(CGIDIR)
 	sudo cp initrd_dir/etc/folding/cgi-bin/fold.iso $(CGIDIR)
 
 $(CGIDIR)/kernel32 : boot/kernel32
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/kernel32 $(CGIDIR)
 
 $(CGIDIR)/kernel64 : boot/kernel64
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/kernel64 $(CGIDIR)
 
 $(CGIDIR)/initrd : boot/initrd
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/initrd $(CGIDIR)
 
 $(CGIDIR)/isolinux.bin : boot/isolinux.bin
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/isolinux.bin $(CGIDIR)
 
 $(CGIDIR)/fold.txt : boot/fold.txt
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/fold.txt $(CGIDIR)
 
 $(CGIDIR)/ifcpu.32 : boot/ifcpu.32
+	sudo mkdir -p $(CGIDIR)
 	sudo cp boot/ifcpu.32 $(CGIDIR)
 
 $(WEBDIR)/benchmark.html : web/benchmark.html
+	mkdir -p $(WEBDIR)
 	cp web/benchmark.html $(WEBDIR)
 
 $(WEBDIR)/vm.html : NEWS web/vm.html
+	mkdir -p $(WEBDIR)
 	cat web/vm.html > $(WEBDIR)/vm.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/vm.html && \
 	echo "</body>" >> $(WEBDIR)/vm.html && \
 	echo "</html>" >> $(WEBDIR)/vm.html
 
 $(WEBDIR)/cd.html : NEWS web/cd.html
+	mkdir -p $(WEBDIR)
 	cat web/cd.html > $(WEBDIR)/cd.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/cd.html && \
 	echo "</body>" >> $(WEBDIR)/cd.html && \
 	echo "</html>" >> $(WEBDIR)/cd.html
 
 $(WEBDIR)/usb.html : NEWS web/usb.html
+	mkdir -p $(WEBDIR)
 	cat web/usb.html > $(WEBDIR)/usb.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/usb.html && \
 	echo "</body>" >> $(WEBDIR)/usb.html && \
 	echo "</html>" >> $(WEBDIR)/usb.html
 
 $(WEBDIR)/linux.html : NEWS web/linux.html
+	mkdir -p $(WEBDIR)
 	cat web/linux.html > $(WEBDIR)/linux.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/linux.html && \
 	echo "</body>" >> $(WEBDIR)/linux.html && \
 	echo "</html>" >> $(WEBDIR)/linux.html
 
 $(WEBDIR)/diskless.html : NEWS web/diskless.html
+	mkdir -p $(WEBDIR)
 	cat web/diskless.html > $(WEBDIR)/diskless.html && \
 	sed "a<BR>" NEWS >> $(WEBDIR)/diskless.html && \
 	echo "</body>" >> $(WEBDIR)/diskless.html && \
@@ -107,24 +127,31 @@ $(WEBDIR)/diskless.html : NEWS web/diskless.html
 install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/kernel64 /var/lib/tftpboot/PXEClient/initrd /var/lib/tftpboot/PXEClient/pxelinux.cfg/default /var/lib/tftpboot/PXEClient/pxelinux.0 /var/lib/tftpboot/PXEClient/fold.txt /var/lib/tftpboot/PXEClient/ifcpu.32
 
 /var/lib/tftpboot/PXEClient/kernel32 : boot/kernel32
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp boot/kernel32 /var/lib/tftpboot/PXEClient/kernel32
 
 /var/lib/tftpboot/PXEClient/kernel64 : boot/kernel64
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp boot/kernel64 /var/lib/tftpboot/PXEClient/kernel64
 
 /var/lib/tftpboot/PXEClient/initrd : boot/initrd
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp boot/initrd /var/lib/tftpboot/PXEClient/initrd
 
 /var/lib/tftpboot/PXEClient/pxelinux.cfg/default : boot/isolinux.cfg
+	mkdir -p /var/lib/tftpboot/PXEClient/pxelinux.cfg
 	cp boot/isolinux.cfg /var/lib/tftpboot/PXEClient/pxelinux.cfg/default
 
 /var/lib/tftpboot/PXEClient/pxelinux.0 : diskless/pxelinux.0
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp diskless/pxelinux.0 /var/lib/tftpboot/PXEClient/pxelinux.0
 
 /var/lib/tftpboot/PXEClient/fold.txt : boot/fold.txt
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp boot/fold.txt /var/lib/tftpboot/PXEClient/fold.txt
 
 /var/lib/tftpboot/PXEClient/ifcpu.32 : boot/ifcpu.32
+	mkdir -p /var/lib/tftpboot/PXEClient
 	cp boot/ifcpu.32 /var/lib/tftpboot/PXEClient/ifcpu.32
 
 # Download source archives if required.
@@ -163,16 +190,20 @@ gcc-g++-$(GCC_VERSION).tar.bz2 :
 
 ### diskless.zip ###
 diskless.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt diskless/ifcpu.32
+	mkdir -p diskless
 	cd diskless && \
 	zip -r ../diskless.zip kernel32 kernel64 initrd pxelinux.0 pxelinux.cfg/default fold.txt ifcpu.32
 
 diskless/kernel32 : boot/kernel32
+	mkdir -p boot
 	cp boot/kernel32 diskless/kernel32
 
 diskless/kernel64 : boot/kernel64
+	mkdir -p boot
 	cp boot/kernel64 diskless/kernel64
 
 diskless/initrd : boot/initrd
+	mkdir -p boot
 	cp boot/initrd diskless/initrd
 
 diskless/pxelinux.cfg/default : boot/isolinux.cfg
@@ -187,10 +218,12 @@ diskless/ifcpu.32 : boot/ifcpu.32
 
 ### usb.zip ###
 usb.zip : diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt diskless/ifcpu.32
+	mkdir -p diskless
 	cd diskless && \
 	zip -r ../usb.zip kernel32 kernel64 initrd syslinux.cfg version.txt fold.txt ifcpu.32
 
 diskless/syslinux.cfg : boot/isolinux.cfg
+	mkdir -p diskless
 	cp boot/isolinux.cfg diskless/syslinux.cfg
 
 diskless/version.txt : initrd_dir/init
@@ -198,6 +231,7 @@ diskless/version.txt : initrd_dir/init
 
 ### folding.zip ###
 folding.zip: disk diskless/kernel32 diskless/kernel64 diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
+	mkdir -p $(MOUNT)
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
 	sudo mount $(LOOPDEV) $(MOUNT) && \
@@ -227,28 +261,35 @@ folding_cd.iso : boot/kernel32 boot/kernel64 boot/initrd boot/isolinux.bin boot/
 	rm boot/isolin.bin
 
 boot/isolinux.cfg : patches/isolinux.cfg
+	mkdir -p boot
 	cp patches/isolinux.cfg boot
 
 boot/fold.txt : patches/fold.txt
+	mkdir -p boot
 	cp patches/fold.txt boot
 
 #### initrd ####
 boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
+	mkdir -p initrd_dir/tmp
 	cd initrd_dir && \
 	chmod 1777 tmp && \
 	find . -name .svn -prune -o -print > etc/manifest && \
 	bin/busybox cpio -o -H newc < etc/manifest | gzip -9 > ../boot/initrd
 
 initrd_dir/bin/queueinfo : glibc_32libs queueinfo.c
+	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/queueinfo queueinfo.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 initrd_dir/bin/encode : glibc_32libs encode.c
+	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/encode encode.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
+	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp patches/fold.txt initrd_dir/etc/folding/cgi-bin
 
 initrd_dir/bin/genisoimage : glibc_32libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/genisoimage.patch
+	mkdir -p initrd_dir/bin
 	tar xzf cdrkit-$(CDRKIT_VERSION).tar.gz && \
 	cd cdrkit-$(CDRKIT_VERSION) && \
 	patch -p1 < ../patches/genisoimage.patch && \
@@ -260,33 +301,41 @@ initrd_dir/bin/genisoimage : glibc_32libs cdrkit-$(CDRKIT_VERSION).tar.gz patche
 
 #### isolinux, pxelinux, syslinux ####
 boot/ifcpu.32: syslinux-$(SYSLINUX_VERSION)/com32/modules/ifcpu.c32
+	mkdir -p boot
 	cp syslinux-$(SYSLINUX_VERSION)/com32/modules/ifcpu.c32 boot/ifcpu.32
 
 diskless/syslinux.exe : diskless/syslinux.com
+	mkdir -p diskless
 	$(MAKE) WINCC=i586-mingw32msvc-gcc WINAR=i586-mingw32msvc-ar WINRANLIB=i586-mingw32msvc-ranlib -C syslinux-$(SYSLINUX_VERSION)/win32 syslinux.exe && \
 	cp syslinux-$(SYSLINUX_VERSION)/win32/syslinux.exe diskless/syslinux.exe
 
 diskless/syslinux.com : initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	mkdir -p diskless
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/dos syslinux.com && \
 	cp syslinux-$(SYSLINUX_VERSION)/dos/syslinux.com diskless/syslinux.com
 
 initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
+	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 boot/isolinux.bin : diskless/pxelinux.0
+	mkdir -p boot
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/core isolinux.bin && \
 	cp syslinux-$(SYSLINUX_VERSION)/core/isolinux.bin boot/
 
 diskless/pxelinux.0 : initrd_dir/bin/mbr.bin
+	mkdir -p diskless
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/core pxelinux.0 && \
 	cp syslinux-$(SYSLINUX_VERSION)/core/pxelinux.0 diskless/
 
 initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux boot/ifcpu.32
+	mkdir -p initrd_dir/bin
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/mbr mbr_bin.c && \
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/mbr mbr.bin && \
         cp syslinux-$(SYSLINUX_VERSION)/mbr/mbr.bin initrd_dir/bin/mbr.bin
 
 initrd_dir/bin/syslinux : syslinux_src glibc_32libs
+	mkdir -p initrd_dir/bin
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/libinstaller ldlinux_bin.c && \
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/libinstaller bootsect_bin.c && \
 	$(MAKE) CC="gcc -m32" -C syslinux-$(SYSLINUX_VERSION)/linux syslinux.o && \
@@ -303,11 +352,13 @@ syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.bz2
 
 #### Samba ####
 initrd_dir/bin/smbd : samba_extract glibc_32libs
+	mkdir -p initrd_dir/bin
 	cd samba-$(SAMBA_VERSION)/source && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/smbd && \
 	cp bin/smbd ../../initrd_dir/bin/smbd
 
 initrd_dir/bin/nmbd : samba_extract glibc_32libs
+	mkdir -p initrd_dir/bin
 	cd samba-$(SAMBA_VERSION)/source && \
 	$(MAKE) CC="gcc -m32 -L../../glibc-32" LIBS="../../glibc-32/resolv/libresolv.so ../../glibc-32/nis/libnsl.so -lc -lc_nonshared ../../glibc-32/elf/ld.so" bin/nmbd && \
 	cp bin/nmbd ../../initrd_dir/bin/nmbd 
@@ -323,13 +374,16 @@ samba_extract : samba-$(SAMBA_VERSION).tar.gz glibc_32libs
 
 #### VM Detectors ####
 initrd_dir/bin/isVMWare : glibc_32libs
+	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVMWare isVMWare.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 initrd_dir/bin/isVPC : glibc_32libs
+	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVPC isVPC.c -lc -lc_nonshared glibc-32/elf/ld.so
 
 #### ntpd ####
 initrd_dir/bin/ntpd : ntp-$(NTP_VERSION).tar.gz glibc_32libs
+	mkdir -p initrd_dir/bin
 	tar xzf ntp-$(NTP_VERSION).tar.gz && \
 	cd ntp-$(NTP_VERSION) && \
 	patch -p0 < ../patches/ntpd.patch && \
@@ -341,6 +395,7 @@ initrd_dir/bin/ntpd : ntp-$(NTP_VERSION).tar.gz glibc_32libs
 
 #### Busybox ####
 initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_32libs patches/busybox.config patches/busybox.patch
+	mkdir -p initrd_dir/bin
 	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
@@ -349,23 +404,27 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_32libs patches
 	cp busybox ../initrd_dir/bin
 
 initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_32libs
+	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cd busybox-$(BUSYBOX_VERSION)/networking && \
 	gcc -m32 -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi -L ../../glibc-32  httpd_indexcgi.c -lc -lc_nonshared
 
 ### Additional libs ###
 initrd_dir/lib64/libbz2.so.1: glibc_64libs bzip2-$(BZIP_VERSION).tar.gz
+	mkdir -p initrd_dir/lib64
 	tar xzf bzip2-$(BZIP_VERSION).tar.gz && \
 	cd bzip2-$(BZIP_VERSION) && \
 	gcc -shared -Wl,-soname -Wl,libbz2.so.1 -fpic -fPIC -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64 -o ../initrd_dir/lib64/libbz2.so.1 -L ../glibc-64 blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c -lc && \
 	strip ../initrd_dir/lib64/libbz2.so.1
 
 initrd_dir/lib64/libstdc++.so.6: initrd_dir/lib64/libgcc_s.so.1
+	mkdir -p initrd_dir/lib64
 	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libstdc++-v3 && \
 	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3 && \
 	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64 && \
 	strip initrd_dir/lib64/libstdc++.so.6
 
 initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_64libs
+	mkdir -p initrd_dir/lib64
 	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libgcc && \
 	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc libgcc_s.so && \
 	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64 && \
@@ -380,6 +439,7 @@ gcc_source: gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 #### Glibc build targets ####
 glibc_32libs : glibc_src boot/kernel32
+	mkdir -p initrd_dir/lib
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
 	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i686-linux && \
@@ -409,6 +469,7 @@ glibc_32libs : glibc_src boot/kernel32
 	touch glibc_32libs
 
 glibc_64libs : glibc_src boot/kernel64
+	mkdir -p initrd_dir/lib64
 	mkdir -p glibc-64 && \
 	cd glibc-64 && \
 	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
@@ -446,16 +507,20 @@ glibc_src : glibc-$(GLIBC_VERSION).tar.bz2
 
 #### Kernel build targets ####
 initrd_dir/etc/folding/cgi-bin/kernel32 : boot/kernel32
+	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/kernel32 initrd_dir/etc/folding/cgi-bin/kernel32
 
 initrd_dir/etc/folding/cgi-bin/kernel64 : boot/kernel64
+	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/kernel64 initrd_dir/etc/folding/cgi-bin/kernel64
 
 boot/kernel32 : kernel_patch
+	mkdir -p boot
 	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_32 ARCH="i386" CC="gcc -m32" LD="ld -m elf_i386" && \
 	cp linux-$(KERNEL_VERSION)/kernel_32/arch/i386/boot/bzImage boot/kernel32
 
 boot/kernel64 : kernel_patch
+	mkdir -p boot
 	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_64 && \
 	cp linux-$(KERNEL_VERSION)/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
 
