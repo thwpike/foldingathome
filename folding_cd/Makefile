@@ -9,7 +9,6 @@ GLIBC_VERSION = 2.12.2
 BUSYBOX_VERSION = 1.16.2
 SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.86
-NTP_VERSION = 4.2.2p3
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
 GCC_VERSION = 4.4.5
@@ -19,10 +18,10 @@ all : folding_cd.iso diskless.zip usb.zip
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 ntp-$(NTP_VERSION).tar.gz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src ntp-$(NTP_VERSION) bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/ntpd initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	-rm -rf linux-$(KERNEL_VERSION) glibc-32 glibc_32libs glibc-64 glibc_64libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel32 $(CGIDIR)/kernel64 $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt $(CGIDIR)/ifcpu.32
@@ -156,7 +155,7 @@ install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/ke
 
 # Download source archives if required.
 
-prefetch : linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 ntp-$(NTP_VERSION).tar.gz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+prefetch : linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 linux-$(KERNEL_VERSION).tar.bz2 :
 	wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-$(KERNEL_VERSION).tar.bz2
@@ -172,9 +171,6 @@ busybox-$(BUSYBOX_VERSION).tar.bz2 :
 
 syslinux-$(SYSLINUX_VERSION).tar.bz2 :
 	wget http://www.kernel.org/pub/linux/utils/boot/syslinux/3.xx/syslinux-$(SYSLINUX_VERSION).tar.bz2
-
-ntp-$(NTP_VERSION).tar.gz :
-	wget http://archive.ntp.org/ntp4/ntp-4.2/ntp-$(NTP_VERSION).tar.gz
 
 bzip2-$(BZIP_VERSION).tar.gz :
 	wget http://www.bzip.org/$(BZIP_VERSION)/bzip2-$(BZIP_VERSION).tar.gz
@@ -269,7 +265,7 @@ boot/fold.txt : patches/fold.txt
 	cp patches/fold.txt boot
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/ntpd initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel32 initrd_dir/etc/folding/cgi-bin/kernel64 glibc_32libs glibc_64libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/smbd initrd_dir/bin/nmbd initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/bin/genisoimage initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6
 	mkdir -p initrd_dir/tmp
 	cd initrd_dir && \
 	chmod 1777 tmp && \
@@ -380,18 +376,6 @@ initrd_dir/bin/isVMWare : glibc_32libs
 initrd_dir/bin/isVPC : glibc_32libs
 	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVPC isVPC.c -lc -lc_nonshared glibc-32/elf/ld.so
-
-#### ntpd ####
-initrd_dir/bin/ntpd : ntp-$(NTP_VERSION).tar.gz glibc_32libs
-	mkdir -p initrd_dir/bin
-	tar xzf ntp-$(NTP_VERSION).tar.gz && \
-	cd ntp-$(NTP_VERSION) && \
-	patch -p0 < ../patches/ntpd.patch && \
-	./configure CC="gcc -m32" --prefix=/ --disable-clockctl --disable-linuxcaps --disable-debugging --disable-all-clocks --disable-ipv6 --without-binsub --without-crypto --without-sntp && \
-	cd ntpd && \
-	$(MAKE) CC="gcc -m32 -L../../glibc-32" ntpd_LDADD="version.o libntpd.a ../libntp/libntp.a ../../glibc-32/math/libm.so ../../glibc-32/libc.so ../../glibc-32/libc_nonshared.a ../../glibc-32/elf/ld.so" ntpd && \
-	strip --strip-debug ntpd && \
-	cp ntpd ../../initrd_dir/bin
 
 #### Busybox ####
 initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_32libs patches/busybox.config patches/busybox.patch
