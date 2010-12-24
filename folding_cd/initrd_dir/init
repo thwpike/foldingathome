@@ -61,6 +61,9 @@ mknod /dev/tty c 5 0
 mknod /dev/tty1 c 4 1
 mknod /dev/rtc c 10 135
 
+mkdir -p /proc
+mkdir -p /sys
+
 mount -n -t proc proc /proc
 mount -n -t sysfs sysfs /sys
 stty -echo
@@ -114,6 +117,7 @@ else
 fi
 echo "127.0.0.1 `hostname`" > /etc/hosts
 
+mkdir -p /etc/folding/cgi-bin
 cd /etc/folding
 cat /proc/cpuinfo > cpuinfo.txt
 dmesg > dmesg.txt
