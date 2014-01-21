@@ -4,14 +4,14 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 2.6.37
-GLIBC_VERSION = 2.12.2
-BUSYBOX_VERSION = 1.18.2
+KERNEL_VERSION = 3.13
+GLIBC_VERSION = 2.16.0
+BUSYBOX_VERSION = 1.18.5
 SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.86
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
-GCC_VERSION = 4.4.5
+GCC_VERSION = 4.4.7
 
 all : folding_cd.iso diskless.zip usb.zip
 
@@ -155,13 +155,13 @@ install_net: /var/lib/tftpboot/PXEClient/kernel32 /var/lib/tftpboot/PXEClient/ke
 
 # Download source archives if required.
 
-prefetch : linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
-linux-$(KERNEL_VERSION).tar.bz2 :
-	wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-$(KERNEL_VERSION).tar.bz2
+linux-$(KERNEL_VERSION).tar.xz :
+	wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-$(KERNEL_VERSION).tar.xz
 
-glibc-$(GLIBC_VERSION).tar.bz2 :
-	wget http://ftp.gnu.org/gnu/glibc/glibc-$(GLIBC_VERSION).tar.bz2
+glibc-$(GLIBC_VERSION).tar.xz :
+	wget http://ftp.gnu.org/gnu/glibc/glibc-$(GLIBC_VERSION).tar.xz
 	
 samba-$(SAMBA_VERSION).tar.gz :
 	wget http://www.samba.org/samba/ftp/stable/samba-$(SAMBA_VERSION).tar.gz
@@ -368,7 +368,6 @@ samba_extract : samba-$(SAMBA_VERSION).tar.gz glibc_32libs
 	cd $(CURDIR) && \
 	touch samba_extract
 
-#### VM Detectors ####
 initrd_dir/bin/isVMWare : glibc_32libs
 	mkdir -p initrd_dir/bin
 	gcc -m32 -L glibc-32 -o initrd_dir/bin/isVMWare isVMWare.c -lc -lc_nonshared glibc-32/elf/ld.so
@@ -426,7 +425,7 @@ glibc_32libs : glibc_src boot/kernel32
 	mkdir -p initrd_dir/lib
 	mkdir -p glibc-32 && \
 	cd glibc-32 && \
-	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i686-linux && \
+	../glibc-$(GLIBC_VERSION)/configure  CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/arch/x86/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_32/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile --host=i686-linux && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
 	cd ../glibc-$(GLIBC_VERSION)/math && \
 	$(MAKE) CC="gcc -m32" CFLAGS="-march=i686 -O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-32 && \
@@ -456,7 +455,7 @@ glibc_64libs : glibc_src boot/kernel64
 	mkdir -p initrd_dir/lib64
 	mkdir -p glibc-64 && \
 	cd glibc-64 && \
-	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
+	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/arch/x86/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/kernel_64/include:$(CURDIR)/linux-$(KERNEL_VERSION)/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
         cd ../glibc-$(GLIBC_VERSION)/math && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc-64 && \
@@ -482,11 +481,8 @@ glibc_64libs : glibc_src boot/kernel64
 	cp glibc-64/dlfcn/libdl.so.2 initrd_dir/lib64 && \
 	touch glibc_64libs
 
-glibc_src : glibc-$(GLIBC_VERSION).tar.bz2
-	tar xjf glibc-$(GLIBC_VERSION).tar.bz2 && \
-	cd glibc-$(GLIBC_VERSION) && \
-	patch -p0 < ../patches/glibc-32-bit-cross-compile.patch && \
-	cd ../ && \
+glibc_src : glibc-$(GLIBC_VERSION).tar.xz
+	tar xJf glibc-$(GLIBC_VERSION).tar.xz && \
 	touch glibc_src
 
 #### Kernel build targets ####
@@ -508,11 +504,9 @@ boot/kernel64 : kernel_patch
 	$(MAKE) -C linux-$(KERNEL_VERSION) O=kernel_64 && \
 	cp linux-$(KERNEL_VERSION)/kernel_64/arch/x86_64/boot/bzImage boot/kernel64
 
-kernel_patch : linux-$(KERNEL_VERSION).tar.bz2 patches/kernel_ioctl.patch patches/kernel32-$(KERNEL_VERSION).config patches/kernel64-$(KERNEL_VERSION).config
-	tar xjf linux-$(KERNEL_VERSION).tar.bz2 && \
+kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel32-$(KERNEL_VERSION).config patches/kernel64-$(KERNEL_VERSION).config
+	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
-	patch -p1 < ../patches/kernel_ioctl.patch && \
-	patch -p1 < ../patches/$(KERNEL_VERSION)-sched-bfs.patch && \
 	mkdir -p kernel_64 && \
 	cp ../patches/kernel64-$(KERNEL_VERSION).config kernel_64/.config && \
 	mkdir -p kernel_32 && \

@@ -1,11 +1,13 @@
 *.bz2
 *.gz
+*.xz
 boot
 busybox-*
 bzip2-*
 cdrkit-*
 diskless.zip
 diskless
+folding/folding.vmx
 folding_cd.iso
 gcc-*
 gcc_source
@@ -20,7 +22,6 @@ initrd_dir/bin/isVMWare
 initrd_dir/bin/isVPC
 initrd_dir/bin/mbr.bin
 initrd_dir/bin/nmbd
-initrd_dir/bin/ntpd
 initrd_dir/bin/queueinfo
 initrd_dir/bin/smbd
 initrd_dir/bin/syslinux
