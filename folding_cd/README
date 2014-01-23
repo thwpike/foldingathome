@@ -24,7 +24,7 @@ with the following packages installed:
 apt-get install nasm gawk zip mkisofs libmpfr-dev libgmp3-dev ia32-libs \
                 libc6-dev-i386 lib32gcc1 gcc-multilib g++-multilib git-core \
                 qemu cmake libcap-dev mingw32 xz-utils ncurses-dev gettext \
-                autoconf libtool
+                autoconf libtool texinfo
 
 This software downloads the folding client and cores from Stanford to comply
 with the Folding@Home license.

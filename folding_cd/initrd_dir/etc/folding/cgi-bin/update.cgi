@@ -18,13 +18,9 @@ do_update() {
   then
     download version.txt
   fi
-  if [ ! -e kernel32 ]
-  then
-    download kernel32
-  fi
-  if [ ! -e kernel64 ]
+  if [ ! -e kernel ]
   then 
-    download kernel64
+    download kernel
   fi
   if [ ! -e initrd ]
   then
@@ -38,7 +34,7 @@ do_update() {
   then
     download fold.txt
   fi
-  cp version.txt kernel32 kernel64 initrd syslinux.cfg fold.txt $1
+  cp version.txt kernel initrd syslinux.cfg fold.txt $1
 }
 
 # Main begins here

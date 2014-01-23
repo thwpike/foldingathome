@@ -12,9 +12,9 @@ folding_cd.iso
 gcc-*
 gcc_source
 glibc-*
-glibc_32libs
-glibc_64libs
+glibc_libs
 glibc_src
+glibc
 initrd_dir/bin/busybox
 initrd_dir/bin/encode
 initrd_dir/bin/genisoimage
@@ -28,8 +28,8 @@ initrd_dir/bin/syslinux
 initrd_dir/etc/folding/cgi-bin/fold.txt
 initrd_dir/etc/folding/cgi-bin/index.cgi
 initrd_dir/etc/folding/cgi-bin/isolinux.bin
-initrd_dir/etc/folding/cgi-bin/kernel32
-initrd_dir/etc/folding/cgi-bin/kernel64
+initrd_dir/etc/folding/cgi-bin/kernel
+initrd_dir/etc/folding/cgi-bin/fold.iso
 initrd_dir/etc/manifest
 initrd_dir/lib/
 initrd_dir/lib64/

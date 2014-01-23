@@ -1,16 +1,10 @@
 
 Notfred's Diskless Folding Suite
 
-fold - starts a 32bit folding client
+fold - starts a folding client
 
-fold64 - starts a 64bit folding client, including SMP if multiple processors
+benchmark - starts the folding benchmark suite
 
-benchmark - starts the folding benchmark suite for 32bit processors
-
-benchmark64 - starts the folding benchmark suite for 64bit processors
-
-Default option will boot in 15 seconds and will select fold/fold64 based
-on processor type
-
+The default option (starting a folding client) will boot in 15 seconds
 
 

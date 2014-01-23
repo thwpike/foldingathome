@@ -4,7 +4,7 @@
 # create an installation
 VERSION=100804
 install() {
-  if [ -e kernel32 -a -e kernel64 -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
+  if [ -e kernel -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
     if [ `cat version.txt` -ge $VERSION ]
     then
@@ -13,30 +13,21 @@ install() {
       echo "Out of date installation found, updating it"
     fi
   fi
-  cp /etc/folding/cgi-bin/kernel64 .
-  cp /etc/folding/cgi-bin/kernel32 .
+  cp /etc/folding/cgi-bin/kernel .
   cp /etc/folding/cgi-bin/fold.txt .
   cat << EOF > syslinux.cfg
 DEFAULT fold
-DEFAULT64 fold64
+DEFAULT64 fold
 TIMEOUT 150
 PROMPT 1
 DISPLAY fold.txt
 
 LABEL fold
-        KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
-
-LABEL fold64
-        KERNEL kernel64
+        KERNEL kernel
         APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
 
 LABEL benchmark
-        KERNEL kernel32
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
-
-LABEL benchmark64
-        KERNEL kernel64
+        KERNEL kernel
         APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
 
 EOF
@@ -171,14 +162,6 @@ if [ $BLANK -lt 0 ] || [ $BLANK -gt 60 ]
 then
   BLANK=0
 fi
-if [ -z "$SAMBA" ]
-then
-  SAMBA=2
-fi
-if [ $SAMBA -lt 0 ] || [ $SAMBA -gt 2 ]
-then
-  SAMBA=2
-fi
 if [ -z "$GROUP" ]
 then
   GROUP=DISKLESS
@@ -202,39 +185,6 @@ noQEMU=$?
 
 # Set screen blank interval
 echo -e "\033[9;$BLANK]"
-
-# Setup Samba
-echo "[global]" > /etc/smb.conf
-echo "workgroup=$GROUP" >> /etc/smb.conf
-cat << EOF >> /etc/smb.conf
-guest account = root
-domain master = yes
-local master = yes
-security = share
-load printers = no
-printcap name = /dev/null
-
-[C]
-path = /
-guest ok = yes
-guest only = yes
-read only = no
-EOF
-if [ $SAMBA -eq 2 ]
-then
-  nmbd -D
-fi
-if [ $SAMBA -ne 0 ]
-then
-  smbd -D
-fi
-
-# Tune the Kernel for Maximum throughput
-echo "Tuning BFS parameters"
-if [ -e /proc/sys/kernel/rr_interval ];
-then
-  echo "300" > /proc/sys/kernel/rr_interval;
-fi
 
 # Check for USB drives
 echo -e "\n\n\nWaiting 10 seconds for any USB drives to start"
@@ -319,13 +269,7 @@ then
   fi
 fi
 
-if [ "$arch" = "x86_64" -a $numprocs -gt 1 ]
-then
-  DOWNLOAD=FAH6.29-Linux.tgz
-else
-  DOWNLOAD=FAH6.02-Linux.tgz
-fi
-
+DOWNLOAD=FAH6.34-Linux64.tgz
 wget http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD
 if [ $? -eq 1 ]
 then
@@ -806,6 +750,8 @@ EOF
 # Start up the client
   ln -s /etc/folding/fah6 .
   ln -s /etc/folding/mpiexec .
+  chmod 0755 /etc/folding/fah6;
+  chmod 0755 /etc/folding/mpiexec;
 
   if [ x"$ONEUNIT" = x"yes" ]
   then

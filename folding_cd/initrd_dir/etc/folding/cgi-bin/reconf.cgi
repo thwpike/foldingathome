@@ -30,19 +30,11 @@ TIMEOUT 150
 DISPLAY fold.txt
 
 LABEL fold
-    KERNEL kernel32
-    APPEND initrd=initrd $POST_STRING BENCHMARK=no
-
-LABEL fold64
-    KERNEL kernel64
+    KERNEL kernel
     APPEND initrd=initrd $POST_STRING BENCHMARK=no
 
 LABEL benchmark
-    KERNEL kernel32
-    APPEND initrd=initrd $POST_STRING BENCHMARK=yes
-
-LABEL benchmark64
-    KERNEL kernel64
+    KERNEL kernel
     APPEND initrd=initrd $POST_STRING BENCHMARK=yes
 _EndOfSyslinux.cfg_
 
