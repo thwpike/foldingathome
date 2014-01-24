@@ -5,7 +5,7 @@ MOUNT = /mnt
 
 # Program Versions
 KERNEL_VERSION = 3.13
-GLIBC_VERSION = 2.16.0
+GLIBC_VERSION = 2.17
 BUSYBOX_VERSION = 1.22.1
 SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.86
@@ -332,6 +332,9 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/b
 	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
+	patch -p1 < ../patches/busybox-1.22.1-ash.patch && \
+	patch -p1 < ../patches/busybox-1.22.1-date.patch && \
+	patch -p1 < ../patches/busybox-1.22.1-iplink.patch && \
 	patch -p0 < ../patches/busybox.patch && \
 	$(MAKE) CC="gcc -L../glibc" busybox && \
 	cp busybox ../initrd_dir/bin
