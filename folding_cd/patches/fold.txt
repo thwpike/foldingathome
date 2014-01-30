@@ -1,5 +1,5 @@
 
-Notfred's Diskless Folding Suite
+Diskless Folding Suite
 
 fold - starts a folding client
 

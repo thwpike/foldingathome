@@ -1,7 +1,11 @@
+This is a series of scripts and files to create a minimal CD, USB or network
+bootable image that will run a Folding@Home client instance.
+
 The Folding CD can only be built on a 64bit (x86_64) system. It will build an
 image that will work for both 64bit(x86_64) and 32bit(i686) systems.
 
-The Diskless Folding zip file (for PXE boot) is derived from The Folding CD and is also built. It appears as diskless.zip in the base directory.
+The Diskless Folding zip file (for PXE boot) is derived from The Folding CD
+and is also built. It appears as diskless.zip in the base directory.
 
 The Folding USB stick zip file (for USB boot) is derived from The Folding CD and
 is also built. It appears as usb.zip in the base directory.
@@ -29,7 +33,8 @@ apt-get install nasm gawk zip mkisofs libmpfr-dev libgmp3-dev ia32-libs \
 This software downloads the folding client and cores from Stanford to comply
 with the Folding@Home license.
 
-Folding CD is:
+Folding CD was originally developed by Nick Reilly and has been updated by
+Thomas Pike of the Crossroads Foundation:
 
    Copyright 2011-2014 Crossroads Foundation Ltd <itdept@crossroads.org.hk>
    Copyright 2006-2009 Nick Reilly - All Rights Reserved

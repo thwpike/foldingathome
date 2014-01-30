@@ -2,7 +2,8 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=100804
+VERSION=20140130
+BUILDER="Thomas Pike"
 install() {
   if [ -e kernel -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
   then
@@ -118,11 +119,11 @@ numprocs=`grep -c "^processor" /proc/cpuinfo`
 arch=`uname -m`
 if [ -z "$USER" ]
 then
-  USER=notfred2630
+  USER=CrossroadsIT
 fi
 if [ -z "$TEAM" ]
 then
-  TEAM=2630
+  TEAM=0
 fi
 if [ -z "$BIG" ]
 then
@@ -412,7 +413,7 @@ EOF
 sed -e "s|cgi-bin/fold.iso|cgi-bin/reconf.cgi|" -e "s|Download ISO|Reconfigure|" < cd.html > reconfigure.html
 
 # Dump useful info to the screen and web page
-echo -e "\n\n\nDiskless Folding version $VERSION by Nick Reilly"
+echo -e "\n\n\nDiskless Folding version $VERSION built by $BUILDER"
 echo "Processor type: $arch"
 echo "Found $numprocs processors"
 echo "User: $USER"
@@ -443,7 +444,7 @@ cat << EOF > index.backup
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <P ALIGN=CENTER><FONT SIZE=7 STYLE="font-size: 32pt">Diskless Folder</FONT></P>
-<P ALIGN=LEFT><FONT SIZE=3>Diskless Folding version $VERSION by Nick Reilly</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Diskless Folding version $VERSION built by $BUILDER</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Processor type: $arch</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>Found $numprocs processors</FONT></P>
 <P ALIGN=LEFT><FONT SIZE=3>User: $USER</FONT></P>
@@ -712,10 +713,16 @@ EOF
   fi
 
 # Start up the client
-  ln -s /etc/folding/fah6 .
-  ln -s /etc/folding/mpiexec .
-  chmod 0755 /etc/folding/fah6;
-  chmod 0755 /etc/folding/mpiexec;
+  if [ -f /etc/folding/fah6 ];
+  then
+    ln -s /etc/folding/fah6 .;
+    chmod 0755 /etc/folding/fah6;
+  fi
+  if [ -f /etc/folding/mpiexec ];
+  then
+    ln -s /etc/folding/mpiexec .;
+    chmod 0755 /etc/folding/mpiexec;
+  fi
 
   if [ x"$ONEUNIT" = x"yes" ]
   then
