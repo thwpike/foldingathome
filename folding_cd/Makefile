@@ -4,10 +4,9 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.13
+KERNEL_VERSION = 3.13.1
 GLIBC_VERSION = 2.17
 BUSYBOX_VERSION = 1.22.1
-SAMBA_VERSION = 3.0.37
 SYSLINUX_VERSION = 3.86
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
@@ -18,10 +17,10 @@ all : folding_cd.iso diskless.zip usb.zip
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.bz2 glibc-$(GLIBC_VERSION).tar.bz2 samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src samba_extract samba-$(SAMBA_VERSION) busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot/* initrd_dir/lib/* initrd_dir/lib64/* initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless/* diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding/folding.vmdk cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -139,7 +138,7 @@ install_net: /var/lib/tftpboot/PXEClient/kernel /var/lib/tftpboot/PXEClient/init
 
 # Download source archives if required.
 
-prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz samba-$(SAMBA_VERSION).tar.gz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
 
 linux-$(KERNEL_VERSION).tar.xz :
 	wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-$(KERNEL_VERSION).tar.xz
@@ -147,9 +146,6 @@ linux-$(KERNEL_VERSION).tar.xz :
 glibc-$(GLIBC_VERSION).tar.xz :
 	wget http://ftp.gnu.org/gnu/glibc/glibc-$(GLIBC_VERSION).tar.xz
 	
-samba-$(SAMBA_VERSION).tar.gz :
-	wget http://www.samba.org/samba/ftp/stable/samba-$(SAMBA_VERSION).tar.gz
-
 busybox-$(BUSYBOX_VERSION).tar.bz2 :
 	wget http://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
 

@@ -369,25 +369,7 @@ EOF
     fi
     echo "    <Label for=\"BLANK\">Console blank time (1-60 minutes, 0=disabled): </Label>" >> cd.html
     echo "    <Input type=\"text\" name=\"BLANK\" value=\"$BLANK\"><BR>" >> cd.html
-    echo "    Windows Networking:<BR>" >> cd.html
-    if [ "$SAMBA" = "2" ]
-    then
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\" checked=\"true\"> Enabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> cd.html
-    elif [ "$SAMBA" = "1" ]
-    then
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\" checked=\"true\"> Browsing disabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\"> Disabled<BR>" >> cd.html
-    else
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"2\"> Enabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"1\"> Browsing disabled<BR>" >> cd.html
-      echo "    <Input type=\"radio\" name=\"SAMBA\" value=\"0\" checked=\"true\"> Disabled<BR>" >> cd.html
-    fi
     cat << EOF >> cd.html
-    <Label for="GROUP">Windows Networking Workgroup: </Label>
-    <Input type="text" name="GROUP" value="$GROUP"><BR>
     <Label for="PROXY_HOST">Proxy Hostname (blank if no proxy): </Label>
     <Input type="text" name="PROXY_HOST" value="$PROXY_HOST"><BR>
     <Label for="PROXY_PORT">Proxy Port (blank if no proxy): </Label>
@@ -451,15 +433,6 @@ else
 fi
 echo "Hostname: " `hostname`
 echo "IP address:" `cat /tmp/myip`
-if [ $SAMBA -eq 2 ]
-then
-  echo "Workgroup: $GROUP"
-elif [ $SAMBA -eq 1 ]
-then
-  echo "Browsing: Disabled"
-else
-  echo "Windows Networking: Disabled"
-fi
 
 cat << EOF > index.backup
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -535,15 +508,6 @@ else
 fi
 echo "<P ALIGN=LEFT><FONT SIZE=3>Hostname: " `hostname` "</FONT></P>" >> index.backup
 echo "<P ALIGN=LEFT><FONT SIZE=3>IP address:" `cat /tmp/myip` "</FONT></P>" >> index.backup
-if [ $SAMBA -eq 2 ]
-then
-  echo "<P ALIGN=LEFT><FONT SIZE=3>Workgroup: $GROUP</FONT></P>" >> index.backup
-elif [ $SAMBA -eq 1 ]
-then
-  echo "<P ALIGN=LEFT><FONT SIZE=3>Browsing: Disabled</FONT></P>" >> index.backup
-else
-  echo "<P ALIGN=LEFT><FONT SIZE=3>Windows Networking: Disabled</FONT></P>" >> index.backup
-fi
 
 # Check if this is running on the bare metal or a VM and do NTP if necessary
 if [ $noVMWare -eq 0 ]

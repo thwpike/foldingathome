@@ -36,12 +36,6 @@
     <Input type="radio" name="INSTALL" value="no"> Disabled<BR>
     <Label for="BLANK">Console blank time (1-60 minutes, 0=disabled): </Label>
     <Input type="text" name="BLANK" value="0"><BR>
-    Windows Networking:<BR>
-    <Input type="radio" name="SAMBA" value="2" checked="true"> Enabled<BR>
-    <Input type="radio" name="SAMBA" value="1"> Browsing disabled<BR>
-    <Input type="radio" name="SAMBA" value="0"> Disabled<BR>
-    <Label for="GROUP">Windows Networking Workgroup: </Label>
-    <Input type="text" name="GROUP" value="DISKLESS"><BR>
     <Label for="PROXY_HOST">Proxy Hostname (blank if no proxy): </Label>
     <Input type="text" name="PROXY_HOST" value=""><BR>
     <Label for="PROXY_PORT">Proxy Port (blank if no proxy): </Label>
@@ -75,7 +69,7 @@ involved in previous unauthorised use of computers for folding!<BR><BR>
 <UL>
 <LI>This generates an 23MB ISO image, burn this to a CD and boot from the CD. It will run an instance of folding per processor that it finds (logical processor, so 2 on hyperthreading and dual-core CPUs) or if there are multiple x86_64 processors it will run an SMP client per 4 processors.<BR>
 <LI>You only need motherboard, processor (with heatsink/fan!), memory and a supported network connection (just about any PCI or onboard Ethernet card supported by Linux). Keyboard is ignored, if you do have a video card and monitor it will show some useful debug info on boot but nothing else whilst actually folding.<BR>
-<LI>To monitor the machine, just point your web browser at it. Alternatively, the machine exports the ramdisk via Windows Networking and the folding files are in <TT>\\$Machine\C\etc\folding\$Instance</TT>.<BR>
+<LI>To monitor the machine, just point your web browser at it.<BR>
 <LI>If you have a TFTP server and your DHCP server advertises it, the work will get backed up at the specified interval into the following 3 files<BR><TT>backup.$IP.A.$Instance<BR>backup.$IP.B.$Instance<BR>latest.$IP.$Instance<BR></TT>where <TT>$IP</TT> is the IP address and <TT>$Instance</TT> is the instance being backed up. You typically need to initially create empty versions of these files on your TFTP server and make them writable by all for this to work. It will also backup and restore from up to 2 USB drives if present.<BR>
 <LI>If you select the install option, if it finds any USB drives at boot, it will write a copy to the USB drive and also write a Master Boot Record making the USB drive bootable.<BR>
 <LI>If you have any further questions, hit the "TR Distributed Computing Effort" forum at <a href=http://www.techreport.com>The Tech Report</a> and ask "notfred".
