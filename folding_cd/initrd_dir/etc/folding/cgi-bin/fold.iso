@@ -37,7 +37,7 @@ done
 POST_STRING=`echo $POST_STRING | sed 's/&/ /g'`
 dir=/tmp/cd_`date +%s`_$REMOTE_ADDR
 mkdir -p $dir/cd/isolinux
-cp kernel32 kernel64 isolinux.bin fold.txt $dir/cd/isolinux
+cp kernel isolinux.bin fold.txt $dir/cd/isolinux
 if [ -f initrd ]
 then
   cp initrd $dir/cd/isolinux
@@ -48,24 +48,15 @@ fi
 cat <<_EndOfIsolinux.cfg_ > $dir/cd/isolinux/isolinux.cfg
 PROMPT 1
 DEFAULT fold
-DEFAULT64 fold64
 TIMEOUT 150
 DISPLAY fold.txt
 
 LABEL fold
-    KERNEL kernel32
-    APPEND initrd=initrd $POST_STRING BENCHMARK=no
-
-LABEL fold64
-    KERNEL kernel64
+    KERNEL kernel
     APPEND initrd=initrd $POST_STRING BENCHMARK=no
 
 LABEL benchmark
-    KERNEL kernel32
-    APPEND initrd=initrd $POST_STRING BENCHMARK=yes
-
-LABEL benchmark64
-    KERNEL kernel64
+    KERNEL kernel
     APPEND initrd=initrd $POST_STRING BENCHMARK=yes
 _EndOfIsolinux.cfg_
 
