@@ -10,14 +10,14 @@ BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
-GCC_VERSION = 4.4.7
+GCC_VERSION = 4.8.2
 
 all : folding_cd.iso diskless.zip usb.zip
 
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
 	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
@@ -158,11 +158,8 @@ bzip2-$(BZIP_VERSION).tar.gz :
 cdrkit-$(CDRKIT_VERSION).tar.gz :
 	wget http://cdrkit.org/releases/cdrkit-$(CDRKIT_VERSION).tar.gz
 
-gcc-core-$(GCC_VERSION).tar.bz2 :
-	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-core-$(GCC_VERSION).tar.bz2
-
-gcc-g++-$(GCC_VERSION).tar.bz2 :
-	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-g++-$(GCC_VERSION).tar.bz2
+gcc-$(GCC_VERSION).tar.bz2 :
+	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.bz2
 
 ### diskless.zip ###
 diskless.zip : diskless/kernel diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt
@@ -371,9 +368,8 @@ initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_libs
 	cd initrd_dir/lib && \
 	ln -sf ../lib64/libgcc_s.so.1 libgcc_s.so.1
 
-gcc_source: gcc-core-$(GCC_VERSION).tar.bz2 gcc-g++-$(GCC_VERSION).tar.bz2
-	tar xjf gcc-core-$(GCC_VERSION).tar.bz2 && \
-	tar xjf gcc-g++-$(GCC_VERSION).tar.bz2 && \
+gcc_source: gcc-$(GCC_VERSION).tar.bz2
+	tar xjf gcc-$(GCC_VERSION).tar.bz2 && \
 	cd gcc-$(GCC_VERSION) && \
 	./configure --disable-bootstrap && \
 	touch ../gcc_source
