@@ -17,7 +17,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
 	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin
@@ -434,15 +434,17 @@ initrd_dir/etc/folding/cgi-bin/kernel : boot/kernel
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/kernel initrd_dir/etc/folding/cgi-bin/kernel
 
-boot/kernel : kernel_patch
+boot/kernel : kernel_patch linux-$(KERNEL_VERSION)/firmware/bnx2/bnx2-mips-06-6.2.3.fw
 	mkdir -p boot
 	$(MAKE) -C linux-$(KERNEL_VERSION) && \
 	cp linux-$(KERNEL_VERSION)/arch/x86_64/boot/bzImage boot/kernel
 
+linux-$(KERNEL_VERSION)/firmware/bnx2/bnx2-mips-06-6.2.3.fw : kernel_patch
+	wget -O linux-$(KERNEL_VERSION)/firmware/bnx2/bnx2-mips-06-6.2.3.fw https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/plain/bnx2/bnx2-mips-06-6.2.3.fw
+
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel-$(KERNEL_VERSION).config
 	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
-	mkdir -p kernel_64 && \
 	cp ../patches/kernel-$(KERNEL_VERSION).config .config && \
 	make oldconfig && \
 	cd .. && \
