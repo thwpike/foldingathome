@@ -23,7 +23,7 @@ Syslinux
 Busybox
 GlibC
 
-In order to build, you will need an up to date installation of Ubuntu 10.04
+In order to build, you will need an up to date installation of Ubuntu 13.10
 with the following packages installed:
 apt-get install nasm gawk zip mkisofs libmpfr-dev libgmp3-dev libmpc-dev \
                 libc6-dev-i386 lib32gcc1 gcc-multilib g++-multilib git-core \
