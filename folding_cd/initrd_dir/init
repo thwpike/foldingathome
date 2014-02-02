@@ -275,7 +275,7 @@ wget http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD
 if [ $? -eq 1 ]
 then
   echo -e "\n\n\nFailed to download the client from Stanford's website:"
-  echo "http://www.stanford.edu/group/pandegroup/folding/release/FAH6.02-Linux.tgz"
+  echo "http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD"
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`
