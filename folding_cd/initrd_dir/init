@@ -116,6 +116,7 @@ dmesg > dmesg.txt
 httpd
 
 numprocs=`grep -c "^processor" /proc/cpuinfo`
+PROCESSORS=$numprocs
 arch=`uname -m`
 if [ -z "$USER" ]
 then
@@ -537,8 +538,10 @@ then
   if [ $carry -gt 0 ]
   then
     numprocs=`expr $numprocs / $SMPCPUS + 1`
+    instances=$numprocs
   else
     numprocs=`expr $numprocs / $SMPCPUS`
+    instances=$numprocs
   fi
   echo "" > /etc/folding/hanglog.txt
   echo "<P ALIGN=LEFT><FONT SIZE=3>Hang check <A HREF=\"hanglog.txt\">logfile</A></FONT></P>" >> index.backup
@@ -759,6 +762,40 @@ do
   then
     getty 38400 tty1
   else
-    sleep 86400
+    reset
+    echo "Diskless Folding version $VERSION built by $BUILDER"
+    echo "Processor type: $arch"
+    echo "Found $PROCESSORS processors"
+    echo "User: $USER"
+    echo "Team: $TEAM"
+    echo "Passkey: $PASSKEY"
+    echo "Big Packets: $BIG"
+    echo "Advmethods: $ADVMETHODS"
+    echo "Memory: $MEM MB"
+    echo "Backup every $BACKUP minutes"
+    echo "Core checkpoint every $CHECKPOINT minutes"
+    echo "Remote reboot: $REBOOT"
+    echo "Install: $INSTALL"
+    if [ $BLANK -eq 0 ]
+    then
+      echo "Console blank: disabled"
+    else
+      echo "Console blank: $BLANK minutes"
+    fi
+    echo "Hostname: " `hostname`
+    echo "IP address:" `cat /tmp/myip`
+    echo "Time: " `date`
+    echo "Load: " `uptime | cut -d' ' -f11-13`
+    for UNIT in `seq $instances`
+    do
+      if [ -f /etc/folding/$UNIT/unitinfo.txt ];
+      then
+        PROGRESS=`cat /etc/folding/$UNIT/unitinfo.txt | grep 'Progress' | sed -e 's,\s*Progress:\s*\([0-9]\+\)\%.*,\1%,'`;
+      else
+        PROGRESS="Not Started";
+    fi
+    echo "Unit $UNIT Progress: " $PROGRESS;
+    done
+    sleep 20;
   fi
 done
