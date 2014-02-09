@@ -70,11 +70,11 @@ then
     for iface in `awk '/eth/ {sub(":", "" ) ; print $1}' /proc/net/dev`
     do
       name=fold-`ifconfig $iface | awk -F : '/HWaddr/ {print $6$7}'`
-      udhcpc -s /etc/dhcp.script -i $iface -H $name -b
+      udhcpc -s /etc/dhcp.script -i $iface -x hostname:$name -b
     done
   else
       name=fold-`ifconfig $INTF | awk -F : '/HWaddr/ {print $6$7}'`
-      udhcpc -s /etc/dhcp.script -i $INTF -H $name
+      udhcpc -s /etc/dhcp.script -i $INTF -x hostname:$name
   fi
   if [ "`hostname`" = "(none)" ]
   then
