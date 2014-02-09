@@ -40,24 +40,21 @@ EOF
   return 0
 }
 
-# Main begins here
-mknod /dev/null c 1 3
-mknod /dev/urandom c 1 9
-mknod /dev/sda b 8 0
-mknod /dev/sda1 b 8 1
-mknod /dev/sdb b 8 16
-mknod /dev/sdb1 b 8 17
-mknod /dev/hda b 3 0
-mknod /dev/hda1 b 3 1
-mknod /dev/tty c 5 0
-mknod /dev/tty1 c 4 1
-mknod /dev/rtc c 10 135
-
+mkdir -p /dev
 mkdir -p /proc
 mkdir -p /sys
 
+mount -t tmpfs -o size=64k,mode=0755 tmpfs /dev
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+
 mount -n -t proc proc /proc
 mount -n -t sysfs sysfs /sys
+
+echo > /dev/mdev.seq
+echo /bin/mdev > /proc/sys/kernel/hotplug
+/bin/mdev -s
+
 stty -echo
 ifconfig lo 127.0.0.1
 ulimit -c unlimited

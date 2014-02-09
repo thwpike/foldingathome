@@ -33,6 +33,7 @@
 /initrd_dir/lib/
 /initrd_dir/lib64/
 /kernel_patch
+/kernel_firmware
 /linux-*
 /ntp-*
 /samba-*
