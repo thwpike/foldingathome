@@ -219,7 +219,7 @@ EOF
 cat << EOF > /bin/do_reboot.sh
 #!/bin/sh
 /bin/sleep 1
-/bin/reboot
+/bin/reboot -f
 EOF
 chmod 755 /bin/do_reboot.sh
 
