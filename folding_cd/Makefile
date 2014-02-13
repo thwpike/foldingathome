@@ -224,7 +224,7 @@ part_gen: part_gen.c
 ### folding_cd.iso ###
 folding_cd.iso : boot/kernel boot/initrd boot/isolinux.bin boot/isolinux.cfg boot/fold.txt
 	cp boot/isolinux.bin boot/isolin.bin && \
-	mkisofs -o folding_cd.iso -b isolin.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table boot && \
+	mkisofs -o folding_cd.iso -b isolin.bin -c boot.cat -no-emul-boot -boot-load-size 4 -input-charset utf-8 -boot-info-table boot && \
 	rm boot/isolin.bin
 
 boot/isolinux.cfg : patches/isolinux.cfg
