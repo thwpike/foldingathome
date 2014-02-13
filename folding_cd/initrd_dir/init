@@ -149,7 +149,7 @@ if [ -z "$INSTALL" -o "$INSTALL" != "yes" ]
 then
   INSTALL=no
 fi
-if [ -z "$SMPCPUS" ]
+if [ -z "$SMPCPUS" -o x"$SMPCPUS" = x"0" ]
 then
   SMPCPUS=$numprocs
 fi
@@ -172,6 +172,8 @@ fi
 if [ -z "$ONEUNIT" -o "$ONEUNIT" != "yes" ]
 then
   ONEUNIT=no
+else
+  FAH_FLAGS="$FAH_FLAGS -oneunit"
 fi
 
 # Check for VMs
@@ -333,20 +335,29 @@ EOF
     echo "    <Label for=\"MEM\">Memory, in MB, to indicate (leave blank for auto-detect): </Label>" >> cd.html
     echo "    <Input type=\"text\" name=\"MEM\" value=\"$MEM\"><BR>" >> cd.html
     echo "    SMP instance per:<BR>" >> cd.html
-    if [ "$SMPCPUS" = "4" ]
+    if [ "$SMPCPUS" = "8" ]
+    then
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\" checked=\"true\"> 8 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"0\"> Automatic<BR>" >> cd.html
+    elif [ "$SMPCPUS" = "4" ]
     then
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\"> 8 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\" checked=\"true\"> 4 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"0\"> Automatic<BR>" >> cd.html
     elif [ "$SMPCPUS" = "2" ]
     then
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\"> 8 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\" checked=\"true\"> 2 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"0\"> Automatic<BR>" >> cd.html
     else
-      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\" checked=\"true\"> 8 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"8\"> 8 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"4\"> 4 CPUs<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"2\"> 2 CPUs<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"SMPCPUS\" value=\"0\" checked=\"true\"> Automatic<BR>" >> cd.html
     fi
     echo "    Remote Reboot:<BR>" >> cd.html
     if [ "$REBOOT" = "enabled" ]
@@ -544,6 +555,7 @@ then
   echo "<P ALIGN=LEFT><FONT SIZE=3>Hang check <A HREF=\"hanglog.txt\">logfile</A></FONT></P>" >> index.backup
   echo "<P ALIGN=LEFT><FONT SIZE=3>SMP instance per $SMPCPUS CPUs</FONT></P>" >> index.backup
   echo "SMP instance per $SMPCPUS CPUs"
+  FAH_FLAGS="$FAH_FLAGS -smp $SMPCPUS"
 else
   smp=0
 fi
@@ -722,16 +734,6 @@ EOF
   then
     ln -s /etc/folding/mpiexec .;
     chmod 0755 /etc/folding/mpiexec;
-  fi
-
-  if [ x"$ONEUNIT" = x"yes" ]
-  then
-    FAH_FLAGS="$FAH_FLAGS -oneunit"
-  fi
-
-  if [ $smp -eq 1 ]
-  then
-    FAH_FLAGS="$FAH_FLAGS -smp $SMPCPUS"
   fi
 
   ./fah6 -local -forceasm $FAH_FLAGS > /dev/null 2>&1 &
