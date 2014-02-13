@@ -524,7 +524,7 @@ then
 else
   echo "VMWare, VirtualPC, QEMU and KVM not detected, using NTP to sync time"
   echo "<P ALIGN=LEFT><FONT SIZE=3>VMWare and VirtualPC not detected, using NTP to sync time</FONT></P>" >> index.backup
-  /bin/ntpd -d -p pool.ntp.org
+  /bin/ntpd -p 0.pool.ntp.org -p 1.pool.ntp.org -p 2.pool.ntp.org -p 3.pool.ntp.org
 fi
 
 # Determine if SMP or normal and correct "processor" count for SMP
