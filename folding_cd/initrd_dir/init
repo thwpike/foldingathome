@@ -151,7 +151,7 @@ then
 fi
 if [ -z "$SMPCPUS" ]
 then
-  SMPCPUS=4
+  SMPCPUS=$numprocs
 fi
 if [ -z "$BLANK" ]
 then
