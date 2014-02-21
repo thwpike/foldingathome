@@ -25,11 +25,11 @@ DISPLAY fold.txt
 
 LABEL fold
         KERNEL kernel
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT POWEROFF=$POWEROFF INSTALL=$INSTALL BENCHMARK=no PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
 
 LABEL benchmark
         KERNEL kernel
-        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
+        APPEND initrd=initrd USER=$USER TEAM=$TEAM PASSKEY=$PASSKEY BIG=$BIG MEM=$MEM ADVMETHODS=$ADVMETHODS SMPCPUS=$SMPCPUS BACKUP=$BACKUP REBOOT=$REBOOT POWEROFF=$POWEROFF INSTALL=$INSTALL BENCHMARK=yes PROXY_HOST=$PROXY_HOST PROXY_PORT=$PROXY_PORT PROXY_USER=$PROXY_USER PROXY_PASS=$PROXY_PASS INTF=$INTF IP=$IP MASK=$MASK GATEWAY=$GATEWAY DNS=$DNS TFTP=$TFTP SHELL=$SHELL ONEUNIT=$ONEUNIT
 
 EOF
   savedir=`pwd`
@@ -144,6 +144,10 @@ fi
 if [ -z "$REBOOT" -o "$REBOOT" != "enabled" ]
 then
   REBOOT=disabled
+fi
+if [ -z "$POWEROFF" -o "$POWEROFF" != "enabled" ]
+then
+  POWEROFF=disabled
 fi
 if [ -z "$INSTALL" -o "$INSTALL" != "yes" ]
 then
@@ -368,6 +372,15 @@ EOF
       echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"enabled\"> Enabled<BR>" >> cd.html
       echo "    <Input type=\"radio\" name=\"REBOOT\" value=\"disabled\" checked=\"true\"> Disabled<BR>" >> cd.html
     fi
+    echo "    Remote Poweroff:<BR>" >> cd.html
+    if [ "$POWEROFF" = "enabled" ]
+    then
+      echo "    <Input type=\"radio\" name=\"POWEROFF\" value=\"enabled\" checked=\"true\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"POWEROFF\" value=\"disabled\"> Disabled<BR>" >> cd.html
+    else
+      echo "    <Input type=\"radio\" name=\"POWEROFF\" value=\"enabled\"> Enabled<BR>" >> cd.html
+      echo "    <Input type=\"radio\" name=\"POWEROFF\" value=\"disabled\" checked=\"true\"> Disabled<BR>" >> cd.html
+    fi
     echo "    Install to USB drives on boot:<BR>" >> cd.html
     if [ "$INSTALL" = "yes" ]
     then
@@ -434,6 +447,7 @@ echo "Memory: $MEM MB"
 echo "Backup every $BACKUP minutes"
 echo "Core checkpoint every $CHECKPOINT minutes"
 echo "Remote reboot: $REBOOT"
+echo "Remote poweroff: $POWEROFF"
 echo "Install: $INSTALL"
 if [ $BLANK -eq 0 ]
 then
@@ -509,6 +523,41 @@ EOF
 else
   echo "<P ALIGN=LEFT><FONT SIZE=3>Remote reboot: disabled</FONT></P>" >> index.backup
 fi
+# Do remote poweroff setup
+if [ "$POWEROFF" = "enabled" ]
+then
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Remote poweroff: <a href=\"poweroff.html\">enabled</a></FONT></P>" >> index.backup
+  cat << EOF > poweroff.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Poweroff</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="cgi-bin/poweroff.cgi">here</a> to poweroff this diskless folder</FONT></P> 
+</BODY></HTML>
+EOF
+  cat << EOF > /bin/do_poweroff.sh
+#!/bin/sh
+sleep 1
+poweroff -f
+EOF
+  chmod 755 /bin/do_poweroff.sh
+
+cat << EOF > cgi-bin/poweroff.cgi
+#!/bin/sh
+echo "Content-type: text/html"
+echo ""
+echo "<html><body>Remote poweroff command sent.</body></html>"
+echo ""
+/bin/do_poweroff.sh > /dev/null 2>&1 &
+EOF
+  chmod 755 cgi-bin/poweroff.cgi
+else
+  echo "<P ALIGN=LEFT><FONT SIZE=3>Remote poweroff: disabled</FONT></P>" >> index.backup
+fi
+
 echo "<P ALIGN=LEFT><FONT SIZE=3>Install: $INSTALL</FONT></P>" >> index.backup
 if [ $BLANK -eq 0 ]
 then

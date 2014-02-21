@@ -257,6 +257,55 @@ cat << EOF > reboot.html
 EOF
 fi
 
+# Create the remote poweroff files
+if [ "$POWEROFF" = "enabled" ]
+then
+
+cat << EOF > poweroff.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Poweroff</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="cgi-bin/poweroff.cgi">here</a> to poweroff this diskless folder.</FONT></P> 
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="/">here</a> to return to the homepage.</FONT></P>
+</BODY></HTML>
+EOF
+
+cat << EOF > /bin/do_poweroff.sh
+#!/bin/sh
+/bin/sleep 1
+/bin/poweroff -f
+EOF
+chmod 755 /bin/do_poweroff.sh
+
+cat << EOF > cgi-bin/poweroff.cgi
+#!/bin/sh
+echo "Content-type: text/html"
+echo ""
+echo "<html><body>Remote poweroff command sent.</body></html>"
+echo ""
+/bin/do_poweroff.sh > /dev/null 2>&1 &
+EOF
+chmod 755 cgi-bin/poweroff.cgi
+
+else 
+cat << EOF > poweroff.html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>Poweroff</TITLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P ALIGN=LEFT><FONT SIZE=3>Poweroff is disabled.</FONT></P>
+<P ALIGN=LEFT><FONT SIZE=3>Click <a href="/">here</a> to return to the homepage.</FONT></P>
+</BODY></HTML>
+EOF
+fi
+
 cat /etc/header.html /etc/results.html /etc/footer.html > /etc/folding/index.html
 
 num_procs=`grep -c ^processor /proc/cpuinfo`
