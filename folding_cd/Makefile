@@ -4,7 +4,7 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.13.3
+KERNEL_VERSION = 3.13.4
 GLIBC_VERSION = 2.17
 BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
