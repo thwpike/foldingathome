@@ -5,7 +5,7 @@ MOUNT = /mnt
 
 # Program Versions
 KERNEL_VERSION = 3.13.5
-GLIBC_VERSION = 2.17
+GLIBC_VERSION = 2.19
 BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
 BZIP_VERSION = 1.0.6
@@ -336,7 +336,7 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/b
 initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_libs
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cd busybox-$(BUSYBOX_VERSION)/networking && \
-	gcc -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi -L ../../glibc httpd_indexcgi.c -lc -lc_nonshared
+	gcc -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi httpd_indexcgi.c -lc -lc_nonshared ../../glibc/elf/ld.so
 
 ### Additional libs ###
 initrd_dir/lib64/libbz2.so.1: glibc_libs bzip2-$(BZIP_VERSION).tar.gz
