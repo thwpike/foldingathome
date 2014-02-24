@@ -20,7 +20,7 @@ distclean: clean
 	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin linux-firmware kernel_firmware initrd_dir/lib/firmware
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -435,21 +435,19 @@ initrd_dir/etc/folding/cgi-bin/kernel : boot/kernel
 	cp boot/kernel initrd_dir/etc/folding/cgi-bin/kernel
 
 kernel_firmware :
-	if [ -d linux-firmware ]; then rm -rf linux-firmware; fi
-	git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
 	mkdir -p initrd_dir/lib/firmware
 	if [ -d initrd_dir/lib/firmware/bnx2 ]; then rm -rf initrd_dir/lib/firmware/bnx2 ; fi
-	cp -rf linux-firmware/bnx2/ initrd_dir/lib/firmware/bnx2/
+	cp -rf linux_firmware/bnx2/ initrd_dir/lib/firmware/bnx2/
 	if [ -d initrd_dir/lib/firmware/bnx2x ]; then rm -rf initrd_dir/lib/firmware/bnx2x ; fi
-	cp -rf linux-firmware/bnx2x/ initrd_dir/lib/firmware/bnx2x/
+	cp -rf linux_firmware/bnx2x/ initrd_dir/lib/firmware/bnx2x/
 	if [ -d initrd_dir/lib/firmware/rtl_nic ]; then rm -rf initrd_dir/lib/firmware/rtl_nic ; fi
-	cp -rf linux-firmware/rtl_nic/ initrd_dir/lib/firmware/rtl_nic/
+	cp -rf linux_firmware/rtl_nic/ initrd_dir/lib/firmware/rtl_nic/
 	if [ -d initrd_dir/lib/firmware/e100 ]; then rm -rf initrd_dir/lib/firmware/e100 ; fi
-	cp -rf linux-firmware/e100/ initrd_dir/lib/firmware/e100/
+	cp -rf linux_firmware/e100/ initrd_dir/lib/firmware/e100/
 	if [ -d initrd_dir/lib/firmware/tigon ]; then rm -rf initrd_dir/lib/firmware/tigon ; fi
-	cp -rf linux-firmware/tigon/ initrd_dir/lib/firmware/tigon/
+	cp -rf linux_firmware/tigon/ initrd_dir/lib/firmware/tigon/
 	if [ -d initrd_dir/lib/firmware/3com ]; then rm -rf initrd_dir/lib/firmware/3com ; fi
-	cp -rf linux-firmware/3com/ initrd_dir/lib/firmware/3com/
+	cp -rf linux_firmware/3com/ initrd_dir/lib/firmware/3com/
 	touch kernel_firmware
 
 boot/kernel : kernel_patch
