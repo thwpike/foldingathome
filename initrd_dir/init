@@ -55,6 +55,8 @@ echo > /dev/mdev.seq
 echo /bin/mdev > /proc/sys/kernel/hotplug
 /bin/mdev -s
 
+mkdir -p /var/lib/hwclock
+
 stty -echo
 ifconfig lo 127.0.0.1
 ulimit -c unlimited
