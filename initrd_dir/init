@@ -836,7 +836,7 @@ do
     echo "IP address:" `cat /tmp/myip`
     echo "Time: " `date`
     echo "Load: " `uptime | cut -d' ' -f11-13`
-    for UNIT in `seq $instances`
+    for UNIT in `seq 1 $instances`
     do
       if [ -f /etc/folding/$UNIT/unitinfo.txt ];
       then
