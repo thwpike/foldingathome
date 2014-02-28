@@ -36,8 +36,14 @@
 /kernel_firmware
 /linux-*
 /ntp-*
+/openssl-*
+/openssl_source
 /samba-*
 /samba_extract
 /syslinux-*
 /syslinux_src
 /usb.zip
+/wget-*
+/wget_source
+/zlib-*
+/zlib_source
