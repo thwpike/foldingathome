@@ -11,16 +11,20 @@ SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
 GCC_VERSION = 4.9.2
+OPENSSL_VERSION=1.0.2
+OPENSSL_PATCH_LEVEL=a
+ZLIB_VERSION=1.2.8
+WGET_VERSION=1.16.3
 
 all : folding_cd.iso diskless.zip usb.zip
 
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2 zlib-$(ZLIB_VERSION).tar.gz openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz wget-$(WGET_VERSION).tar.xz
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware boot/ldlinux.c32 diskless/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32 initrd_dir/include
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware boot/ldlinux.c32 diskless/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32 initrd_dir/include zlib_source zlib-$(ZLIB_VERSION) openssl_source openssl-$(OPENSSL_VERSION) wget_source wget-$(WGET_VERSION) initrd_dir/bin/wget
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -137,8 +141,7 @@ install_net: /var/lib/tftpboot/PXEClient/kernel /var/lib/tftpboot/PXEClient/init
 	cp boot/fold.txt /var/lib/tftpboot/PXEClient/fold.txt
 
 # Download source archives if required.
-
-prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
+prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2 zlib-$(ZLIB_VERSION).tar.gz openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz wget-$(WGET_VERSION).tar.xz
 
 linux-$(KERNEL_VERSION).tar.xz :
 	wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-$(KERNEL_VERSION).tar.xz
@@ -160,6 +163,15 @@ cdrkit-$(CDRKIT_VERSION).tar.gz :
 
 gcc-$(GCC_VERSION).tar.bz2 :
 	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.bz2
+
+zlib-$(ZLIB_VERSION).tar.gz :
+	wget http://zlib.net/zlib-$(ZLIB_VERSION).tar.gz
+
+openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz :
+	wget https://www.openssl.org/source/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz
+
+wget-$(WGET_VERSION).tar.xz :
+	wget http://ftp.gnu.org/gnu/wget/wget-$(WGET_VERSION).tar.xz
 
 ### diskless.zip ###
 diskless.zip : diskless/kernel diskless/initrd diskless/pxelinux.cfg/default diskless/pxelinux.0 diskless/fold.txt
@@ -245,7 +257,7 @@ diskless/ldlinux.c32: initrd_dir/bin/syslinux
 	cp syslinux-$(SYSLINUX_VERSION)/bios/com32/elflink/ldlinux/ldlinux.c32 diskless
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel glibc_libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6 initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/bin/genisoimage kernel_firmware initrd_dir/etc/folding/cgi-bin/ldlinux.c32 boot/kernel
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel glibc_libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6 initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/bin/genisoimage kernel_firmware initrd_dir/etc/folding/cgi-bin/ldlinux.c32 boot/kernel initrd_dir/bin/wget
 	mkdir -p initrd_dir/tmp
 	cd initrd_dir && \
 	chmod 1777 tmp && \
@@ -369,6 +381,60 @@ gcc_source: gcc-$(GCC_VERSION).tar.bz2
 	cd gcc-$(GCC_VERSION) && \
 	./configure --disable-bootstrap && \
 	touch ../gcc_source
+
+initrd_dir/lib64/libz.so.$(ZLIB_VERSION) : zlib_source
+	mkdir -p initrd_dir/lib
+	mkdir -p initrd_dir/lib64
+	cd zlib-$(ZLIB_VERSION) && \
+	$(MAKE) && \
+	cp libz.so.$(ZLIB_VERSION) ../initrd_dir/lib64/libz.so.$(ZLIB_VERSION) && \
+	cd ../initrd_dir/lib64 && \
+	ln -sf libz.so.$(ZLIB_VERSION) libz.so.1 && \
+	ln -sf libz.so.$(ZLIB_VERSION) libz.so && \
+	cd ../lib && \
+	ln -sf ../lib64/libz.so.$(ZLIB_VERSION) libz.so.$(ZLIB_VERSION) && \
+	ln -sf libz.so.$(ZLIB_VERSION) libz.so.1 && \
+	ln -sf libz.so.$(ZLIB_VERSION) libz.so
+
+zlib_source : zlib-$(ZLIB_VERSION).tar.gz glibc_libs initrd_dir/lib64/libgcc_s.so.1
+	tar xzf zlib-$(ZLIB_VERSION).tar.gz && \
+	cd zlib-$(ZLIB_VERSION) && \
+	./configure --prefix=/ && \
+	touch ../zlib_source
+
+initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION) : openssl_source
+	mkdir -p initrd_dir/lib
+	mkdir -p initrd_dir/lib64
+	cd openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL) && \
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION)" $(MAKE) && \
+	cp libssl.so.$(OPENSSL_VERSION) ../initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION) && \
+	cp libcrypto.so.$(OPENSSL_VERSION) ../initrd_dir/lib64/libcrypto.so.$(OPENSSL_VERSION) && \
+	cd ../initrd_dir/lib64 && \
+	ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so && \
+	ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so && \
+	cd ../lib && \
+	ln -sf ../lib64/libssl.so.$(OPENSSL_VERSION) libssl.so.$(OPENSSL_VERSION) && \
+	ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so && \
+	ln -sf ../lib64/libcrypto.so.$(OPENSSL_VERSION) libcrypto.so.$(OPENSSL_VERSION) && \
+	ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so
+
+openssl_source : openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz glibc_libs initrd_dir/lib64/libz.so.$(ZLIB_VERSION) 
+	tar xzf openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz && \
+	cd openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL) && \
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION)" ./config --prefix=/ shared zlib-dynamic no-rc5 no-idea && \
+	touch ../openssl_source
+
+initrd_dir/bin/wget : wget_source
+	mkdir -p initrd_dir/bin
+	cd wget-$(WGET_VERSION) && \
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)" $(MAKE)
+	cp wget-$(WGET_VERSION)/src/wget initrd_dir/bin/wget
+
+wget_source : wget-$(WGET_VERSION).tar.xz glibc_libs initrd_dir/lib64/libz.so.$(ZLIB_VERSION) initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION)
+	tar xJf wget-$(WGET_VERSION).tar.xz && \
+	cd wget-$(WGET_VERSION) && \
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)/include" ./configure --prefix=/ --with-ssl=openssl && \
+	touch ../wget_source
 
 glibc_libs : glibc_src boot/kernel
 	mkdir -p initrd_dir/lib
