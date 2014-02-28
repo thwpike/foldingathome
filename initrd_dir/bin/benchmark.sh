@@ -321,7 +321,7 @@ do
   echo "Loading processor $load_procs"
   echo "Loading processor $load_procs<BR>" >> /etc/header.html
   cat /etc/header.html /etc/results.html /etc/footer.html > /etc/folding/index.html
-  mkdir load_$load_procs
+  mkdir -p load_$load_procs
   if [ `expr $load_procs % 4` -eq 0 ]
   then
     cd /etc/fold.tinker

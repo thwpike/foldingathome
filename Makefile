@@ -197,7 +197,7 @@ diskless/version.txt : initrd_dir/init
 
 ### folding.zip ###
 folding.zip: disk diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
-	mkdir folding
+	mkdir -p folding
 	mkdir -p $(MOUNT)
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
