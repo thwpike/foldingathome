@@ -435,6 +435,8 @@ initrd_dir/etc/folding/cgi-bin/kernel : boot/kernel
 	cp boot/kernel initrd_dir/etc/folding/cgi-bin/kernel
 
 kernel_firmware :
+	git submodule init
+	git submodule update
 	mkdir -p initrd_dir/lib/firmware
 	if [ -d initrd_dir/lib/firmware/bnx2 ]; then rm -rf initrd_dir/lib/firmware/bnx2 ; fi
 	cp -rf linux_firmware/bnx2/ initrd_dir/lib/firmware/bnx2/
