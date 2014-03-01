@@ -657,7 +657,7 @@ grep -v backup index.backup > index.html
 while [ "$numprocs" -gt "0" ]
 do
   echo "Setting up instance $numprocs"
-  mkdir $numprocs
+  mkdir -p $numprocs
   cd $numprocs
   cat << EOF > client.cfg
 [settings]
