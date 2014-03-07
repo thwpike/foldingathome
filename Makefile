@@ -4,7 +4,7 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.13.5
+KERNEL_VERSION = 3.13.6
 GLIBC_VERSION = 2.19
 BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
@@ -210,7 +210,7 @@ diskless/version.txt : initrd_dir/init
 
 ### folding.zip ###
 folding.zip: disk diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx
-	mkdir folding
+	mkdir -p folding
 	mkdir -p $(MOUNT)
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
@@ -502,6 +502,8 @@ initrd_dir/etc/folding/cgi-bin/kernel : boot/kernel
 	cp boot/kernel initrd_dir/etc/folding/cgi-bin/kernel
 
 kernel_firmware :
+	git submodule init
+	git submodule update
 	mkdir -p initrd_dir/lib/firmware
 	if [ -d initrd_dir/lib/firmware/bnx2 ]; then rm -rf initrd_dir/lib/firmware/bnx2 ; fi
 	cp -rf linux_firmware/bnx2/ initrd_dir/lib/firmware/bnx2/

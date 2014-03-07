@@ -55,6 +55,8 @@ echo > /dev/mdev.seq
 echo /bin/mdev > /proc/sys/kernel/hotplug
 /bin/mdev -s
 
+mkdir -p /var/lib/hwclock
+
 stty -echo
 ifconfig lo 127.0.0.1
 ulimit -c unlimited
@@ -655,7 +657,7 @@ grep -v backup index.backup > index.html
 while [ "$numprocs" -gt "0" ]
 do
   echo "Setting up instance $numprocs"
-  mkdir $numprocs
+  mkdir -p $numprocs
   cd $numprocs
   cat << EOF > client.cfg
 [settings]
@@ -834,7 +836,7 @@ do
     echo "IP address:" `cat /tmp/myip`
     echo "Time: " `date`
     echo "Load: " `uptime | cut -d' ' -f11-13`
-    for UNIT in `seq $instances`
+    for UNIT in `seq 1 $instances`
     do
       if [ -f /etc/folding/$UNIT/unitinfo.txt ];
       then
