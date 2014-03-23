@@ -55,6 +55,9 @@ echo > /dev/mdev.seq
 echo /bin/mdev > /proc/sys/kernel/hotplug
 /bin/mdev -s
 
+echo "Tuning BFS parameters"
+echo 300 > /proc/sys/kernel/rr_interval
+
 mkdir -p /var/lib/hwclock
 
 stty -echo

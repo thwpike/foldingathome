@@ -12,6 +12,8 @@ BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
 GCC_VERSION = 4.8.2
 
+PROCESSOR_SPECIFIC_FLAGS = -march=amdfam10 -mtune=amdfam10
+
 all : folding_cd.iso diskless.zip usb.zip
 
 .PHONY : prefetch distclean clean install_net install_web
@@ -344,7 +346,7 @@ initrd_dir/lib64/libbz2.so.1: glibc_libs bzip2-$(BZIP_VERSION).tar.gz
 	mkdir -p initrd_dir/lib64
 	tar xzf bzip2-$(BZIP_VERSION).tar.gz && \
 	cd bzip2-$(BZIP_VERSION) && \
-	gcc -shared -Wl,-soname -Wl,libbz2.so.1 -fpic -fPIC -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64 -o ../initrd_dir/lib64/libbz2.so.1 -L ../glibc-64 blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c -lc && \
+	gcc -shared -Wl,-soname -Wl,libbz2.so.1 -fpic -fPIC -Wall -Winline -O2 $(PROCESSOR_SPECIFIC_FLAGS) -g -D_FILE_OFFSET_BITS=64 -o ../initrd_dir/lib64/libbz2.so.1 -L ../glibc-64 blocksort.c huffman.c crctable.c randtable.c compress.c decompress.c bzlib.c -lc && \
 	strip ../initrd_dir/lib64/libbz2.so.1 && \
 	cd ../initrd_dir/lib && \
 	ln -sf ../lib64/libbz2.so.1 libbz2.so.1
@@ -371,7 +373,7 @@ initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_libs
 gcc_source: gcc-$(GCC_VERSION).tar.bz2
 	tar xjf gcc-$(GCC_VERSION).tar.bz2 && \
 	cd gcc-$(GCC_VERSION) && \
-	./configure --disable-bootstrap && \
+	./configure CFLAGS="$(PROCESSOR_SPECIFIC_FLAGS) -O2" --disable-bootstrap && \
 	touch ../gcc_source
 
 glibc_libs : glibc_src boot/kernel
@@ -379,24 +381,24 @@ glibc_libs : glibc_src boot/kernel
 	mkdir -p initrd_dir/lib64
 	mkdir -p glibc && \
 	cd glibc && \
-	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
+	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" lib && \
         cd ../glibc-$(GLIBC_VERSION)/math && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../nptl && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../rt && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../nss && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../resolv && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../dlfcn && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../crypt && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd ../nis && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE $(PROCESSOR_SPECIFIC_FLAGS)" -r srcdir=.. objdir=../../glibc && \
 	cd $(CURDIR) && \
 	cp glibc/libc.so initrd_dir/lib64/libc.so.6 && \
 	cp glibc/elf/ld-linux-x86-64.so.2 initrd_dir/lib64 && \
@@ -459,6 +461,8 @@ boot/kernel : kernel_patch
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
 	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
+	patch -p1 < ../patches/kernel-sched-bfs.patch && \
+	patch -p1 < ../patches/enable_additional_cpu_optimizations_for_gcc.patch && \
 	cp ../patches/kernel.config .config && \
 	make oldconfig && \
 	cd .. && \
