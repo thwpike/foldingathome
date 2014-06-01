@@ -4,7 +4,7 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.13.9
+KERNEL_VERSION = 3.14.5
 GLIBC_VERSION = 2.19
 BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
@@ -364,10 +364,10 @@ initrd_dir/lib64/libbz2.so.1: glibc_libs bzip2-$(BZIP_VERSION).tar.gz
 
 initrd_dir/lib64/libstdc++.so.6: initrd_dir/lib64/libgcc_s.so.1
 	mkdir -p initrd_dir/lib64
-	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libstdc++-v3 && \
-	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3 && \
-	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64 && \
-	strip initrd_dir/lib64/libstdc++.so.6 && \
+	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libstdc++-v3
+	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3
+	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64
+	strip initrd_dir/lib64/libstdc++.so.6
 	cd initrd_dir/lib && \
 	ln -sf ../lib64/libstdc++.so.6 libstdc++.so.6
 
@@ -501,7 +501,7 @@ initrd_dir/etc/folding/cgi-bin/kernel : boot/kernel
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/kernel initrd_dir/etc/folding/cgi-bin/kernel
 
-kernel_firmware :
+kernel_firmware : boot/kernel
 	git submodule update --init
 	mkdir -p initrd_dir/lib/firmware
 	if [ -d initrd_dir/lib/firmware/bnx2 ]; then rm -rf initrd_dir/lib/firmware/bnx2 ; fi
