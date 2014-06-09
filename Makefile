@@ -4,7 +4,7 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.13.9
+KERNEL_VERSION = 3.14.5
 GLIBC_VERSION = 2.19
 BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
@@ -461,7 +461,6 @@ boot/kernel : kernel_patch
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
 	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
-	patch -p1 < ../patches/kernel-sched-bfs.patch && \
 	patch -p1 < ../patches/enable_additional_cpu_optimizations_for_gcc.patch && \
 	cp ../patches/kernel.config .config && \
 	make oldconfig && \
