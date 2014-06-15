@@ -2,6 +2,8 @@ WEBDIR = /var/www/reilly/folding
 CGIDIR = /usr/lib/cgi-bin
 LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
+LOCAL_TOOL_DIR = $(CURDIR)/tools
+export PATH := $(LOCAL_TOOL_DIR)/bin:$(PATH)
 
 # Program Versions
 KERNEL_VERSION = 3.15
@@ -10,9 +12,9 @@ BUSYBOX_VERSION = 1.22.1
 SYSLINUX_VERSION = 3.86
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
-GCC_VERSION = 4.8.2
+GCC_VERSION = 4.9.0
 
-PROCESSOR_SPECIFIC_FLAGS = -march=corei7 -mtune=corei7
+PROCESSOR_SPECIFIC_FLAGS = -march=nehalem 
 
 all : folding_cd.iso diskless.zip usb.zip
 
@@ -22,7 +24,7 @@ distclean: clean
 	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware $(LOCAL_TOOL_DIR)
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -220,7 +222,7 @@ disk: initrd_dir/bin/mbr.bin partition_table
 partition_table: part_gen
 	./part_gen > partition_table
 
-part_gen: part_gen.c
+part_gen: $(LOCAL_TOOL_DIR)/bin/gcc part_gen.c
 	gcc -o part_gen part_gen.c
 
 ### folding_cd.iso ###
@@ -245,11 +247,11 @@ boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queuei
 	find . -name .svn -prune -o -print > etc/manifest && \
 	bin/busybox cpio -o -H newc < etc/manifest | gzip -9 > ../boot/initrd
 
-initrd_dir/bin/queueinfo : glibc_libs queueinfo.c
+initrd_dir/bin/queueinfo : $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs queueinfo.c
 	mkdir -p initrd_dir/bin
 	gcc -L glibc -o initrd_dir/bin/queueinfo queueinfo.c -lc -lc_nonshared glibc/elf/ld.so
 
-initrd_dir/bin/encode : glibc_libs encode.c
+initrd_dir/bin/encode : $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs encode.c
 	mkdir -p initrd_dir/bin
 	gcc -L glibc -o initrd_dir/bin/encode encode.c -lc -lc_nonshared glibc/elf/ld.so
 
@@ -257,7 +259,7 @@ initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp patches/fold.txt initrd_dir/etc/folding/cgi-bin
 
-initrd_dir/bin/genisoimage : glibc_libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/genisoimage.patch
+initrd_dir/bin/genisoimage : $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/genisoimage.patch
 	mkdir -p initrd_dir/bin
 	tar xzf cdrkit-$(CDRKIT_VERSION).tar.gz && \
 	cd cdrkit-$(CDRKIT_VERSION) && \
@@ -298,7 +300,7 @@ initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
 	$(MAKE) -C syslinux-$(SYSLINUX_VERSION)/mbr mbr.bin && \
         cp syslinux-$(SYSLINUX_VERSION)/mbr/mbr.bin initrd_dir/bin/mbr.bin
 
-initrd_dir/bin/syslinux : syslinux_src glibc_libs
+initrd_dir/bin/syslinux : $(LOCAL_TOOL_DIR)/bin/gcc syslinux_src glibc_libs
 	mkdir -p initrd_dir/bin
 	$(MAKE) -C syslinux-$(SYSLINUX_VERSION)/libinstaller ldlinux_bin.c && \
 	$(MAKE) -C syslinux-$(SYSLINUX_VERSION)/libinstaller bootsect_bin.c && \
@@ -309,21 +311,19 @@ initrd_dir/bin/syslinux : syslinux_src glibc_libs
 	gcc -s -L glibc -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/linux/syslinux.o syslinux-$(SYSLINUX_VERSION)/linux/syslxmod.o syslinux-$(SYSLINUX_VERSION)/linux/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/linux/ldlinux_bin.o -lc -lc_nonshared glibc/elf/ld.so
 
 syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.bz2
-	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2 && \
-	cd syslinux-$(SYSLINUX_VERSION) && \
-	cd $(CURDIR) && \
+	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2
 	touch syslinux_src
 
-initrd_dir/bin/isVMWare : glibc_libs
+initrd_dir/bin/isVMWare : $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs
 	mkdir -p initrd_dir/bin
 	gcc -L glibc2 -o initrd_dir/bin/isVMWare isVMWare.c -lc -lc_nonshared glibc/elf/ld.so
 
-initrd_dir/bin/isVPC : glibc_libs
+initrd_dir/bin/isVPC : $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs
 	mkdir -p initrd_dir/bin
 	gcc -L glibc -o initrd_dir/bin/isVPC isVPC.c -lc -lc_nonshared glibc/elf/ld.so
 
 #### Busybox ####
-initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/busybox.config patches/busybox.patch
+initrd_dir/bin/busybox : $(LOCAL_TOOL_DIR)/bin/gcc busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/busybox.config patches/busybox.patch
 	mkdir -p initrd_dir/bin
 	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
 	cd busybox-$(BUSYBOX_VERSION) && \
@@ -335,13 +335,13 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/b
 	$(MAKE) CC="gcc -L../glibc" busybox && \
 	cp busybox ../initrd_dir/bin
 
-initrd_dir/etc/folding/cgi-bin/index.cgi : initrd_dir/bin/busybox glibc_libs
+initrd_dir/etc/folding/cgi-bin/index.cgi : $(LOCAL_TOOL_DIR)/bin/gcc initrd_dir/bin/busybox glibc_libs
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cd busybox-$(BUSYBOX_VERSION)/networking && \
 	gcc -o ../../initrd_dir/etc/folding/cgi-bin/index.cgi httpd_indexcgi.c -lc -lc_nonshared ../../glibc/elf/ld.so
 
 ### Additional libs ###
-initrd_dir/lib64/libbz2.so.1: glibc_libs bzip2-$(BZIP_VERSION).tar.gz
+initrd_dir/lib64/libbz2.so.1: $(LOCAL_TOOL_DIR)/bin/gcc glibc_libs bzip2-$(BZIP_VERSION).tar.gz
 	mkdir -p initrd_dir/lib
 	mkdir -p initrd_dir/lib64
 	tar xzf bzip2-$(BZIP_VERSION).tar.gz && \
@@ -351,32 +351,35 @@ initrd_dir/lib64/libbz2.so.1: glibc_libs bzip2-$(BZIP_VERSION).tar.gz
 	cd ../initrd_dir/lib && \
 	ln -sf ../lib64/libbz2.so.1 libbz2.so.1
 
-initrd_dir/lib64/libstdc++.so.6: initrd_dir/lib64/libgcc_s.so.1
+initrd_dir/lib64/libstdc++.so.6: $(LOCAL_TOOL_DIR)/bin/gcc initrd_dir/lib64/libgcc_s.so.1
 	mkdir -p initrd_dir/lib64
-	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libstdc++-v3
-	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3
-	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64
+	$(MAKE) -C gcc-$(GCC_VERSION)/client configure-target-libstdc++-v3
+	$(MAKE) -C gcc-$(GCC_VERSION)/client/x86_64-unknown-linux-gnu/libstdc++-v3
+	cp gcc-$(GCC_VERSION)/client/x86_64-unknown-linux-gnu/libstdc++-v3/src/.libs/libstdc++.so.6 initrd_dir/lib64
 	strip initrd_dir/lib64/libstdc++.so.6
 	cd initrd_dir/lib && \
 	ln -sf ../lib64/libstdc++.so.6 libstdc++.so.6
 
-initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_libs
+initrd_dir/lib64/libgcc_s.so.1: $(LOCAL_TOOL_DIR)/bin/gcc gcc_source glibc_libs
+	which gcc
+	exit
 	mkdir -p initrd_dir/lib
 	mkdir -p initrd_dir/lib64
-	$(MAKE) -C gcc-$(GCC_VERSION) configure-target-libgcc && \
-	$(MAKE) -C gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc libgcc_s.so && \
-	cp gcc-$(GCC_VERSION)/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64 && \
-	strip initrd_dir/lib64/libgcc_s.so.1 && \
+	mkdir -p gcc-$(GCC_VERSION)/client
+	cd gcc-$(GCC_VERSION)/client && \
+        ../configure CFLAGS="$(PROCESSOR_SPECIFIC_FLAGS) -O3" --disable-bootstrap --enable-languages=c,c++
+	$(MAKE) -C gcc-$(GCC_VERSION)/client configure-target-libgcc
+	$(MAKE) -C gcc-$(GCC_VERSION)/client/x86_64-unknown-linux-gnu/libgcc libgcc_s.so
+	cp gcc-$(GCC_VERSION)/client/x86_64-unknown-linux-gnu/libgcc/libgcc_s.so.1 initrd_dir/lib64
+	strip initrd_dir/lib64/libgcc_s.so.1
 	cd initrd_dir/lib && \
 	ln -sf ../lib64/libgcc_s.so.1 libgcc_s.so.1
 
 gcc_source: gcc-$(GCC_VERSION).tar.bz2
-	tar xjf gcc-$(GCC_VERSION).tar.bz2 && \
-	cd gcc-$(GCC_VERSION) && \
-	./configure CFLAGS="$(PROCESSOR_SPECIFIC_FLAGS) -O3" --disable-bootstrap && \
-	touch ../gcc_source
+	tar xjf gcc-$(GCC_VERSION).tar.bz2
+	touch $(CURDIR)/gcc_source
 
-glibc_libs : glibc_src boot/kernel
+glibc_libs : $(LOCAL_TOOL_DIR)/bin/gcc glibc_src boot/kernel
 	mkdir -p initrd_dir/lib
 	mkdir -p initrd_dir/lib64
 	mkdir -p glibc && \
@@ -453,7 +456,7 @@ kernel_firmware : boot/kernel
 	cp -rf linux_firmware/3com/ initrd_dir/lib/firmware/3com/
 	touch kernel_firmware
 
-boot/kernel : kernel_patch
+boot/kernel : $(LOCAL_TOOL_DIR)/bin/gcc kernel_patch
 	mkdir -p boot
 	$(MAKE) -C linux-$(KERNEL_VERSION) && \
 	cp linux-$(KERNEL_VERSION)/arch/x86_64/boot/bzImage boot/kernel
@@ -466,3 +469,10 @@ kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
 	make oldconfig && \
 	cd .. && \
 	touch kernel_patch
+
+$(LOCAL_TOOL_DIR)/bin/gcc: gcc_source
+	mkdir -p gcc-$(GCC_VERSION)/host
+	cd gcc-$(GCC_VERSION)/host && \
+	../configure --disable-bootstrap --prefix=$(LOCAL_TOOL_DIR) --enable-languages=c,c++ && \
+	$(MAKE) && \
+	$(MAKE) install
