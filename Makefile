@@ -197,6 +197,7 @@ diskless/syslinux.cfg : boot/isolinux.cfg
 	cp boot/isolinux.cfg diskless/syslinux.cfg
 
 diskless/version.txt : initrd_dir/init
+	mkdir -p diskless
 	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
 
 ### folding.zip ###
