@@ -461,6 +461,6 @@ kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
 	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
 	cp ../patches/kernel.config .config && \
-	make oldconfig && \
+	make olddefconfig && \
 	cd .. && \
 	touch kernel_patch
