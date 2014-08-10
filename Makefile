@@ -17,7 +17,7 @@ all : folding_cd.iso diskless.zip usb.zip
 .PHONY : prefetch distclean clean install_net install_web
 
 distclean: clean
-	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
+	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
 	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware
@@ -138,7 +138,7 @@ install_net: /var/lib/tftpboot/PXEClient/kernel /var/lib/tftpboot/PXEClient/init
 
 # Download source archives if required.
 
-prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.bz2 bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
+prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 linux-$(KERNEL_VERSION).tar.xz :
 	wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-$(KERNEL_VERSION).tar.xz
@@ -149,8 +149,8 @@ glibc-$(GLIBC_VERSION).tar.xz :
 busybox-$(BUSYBOX_VERSION).tar.bz2 :
 	wget http://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
 
-syslinux-$(SYSLINUX_VERSION).tar.bz2 :
-	wget http://www.kernel.org/pub/linux/utils/boot/syslinux/3.xx/syslinux-$(SYSLINUX_VERSION).tar.bz2
+syslinux-$(SYSLINUX_VERSION).tar.xz :
+	wget http://www.kernel.org/pub/linux/utils/boot/syslinux/3.xx/syslinux-$(SYSLINUX_VERSION).tar.xz
 
 bzip2-$(BZIP_VERSION).tar.gz :
 	wget http://www.bzip.org/$(BZIP_VERSION)/bzip2-$(BZIP_VERSION).tar.gz
@@ -307,8 +307,8 @@ initrd_dir/bin/syslinux : syslinux_src glibc_libs
 	$(MAKE) -C syslinux-$(SYSLINUX_VERSION)/linux ldlinux_bin.o && \
 	gcc -s -L glibc -o initrd_dir/bin/syslinux syslinux-$(SYSLINUX_VERSION)/linux/syslinux.o syslinux-$(SYSLINUX_VERSION)/linux/syslxmod.o syslinux-$(SYSLINUX_VERSION)/linux/bootsect_bin.o syslinux-$(SYSLINUX_VERSION)/linux/ldlinux_bin.o -lc -lc_nonshared glibc/elf/ld.so
 
-syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.bz2
-	tar xjf syslinux-$(SYSLINUX_VERSION).tar.bz2 && \
+syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.xz
+	tar xJf syslinux-$(SYSLINUX_VERSION).tar.xz && \
 	cd syslinux-$(SYSLINUX_VERSION) && \
 	cd $(CURDIR) && \
 	touch syslinux_src
