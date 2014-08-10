@@ -32,6 +32,7 @@
 /initrd_dir/etc/manifest
 /initrd_dir/lib/
 /initrd_dir/lib64/
+/initrd_dir/etc/folding/cgi-bin/ldlinux.c32
 /kernel_patch
 /kernel_firmware
 /linux-*

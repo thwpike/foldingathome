@@ -37,7 +37,7 @@ done
 POST_STRING=`echo $POST_STRING | sed 's/&/ /g'`
 dir=/tmp/cd_`date +%s`_$REMOTE_ADDR
 mkdir -p $dir/cd/isolinux
-cp kernel isolinux.bin fold.txt $dir/cd/isolinux
+cp kernel isolinux.bin fold.txt ldlinux.c32 $dir/cd/isolinux
 if [ -f initrd ]
 then
   cp initrd $dir/cd/isolinux
