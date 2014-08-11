@@ -304,7 +304,7 @@ initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
 
 initrd_dir/bin/syslinux : syslinux_src
 	mkdir -p initrd_dir/bin
-	make -C syslinux-$(SYSLINUX_VERSION) bios
+	$(MAKE) -C syslinux-$(SYSLINUX_VERSION) bios
 	cp syslinux-$(SYSLINUX_VERSION)/bios/linux/syslinux initrd_dir/bin/syslinux
 
 syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.xz glibc_libs
@@ -459,6 +459,6 @@ kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
 	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
 	cd linux-$(KERNEL_VERSION) && \
 	cp ../patches/kernel.config .config && \
-	make oldconfig && \
+	$(MAKE) oldconfig && \
 	cd .. && \
 	touch kernel_patch
