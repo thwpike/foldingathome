@@ -30,6 +30,7 @@
 /initrd_dir/etc/folding/cgi-bin/index.cgi
 /initrd_dir/etc/folding/cgi-bin/isolinux.bin
 /initrd_dir/etc/folding/cgi-bin/kernel
+/initrd_dir/etc/folding/cgi-bin/ldlinux.c32
 /initrd_dir/etc/manifest
 /initrd_dir/lib/
 /initrd_dir/lib64/
