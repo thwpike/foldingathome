@@ -308,7 +308,7 @@ initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
 
 initrd_dir/bin/syslinux : $(LOCAL_TOOL_DIR)/bin/gcc syslinux_src glibc_libs
 	mkdir -p initrd_dir/bin
-	make -C syslinux-$(SYSLINUX_VERSION) bios
+	$(MAKE) -C syslinux-$(SYSLINUX_VERSION) bios
 	cp syslinux-$(SYSLINUX_VERSION)/bios/linux/syslinux initrd_dir/bin/syslinux
 
 syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.xz glibc_libs
@@ -463,12 +463,11 @@ boot/kernel : $(LOCAL_TOOL_DIR)/bin/gcc kernel_patch
 	cp linux-$(KERNEL_VERSION)/arch/x86_64/boot/bzImage boot/kernel
 
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
-	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
+	tar xJf linux-$(KERNEL_VERSION).tar.xz
 	cd linux-$(KERNEL_VERSION) && \
-	patch -p1 < ../patches/enable_additional_cpu_optimizations_for_gcc.patch && \
-	cp ../patches/kernel.config .config && \
-	make oldconfig && \
-	cd .. && \
+	patch -p1 < ../patches/enable_additional_cpu_optimizations_for_gcc.patch
+	cp patches/kernel.config linux-$(KERNEL_VERSION)/.config
+	$(MAKE) -C linux-$(KERNEL_VERSION) olddefconfig
 	touch kernel_patch
 
 $(LOCAL_TOOL_DIR)/bin/gcc: gcc_source
