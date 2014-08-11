@@ -20,7 +20,7 @@ distclean: clean
 	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware boot/ldlinux.c32 diskless/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -168,11 +168,11 @@ diskless.zip : diskless/kernel diskless/initrd diskless/pxelinux.cfg/default dis
 	zip -r ../diskless.zip kernel initrd pxelinux.0 pxelinux.cfg/default fold.txt
 
 diskless/kernel : boot/kernel
-	mkdir -p boot
+	mkdir -p diskless
 	cp boot/kernel diskless/kernel
 
 diskless/initrd : boot/initrd
-	mkdir -p boot
+	mkdir -p diskless
 	cp boot/initrd diskless/initrd
 
 diskless/pxelinux.cfg/default : boot/isolinux.cfg
@@ -183,11 +183,10 @@ diskless/fold.txt : boot/fold.txt
 	cp boot/fold.txt diskless/fold.txt
 
 ### usb.zip ###
-usb.zip : diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt boot/ldlinux.c32
+usb.zip : diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt diskless/ldlinux.c32
 	mkdir -p diskless
 	cd diskless && \
-	cp ../boot/ldlinux.c32 ./ldlinux.c32 && \
-	zip -r ../usb.zip kernel initrd syslinux.cfg version.txt fold.txt
+	zip -r ../usb.zip kernel initrd syslinux.cfg ldlinux.c32 version.txt fold.txt
 
 diskless/syslinux.cfg : boot/isolinux.cfg
 	mkdir -p diskless
@@ -198,13 +197,13 @@ diskless/version.txt : initrd_dir/init
 	grep -m 1 VERSION= initrd_dir/init | sed s/VERSION=// > diskless/version.txt
 
 ### folding.zip ###
-folding.zip: disk diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx boot/ldlinux.c32
+folding.zip: disk diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt initrd_dir/bin/syslinux folding/folding.vmx diskless/ldlinux.c32
 	mkdir -p folding
 	mkdir -p $(MOUNT)
 	sudo losetup -o 32256 $(LOOPDEV) disk && \
 	mkdosfs -F 32 $(LOOPDEV) && \
 	sudo mount $(LOOPDEV) $(MOUNT) && \
-	sudo cp boot/ldlinux.c32 diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt $(MOUNT) && \
+	sudo cp diskless/ldlinux.c32 diskless/kernel diskless/initrd diskless/syslinux.cfg diskless/version.txt diskless/fold.txt $(MOUNT) && \
 	sudo umount $(MOUNT) && \
 	sudo initrd_dir/bin/syslinux $(LOOPDEV) && \
 	dosfsck -a $(LOOPDEV) ; \
@@ -237,9 +236,13 @@ boot/fold.txt : patches/fold.txt
 	mkdir -p boot
 	cp patches/fold.txt boot
 
-boot/ldlinux.c32: syslinux_src
+boot/ldlinux.c32: initrd_dir/bin/syslinux
 	mkdir -p boot
 	cp syslinux-$(SYSLINUX_VERSION)/bios/com32/elflink/ldlinux/ldlinux.c32 boot
+
+diskless/ldlinux.c32: initrd_dir/bin/syslinux
+	mkdir -p boot
+	cp syslinux-$(SYSLINUX_VERSION)/bios/com32/elflink/ldlinux/ldlinux.c32 diskless
 
 #### initrd ####
 boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel glibc_libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6 initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/bin/genisoimage kernel_firmware initrd_dir/etc/folding/cgi-bin/ldlinux.c32
@@ -249,9 +252,6 @@ boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queuei
 	find . -name .svn -prune -o -print > etc/manifest && \
 	bin/busybox cpio -o -H newc < etc/manifest | gzip -9 > ../boot/initrd
 
-initrd_dir/etc/folding/cgi-bin/ldlinux.c32: boot/ldlinux.c32
-	cp boot/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32
-
 initrd_dir/bin/queueinfo : glibc_libs queueinfo.c
 	mkdir -p initrd_dir/bin
 	gcc -L glibc -o initrd_dir/bin/queueinfo queueinfo.c -lc -lc_nonshared glibc/elf/ld.so
@@ -259,6 +259,9 @@ initrd_dir/bin/queueinfo : glibc_libs queueinfo.c
 initrd_dir/bin/encode : glibc_libs encode.c
 	mkdir -p initrd_dir/bin
 	gcc -L glibc -o initrd_dir/bin/encode encode.c -lc -lc_nonshared glibc/elf/ld.so
+
+initrd_dir/etc/folding/cgi-bin/ldlinux.c32: boot/ldlinux.c32
+	cp boot/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32
 
 initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
 	mkdir -p initrd_dir/etc/folding/cgi-bin
@@ -275,11 +278,11 @@ initrd_dir/bin/genisoimage : glibc_libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/
 	cp genisoimage/genisoimage ../../initrd_dir/bin/genisoimage
 
 #### isolinux, pxelinux, syslinux ####
-diskless/syslinux.exe : syslinux_src
+diskless/syslinux.exe : initrd_dir/bin/syslinux
 	mkdir -p diskless
 	cp syslinux-$(SYSLINUX_VERSION)/bios/win32/syslinux.exe diskless/syslinux.exe
 
-diskless/syslinux.com : syslinux_src
+diskless/syslinux.com : initrd_dir/bin/syslinux
 	mkdir -p diskless
 	cp syslinux-$(SYSLINUX_VERSION)/bios/dos/syslinux.com diskless/syslinux.com
 
@@ -287,27 +290,25 @@ initrd_dir/etc/folding/cgi-bin/isolinux.bin : boot/isolinux.bin
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp boot/isolinux.bin initrd_dir/etc/folding/cgi-bin/isolinux.bin
 
-boot/isolinux.bin : syslinux_src
+boot/isolinux.bin : initrd_dir/bin/syslinux
 	mkdir -p boot
-	cp syslinux-$(SYSLINUX_VERSION)/bios/core/isolinux.bin boot/
+	cp syslinux-$(SYSLINUX_VERSION)/bios/core/isolinux.bin boot
 
-diskless/pxelinux.0 : syslinux_src
+diskless/pxelinux.0 : initrd_dir/bin/syslinux
 	mkdir -p diskless
-	cp syslinux-$(SYSLINUX_VERSION)/bios/core/pxelinux.0 diskless/
+	cp syslinux-$(SYSLINUX_VERSION)/bios/core/pxelinux.0 diskless
 
-initrd_dir/bin/mbr.bin : syslinux_src
+initrd_dir/bin/mbr.bin : initrd_dir/bin/syslinux
 	mkdir -p initrd_dir/bin
 	cp syslinux-$(SYSLINUX_VERSION)/bios/mbr/mbr.bin initrd_dir/bin/mbr.bin
 
 initrd_dir/bin/syslinux : syslinux_src
 	mkdir -p initrd_dir/bin
+	make -C syslinux-$(SYSLINUX_VERSION) bios
 	cp syslinux-$(SYSLINUX_VERSION)/bios/linux/syslinux initrd_dir/bin/syslinux
 
-syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.xz
-	tar xJf syslinux-$(SYSLINUX_VERSION).tar.xz && \
-	cd syslinux-$(SYSLINUX_VERSION) && \
-	make bios && \
-	cd $(CURDIR) && \
+syslinux_src : syslinux-$(SYSLINUX_VERSION).tar.xz glibc_libs
+	tar xJf syslinux-$(SYSLINUX_VERSION).tar.xz
 	touch syslinux_src
 
 initrd_dir/bin/isVMWare : glibc_libs
