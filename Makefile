@@ -456,9 +456,7 @@ boot/kernel : kernel_patch
 	cp linux-$(KERNEL_VERSION)/arch/x86_64/boot/bzImage boot/kernel
 
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
-	tar xJf linux-$(KERNEL_VERSION).tar.xz && \
-	cd linux-$(KERNEL_VERSION) && \
-	cp ../patches/kernel.config .config && \
-	$(MAKE) oldconfig && \
-	cd .. && \
+	tar xJf linux-$(KERNEL_VERSION).tar.xz
+	cp patches/kernel.config linux-$(KERNEL_VERSION)/.config
+	$(MAKE) -C linux-$(KERNEL_VERSION) olddefconfig
 	touch kernel_patch
