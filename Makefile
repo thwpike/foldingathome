@@ -156,7 +156,7 @@ bzip2-$(BZIP_VERSION).tar.gz :
 	wget http://www.bzip.org/$(BZIP_VERSION)/bzip2-$(BZIP_VERSION).tar.gz
 
 cdrkit-$(CDRKIT_VERSION).tar.gz :
-	wget http://cdrkit.org/releases/cdrkit-$(CDRKIT_VERSION).tar.gz
+	wget http://distro.ibiblio.org/slitaz/sources/packages/c/cdrkit-$(CDRKIT_VERSION).tar.gz
 
 gcc-$(GCC_VERSION).tar.bz2 :
 	wget http://ftp.gnu.org/gnu/gcc/gcc-$(GCC_VERSION)/gcc-$(GCC_VERSION).tar.bz2
