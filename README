@@ -27,7 +27,7 @@ In order to build, you will need an up to date installation of Ubuntu 14.04 (LTS
 with the following additional packages installed:
 apt-get install nasm zip genisoimage libmpfr-dev libgmp3-dev libmpc-dev \
                 libc6-dev-i386 lib32gcc1 gcc-multilib g++-multilib git-core \
-                qemu cmake libcap-dev mingw32 xz-util libncurses5-dev gettext \
+                qemu cmake libcap-dev mingw32 libncurses5-dev gettext \
                 autoconf libtool texinfo uuid-dev
 
 This software downloads the folding client and cores from Stanford to comply
