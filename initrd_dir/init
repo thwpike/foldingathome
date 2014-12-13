@@ -57,6 +57,9 @@ echo /bin/mdev > /proc/sys/kernel/hotplug
 
 mkdir -p /var/lib/hwclock
 
+# Silence some warnings on the console.
+echo "4 4 1 7" > /proc/sys/kernel/printk
+
 stty -echo
 ifconfig lo 127.0.0.1
 ulimit -c unlimited
