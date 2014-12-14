@@ -1,8 +1,8 @@
 This is a series of scripts and files to create a minimal CD, USB or network
 bootable image that will run a Folding@Home client instance.
 
-The Folding CD can only be built on a 64bit (x86_64) system. It will build an
-image that will work for both 64bit(x86_64) and 32bit(i686) systems.
+The Folding CD can only be built on a 64bit (x86_64) system and will build an
+image that will only work on 64bit (x86_64) systems.
 
 The Diskless Folding zip file (for PXE boot) is derived from The Folding CD
 and is also built. It appears as diskless.zip in the base directory.
