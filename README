@@ -28,7 +28,7 @@ the following additional packages installed:
 apt-get install nasm zip genisoimage libmpfr-dev libgmp3-dev libmpc-dev \
                 libc6-dev-i386 lib32gcc1 gcc-multilib g++-multilib git-core \
                 qemu cmake libcap-dev mingw32 libncurses5-dev gettext \
-                autoconf libtool texinfo uuid-dev
+                autoconf libtool texinfo uuid-dev upx
 
 This software downloads the folding client and cores from Stanford to comply
 with the Folding@Home license.
