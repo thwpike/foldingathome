@@ -6,9 +6,9 @@ LOCAL_TOOL_DIR = $(CURDIR)/tools
 export PATH := $(LOCAL_TOOL_DIR)/bin:$(PATH)
 
 # Program Versions
-KERNEL_VERSION = 3.18.3
+KERNEL_VERSION = 3.18.5
 GLIBC_VERSION = 2.20
-BUSYBOX_VERSION = 1.22.1
+BUSYBOX_VERSION = 1.23.1
 SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
@@ -329,9 +329,6 @@ initrd_dir/bin/busybox : $(LOCAL_TOOL_DIR)/bin/gcc busybox-$(BUSYBOX_VERSION).ta
 	tar xjf busybox-$(BUSYBOX_VERSION).tar.bz2 && \
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
-	patch -p1 < ../patches/busybox-1.22.1-ash.patch && \
-	patch -p1 < ../patches/busybox-1.22.1-date.patch && \
-	patch -p1 < ../patches/busybox-1.22.1-iplink.patch && \
 	patch -p0 < ../patches/busybox.patch && \
 	$(MAKE) CC="gcc -L../glibc" busybox && \
 	cp busybox ../initrd_dir/bin
