@@ -14,7 +14,7 @@ BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
 GCC_VERSION = 4.9.2
 
-PROCESSOR_SPECIFIC_FLAGS = -march=nehalem 
+PROCESSOR_SPECIFIC_FLAGS = -march=core2
 
 all : folding_cd.iso diskless.zip usb.zip
 
