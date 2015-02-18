@@ -2,7 +2,7 @@
 
 # Check the current directory for an installation, if not present then
 # create an installation
-VERSION=20140130
+VERSION=20150218
 BUILDER="Thomas Pike"
 install() {
   if [ -e kernel -a -e initrd -a -e ldlinux.sys -a -e syslinux.cfg -a -e version.txt -a -e fold.txt ]
@@ -115,7 +115,7 @@ mkdir -p /etc/folding/cgi-bin
 cd /etc/folding
 cat /proc/cpuinfo > cpuinfo.txt
 dmesg > dmesg.txt
-httpd
+#httpd
 
 numprocs=`grep -c "^processor" /proc/cpuinfo`
 PROCESSORS=$numprocs
@@ -279,12 +279,12 @@ then
   fi
 fi
 
-DOWNLOAD=FAH6.34-Linux64.tgz
-wget http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD
+DOWNLOAD=fahclient_7.4.4-64bit-release
+wget --no-check-certificate https://fah-web.stanford.edu/file-releases/beta/release/fahclient/centos-5.3-64bit/v7.4/${DOWNLOAD}.tar.bz2
 if [ $? -eq 1 ]
 then
   echo -e "\n\n\nFailed to download the client from Stanford's website:"
-  echo "http://www.stanford.edu/group/pandegroup/folding/release/$DOWNLOAD"
+  echo "https://fah-web.stanford.edu/file-releases/beta/release/fahclient/centos-5.3-64bit/v7.4/${DOWNLOAD}.tar.bz2"
   echo ""
   echo "Please double check your Gateway and DNS information"
   echo "Gateway: " `route -n | awk '/^0.0.0.0/ {print $2}'`
@@ -294,7 +294,7 @@ then
     sleep 86400
   done
 fi
-tar xzf $DOWNLOAD
+tar xjf ${DOWNLOAD}.tar.bz2
 
 # Create a CD generator link
 cat << EOF > cd.html
@@ -657,42 +657,40 @@ echo "</BODY></HTML>" >> index.backup
 grep -v backup index.backup > index.html
 
 # Setup the instances
-while [ "$numprocs" -gt "0" ]
-do
-  echo "Setting up instance $numprocs"
-  mkdir -p $numprocs
-  cd $numprocs
-  cat << EOF > client.cfg
-[settings]
-username=$USER
-team=$TEAM
-passkey=$PASSKEY
-asknet=no
-bigpackets=$BIG
-machineid=$numprocs
-
-[http]
+echo "Creating config.xml file for FAHClient"
+cat << EOF > /etc/folding/config.xml
+<config>
+  <user value='${USER}' />
+  <team value='${TEAM}' />
+  <passkey value='${PASSKEY}' />
+  <power value='full'/>
+  <smp value='true'/>
+  <gpu value='true'/>
+  <web-enable value='true'/>
+  <allow>0/0</allow>
+  <web-allow>0/0</web-allow>
+</config>
 EOF
 
-  if [ -z "$PROXY_HOST" ]
+if [ -z "$PROXY_HOST" ]
+then
+  echo "active=no" >> client.cfg
+  echo "host=localhost" >> client.cfg
+  echo "port=8080" >> client.cfg
+else
+  echo "active=yes" >> client.cfg
+  echo "host=$PROXY_HOST" >> client.cfg
+  echo "port=$PROXY_PORT" >> client.cfg
+  if [ -z "$PROXY_USER" ]
   then
-    echo "active=no" >> client.cfg
-    echo "host=localhost" >> client.cfg
-    echo "port=8080" >> client.cfg
+    echo "usepasswd=no" >> client.cfg
   else
-    echo "active=yes" >> client.cfg
-    echo "host=$PROXY_HOST" >> client.cfg
-    echo "port=$PROXY_PORT" >> client.cfg
-    if [ -z "$PROXY_USER" ]
-    then
-      echo "usepasswd=no" >> client.cfg
-    else
-      echo "usepasswd=yes" >> client.cfg
-      echo "proxy_name=$PROXY_USER"  >> client.cfg
-      echo "proxy_passwd=$PROXY_PASS" >> client.cfg
-    fi
+    echo "usepasswd=yes" >> client.cfg
+    echo "proxy_name=$PROXY_USER"  >> client.cfg
+    echo "proxy_passwd=$PROXY_PASS" >> client.cfg
   fi
-  cat << EOF >> client.cfg
+fi
+cat << EOF >> client.cfg
 
 [core]
 checkpoint=$CHECKPOINT
@@ -718,137 +716,122 @@ EOF
   fi
 
 # Restore from tftp backup if present
-  if [ "`cat /tmp/tftpserverip`" != "" ]
+if [ "`cat /tmp/tftpserverip`" != "" ]
+then
+  tftp -g `cat /tmp/tftpserverip` -l latest.`cat /tmp/myip`.$numprocs -r latest.`cat /tmp/myip`.$numprocs > /dev/null 2>&1
+  if [ "`cat latest.* 2>/dev/null`" != "" ]
   then
-    tftp -g `cat /tmp/tftpserverip` -l latest.`cat /tmp/myip`.$numprocs -r latest.`cat /tmp/myip`.$numprocs > /dev/null 2>&1
-    if [ "`cat latest.* 2>/dev/null`" != "" ]
-    then
-      echo "Restoring from TFTP"
-      tftp -g `cat /tmp/tftpserverip` -l backup.`cat /tmp/myip`.`cat latest.*`.$numprocs -r backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
-      tar xvf backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
-      rm backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
-      echo "Restore done"
-    fi
+    echo "Restoring from TFTP"
+    tftp -g `cat /tmp/tftpserverip` -l backup.`cat /tmp/myip`.`cat latest.*`.$numprocs -r backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+    tar xvf backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+    rm backup.`cat /tmp/myip`.`cat latest.*`.$numprocs
+    echo "Restore done"
   fi
+fi
 
 # Restore from USB drive A if present
-  mount -n -t vfat /dev/sda1 /usba > /dev/null 2>&1
-  if [ $? -eq 0 ]
+mount -n -t vfat /dev/sda1 /usba > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+  if [ -d /usba/folding/$numprocs ]
   then
-    if [ -d /usba/folding/$numprocs ]
-    then
-      echo "Restoring from USB drive A"
-      cp -r /usba/folding/$numprocs/* .
-      echo "Restore done"
-    fi
-    umount /usba
- fi
+    echo "Restoring from USB drive A"
+    cp -r /usba/folding/$numprocs/* .
+    echo "Restore done"
+  fi
+  umount /usba
+fi
 
 # Restore from USB drive B if present
-  mount -n -t vfat /dev/sdb1 /usbb > /dev/null 2>&1
-  if [ $? -eq 0 ]
+mount -n -t vfat /dev/sdb1 /usbb > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+  if [ -d /usbb/folding/$numprocs ]
   then
-    if [ -d /usbb/folding/$numprocs ]
-    then
-      echo "Restoring from USB drive B"
-      cp -r /usbb/folding/$numprocs/* .
-      echo "Restore done"
-    fi
-    umount /usbb
+    echo "Restoring from USB drive B"
+    cp -r /usbb/folding/$numprocs/* .
+    echo "Restore done"
   fi
+  umount /usbb
+fi
 
 # Restore from hard drive image if VM and booted from syslinux
-  if [ $noVMWare -eq 0 -o $noQEMU -eq 0 -o $noVPC -eq 0 ] 
+if [ $noVMWare -eq 0 -o $noQEMU -eq 0 -o $noVPC -eq 0 ] 
+then
+  if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
   then
-    if [ "`cat /proc/sys/kernel/bootloader_type`" = "49" ]
+    mount -n -t vfat /dev/hda1 /hda
+    if [ $? -eq 0 ]
     then
-      mount -n -t vfat /dev/hda1 /hda
-      if [ $? -eq 0 ]
+      if [ -d /hda/folding/$numprocs ]
       then
-        if [ -d /hda/folding/$numprocs ]
-        then
-          echo "Restoring from disk image"
-          cp -r /hda/folding/$numprocs/* .
-          echo "Restore done"
-        fi
-        umount /hda
-      else
-        echo "Disk image is corrupt, not restoring"
+        echo "Restoring from disk image"
+        cp -r /hda/folding/$numprocs/* .
+        echo "Restore done"
       fi
+      umount /hda
+    else
+      echo "Disk image is corrupt, not restoring"
     fi
   fi
+fi
 
-# Start up the client
-  if [ -f /etc/folding/fah6 ];
-  then
-    ln -s /etc/folding/fah6 .;
-    chmod 0755 /etc/folding/fah6;
-  fi
-  if [ -f /etc/folding/mpiexec ];
-  then
-    ln -s /etc/folding/mpiexec .;
-    chmod 0755 /etc/folding/mpiexec;
-  fi
-
-  ./fah6 -local -forceasm $FAH_FLAGS > /dev/null 2>&1 &
-
-  numprocs=`expr $numprocs - 1`
-  cd /etc/folding
-done
+cd /etc/folding/${DOWNLOAD}
+./FAHClient --config /etc/folding/config.xml &
 
 # Startup the backup process
-if [ $BACKUP -gt 0 ]
-then
-  backup.sh $BACKUP &
-fi
+#if [ $BACKUP -gt 0 ]
+#then
+#  backup.sh $BACKUP &
+#fi
 
 # Startup the hang checker
-if [ $smp -eq 1 ]
-then
-  check_hang.sh &
-fi
+#if [ $smp -eq 1 ]
+#then
+#  check_hang.sh &
+#fi
 
 # Loop so we don't exit init
-while [ 1 ]
-do
-  if [ $SHELL = "yes" ]
-  then
+#while [ 1 ]
+#do
+#  if [ $SHELL = "yes" ]
+#  then
     getty 38400 tty1
-  else
-    reset
-    echo "Diskless Folding version $VERSION built by $BUILDER"
-    echo "Processor type: $arch"
-    echo "Found $PROCESSORS processors"
-    echo "User: $USER"
-    echo "Team: $TEAM"
-    echo "Passkey: $PASSKEY"
-    echo "Big Packets: $BIG"
-    echo "Advmethods: $ADVMETHODS"
-    echo "Memory: $MEM MB"
-    echo "Backup every $BACKUP minutes"
-    echo "Core checkpoint every $CHECKPOINT minutes"
-    echo "Remote reboot: $REBOOT"
-    echo "Install: $INSTALL"
-    if [ $BLANK -eq 0 ]
-    then
-      echo "Console blank: disabled"
-    else
-      echo "Console blank: $BLANK minutes"
-    fi
-    echo "Hostname: " `hostname`
-    echo "IP address:" `cat /tmp/myip`
-    echo "Time: " `date`
-    echo "Load: " `uptime | cut -d' ' -f11-13`
-    for UNIT in `seq 1 $instances`
-    do
-      if [ -f /etc/folding/$UNIT/unitinfo.txt ];
-      then
-        PROGRESS=`cat /etc/folding/$UNIT/unitinfo.txt | grep 'Progress' | sed -e 's,\s*Progress:\s*\([0-9]\+\)\%.*,\1%,'`;
-      else
-        PROGRESS="Not Started";
-    fi
-    echo "Unit $UNIT Progress: " $PROGRESS;
-    done
-    sleep 20;
-  fi
-done
+#  else
+#    reset
+#    echo "Diskless Folding version $VERSION built by $BUILDER"
+#    echo "Processor type: $arch"
+#    echo "Found $PROCESSORS processors"
+#    echo "User: $USER"
+#    echo "Team: $TEAM"
+#    echo "Passkey: $PASSKEY"
+#    echo "Big Packets: $BIG"
+#    echo "Advmethods: $ADVMETHODS"
+#    echo "Memory: $MEM MB"
+#    echo "Backup every $BACKUP minutes"
+#    echo "Core checkpoint every $CHECKPOINT minutes"
+#    echo "Remote reboot: $REBOOT"
+#    echo "Install: $INSTALL"
+#    if [ $BLANK -eq 0 ]
+#    then
+#      echo "Console blank: disabled"
+#    else
+#      echo "Console blank: $BLANK minutes"
+#    fi
+#    echo "Hostname: " `hostname`
+#    echo "IP address:" `cat /tmp/myip`
+#    echo "Time: " `date`
+#    echo "Load: " `uptime | cut -d' ' -f11-13`
+#    for UNIT in `seq 1 $instances`
+#    do
+#      if [ -f /etc/folding/$UNIT/unitinfo.txt ];
+#      then
+#        PROGRESS=`cat /etc/folding/$UNIT/unitinfo.txt | grep 'Progress' | sed -e 's,\s*Progress:\s*\([0-9]\+\)\%.*,\1%,'`;
+#      else
+#        PROGRESS="Not Started";
+#    fi
+#    echo "Unit $UNIT Progress: " $PROGRESS;
+#    done
+#    sleep 20;
+#  fi
+#done

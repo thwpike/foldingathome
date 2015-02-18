@@ -11,10 +11,10 @@ SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
 GCC_VERSION = 4.9.1
-OPENSSL_VERSION=1.0.0
-OPENSSL_PATCH_LEVEL=h
+OPENSSL_VERSION=1.0.2
+OPENSSL_PATCH_LEVEL=
 ZLIB_VERSION=1.2.8
-WGET_VERSION=1.15
+WGET_VERSION=1.16.1
 
 all : folding_cd.iso diskless.zip usb.zip
 
@@ -409,15 +409,19 @@ initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION) : openssl_source
 	mkdir -p initrd_dir/lib64
 	cd openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL) && \
 	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION)" $(MAKE) && \
-	cp libssl.so.$(OPENSSL_VERSION) ../initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION) && \
-	cp libcrypto.so.$(OPENSSL_VERSION) ../initrd_dir/lib64/libcrypto.so.$(OPENSSL_VERSION) && \
+	cp libssl.so.1.0.0 ../initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION) && \
+	cp libcrypto.so.1.0.0 ../initrd_dir/lib64/libcrypto.so.$(OPENSSL_VERSION) && \
 	cd ../initrd_dir/lib64 && \
+        ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so.1.0.0 && \
 	ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so && \
-	ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so && \
+	ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so.1.0.0 && \
+        ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so && \
 	cd ../lib && \
 	ln -sf ../lib64/libssl.so.$(OPENSSL_VERSION) libssl.so.$(OPENSSL_VERSION) && \
+        ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so.1.0.0 && \
 	ln -sf libssl.so.$(OPENSSL_VERSION) libssl.so && \
 	ln -sf ../lib64/libcrypto.so.$(OPENSSL_VERSION) libcrypto.so.$(OPENSSL_VERSION) && \
+        ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so.1.0.0 && \
 	ln -sf libcrypto.so.$(OPENSSL_VERSION) libcrypto.so
 
 openssl_source : openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz glibc_libs initrd_dir/lib64/libz.so.$(ZLIB_VERSION) 
@@ -435,7 +439,7 @@ initrd_dir/bin/wget : wget_source
 wget_source : wget-$(WGET_VERSION).tar.xz glibc_libs initrd_dir/lib64/libz.so.$(ZLIB_VERSION) initrd_dir/lib64/libssl.so.$(OPENSSL_VERSION)
 	tar xJf wget-$(WGET_VERSION).tar.xz && \
 	cd wget-$(WGET_VERSION) && \
-	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)/include" ./configure --prefix=/ --with-ssl=openssl && \
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CPPFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)/include" ./configure --prefix=/ --with-ssl=openssl --without-libuuid && \
 	touch ../wget_source
 
 glibc_libs : glibc_src boot/kernel
