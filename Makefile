@@ -4,8 +4,8 @@ LOOPDEV = $(shell sudo losetup -f)
 MOUNT = /mnt
 
 # Program Versions
-KERNEL_VERSION = 3.18.5
-GLIBC_VERSION = 2.20
+KERNEL_VERSION = 3.19
+GLIBC_VERSION = 2.21
 BUSYBOX_VERSION = 1.23.1
 SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
@@ -24,7 +24,7 @@ distclean: clean
 	-rm -rf linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2 zlib-$(ZLIB_VERSION).tar.gz openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz wget-$(WGET_VERSION).tar.xz
 
 clean:
-	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware zlib_source zlib-$(ZLIB_VERSION) openssl_source openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL) wget_source wget-$(WGET_VERSION) initrd_dir/bin/wget boot/ldlinux.c32 diskless/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32
+	-rm -rf linux-$(KERNEL_VERSION) glibc glibc_libs glibc-$(GLIBC_VERSION) glibc_src busybox-$(BUSYBOX_VERSION) syslinux-$(SYSLINUX_VERSION) syslinux_src bzip2-$(BZIP_VERSION) boot initrd_dir/lib initrd_dir/lib64 initrd_dir/bin/busybox initrd_dir/bin/encode initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel initrd_dir/bin/genisoimage initrd_dir/etc/manifest initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/index.cgi diskless diskless.zip usb.zip kernel_patch folding_cd.iso folding.zip partition_table part_gen outfile disk folding cdrkit-$(CDRKIT_VERSION) gcc_source gcc-$(GCC_VERSION) initrd_dir/etc/folding/cgi-bin/isolinux.bin kernel_firmware initrd_dir/lib/firmware zlib_source zlib-$(ZLIB_VERSION) openssl_source openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL) wget_source wget-$(WGET_VERSION) initrd_dir/bin/wget boot/ldlinux.c32 diskless/ldlinux.c32 initrd_dir/etc/folding/cgi-bin/ldlinux.c32 initrd_dir/include
 
 ### install_web ###
 install_web: $(WEBDIR)/benchmark.html $(WEBDIR)/cd.html $(WEBDIR)/diskless.html $(WEBDIR)/diskless.zip $(WEBDIR)/index.html $(WEBDIR)/linux.html $(WEBDIR)/syslinux $(WEBDIR)/syslinux.com $(WEBDIR)/syslinux.exe $(WEBDIR)/usb.html $(WEBDIR)/usb.zip $(WEBDIR)/folding.zip $(WEBDIR)/vm.html $(CGIDIR)/fold.iso $(CGIDIR)/kernel $(CGIDIR)/initrd $(CGIDIR)/isolinux.bin $(CGIDIR)/fold.txt
@@ -258,11 +258,11 @@ diskless/ldlinux.c32: initrd_dir/bin/syslinux
 	cp syslinux-$(SYSLINUX_VERSION)/bios/com32/elflink/ldlinux/ldlinux.c32 diskless
 
 #### initrd ####
-boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel glibc_libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6 initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/bin/genisoimage kernel_firmware initrd_dir/bin/wget initrd_dir/etc/folding/cgi-bin/ldlinux.c32
+boot/initrd : initrd_dir/bin/isVMWare initrd_dir/bin/isVPC initrd_dir/bin/queueinfo initrd_dir/bin/busybox initrd_dir/bin/mbr.bin initrd_dir/bin/syslinux initrd_dir/etc/folding/cgi-bin/isolinux.bin initrd_dir/etc/folding/cgi-bin/kernel glibc_libs initrd_dir/init initrd_dir/bin/encode initrd_dir/bin/backup.sh initrd_dir/bin/check_hang.sh initrd_dir/bin/processor.awk initrd_dir/bin/average.awk initrd_dir/bin/bench.amber.awk initrd_dir/bin/bench.bonusgromacs.awk initrd_dir/bin/bench.gromacs33.awk initrd_dir/bin/bench.tinker.awk initrd_dir/bin/benchmark.sh initrd_dir/etc/folding/cgi-bin/index.cgi initrd_dir/etc/folding/cgi-bin/fold.txt initrd_dir/etc/folding/cgi-bin/reconf.cgi initrd_dir/etc/folding/cgi-bin/oneunit.cgi initrd_dir/lib64/libbz2.so.1 initrd_dir/lib64/libgcc_s.so.1 initrd_dir/lib64/libstdc++.so.6 initrd_dir/etc/folding/cgi-bin/fold.iso initrd_dir/bin/genisoimage kernel_firmware initrd_dir/etc/folding/cgi-bin/ldlinux.c32 boot/kernel initrd_dir/bin/wget
 	mkdir -p initrd_dir/tmp
 	cd initrd_dir && \
 	chmod 1777 tmp && \
-	find . -name .svn -prune -o -print > etc/manifest && \
+	find . -type d \( -name .svn -o -name include \) -prune -o -print > etc/manifest && \
 	bin/busybox cpio -o -H newc < etc/manifest | gzip -9 > ../boot/initrd
 
 initrd_dir/bin/queueinfo : glibc_libs queueinfo.c
@@ -339,6 +339,7 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/b
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
 	patch -p0 < ../patches/busybox.patch && \
+	patch -p1 < ../patches/busybox-1.23.1-modprobe-small.patch && \
 	$(MAKE) CC="gcc -L../glibc" busybox && \
 	cp busybox ../initrd_dir/bin
 
@@ -440,9 +441,9 @@ wget_source : wget-$(WGET_VERSION).tar.xz glibc_libs initrd_dir/lib64/libz.so.$(
 glibc_libs : glibc_src boot/kernel
 	mkdir -p initrd_dir/lib
 	mkdir -p initrd_dir/lib64
-	mkdir -p glibc && \
+	mkdir -p glibc
 	cd glibc && \
-	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/generated/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include/uapi:$(CURDIR)/linux-$(KERNEL_VERSION)/include:$(CURDIR)/linux-$(KERNEL_VERSION)/arch/x86/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
+	../glibc-$(GLIBC_VERSION)/configure CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" --prefix=/usr --with-headers=$(CURDIR)/initrd_dir/include --enable-kernel=$(KERNEL_VERSION) --disable-profile && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" lib && \
         cd ../glibc-$(GLIBC_VERSION)/math && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
@@ -459,19 +460,18 @@ glibc_libs : glibc_src boot/kernel
 	cd ../crypt && \
 	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
 	cd ../nis && \
-	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc && \
-	cd $(CURDIR) && \
-	cp glibc/libc.so initrd_dir/lib64/libc.so.6 && \
-	cp glibc/elf/ld-linux-x86-64.so.2 initrd_dir/lib64 && \
-	cp glibc/rt/librt.so.1 initrd_dir/lib64 && \
-	cp glibc/nptl/libpthread.so.0 initrd_dir/lib64 && \
-	cp glibc/math/libm.so.6 initrd_dir/lib64 && \
-	cp glibc/nss/libnss_files.so.2 initrd_dir/lib64 && \
-	cp glibc/resolv/libnss_dns.so.2 initrd_dir/lib64 && \
-	cp glibc/resolv/libresolv.so.2 initrd_dir/lib64 && \
-	cp glibc/dlfcn/libdl.so.2 initrd_dir/lib64 && \
-	cp glibc/crypt/libcrypt.so.1 initrd_dir/lib64 && \
-	cp glibc/nis/libnsl.so.1 initrd_dir/lib64 && \
+	$(MAKE) CFLAGS="-O2 -fno-stack-protector -U_FORTIFY_SOURCE" -r srcdir=.. objdir=../../glibc
+	cp glibc/libc.so initrd_dir/lib64/libc.so.6
+	cp glibc/elf/ld-linux-x86-64.so.2 initrd_dir/lib64
+	cp glibc/rt/librt.so.1 initrd_dir/lib64
+	cp glibc/nptl/libpthread.so.0 initrd_dir/lib64
+	cp glibc/math/libm.so.6 initrd_dir/lib64
+	cp glibc/nss/libnss_files.so.2 initrd_dir/lib64
+	cp glibc/resolv/libnss_dns.so.2 initrd_dir/lib64
+	cp glibc/resolv/libresolv.so.2 initrd_dir/lib64
+	cp glibc/dlfcn/libdl.so.2 initrd_dir/lib64
+	cp glibc/crypt/libcrypt.so.1 initrd_dir/lib64
+	cp glibc/nis/libnsl.so.1 initrd_dir/lib64
 	cd initrd_dir/lib && \
 	ln -sf ../lib64/libc.so.6 libc.so.6 && \
 	ln -sf ../lib64/ld-linux-x86-64.so.2 ld-linux-x86-64.so.2 && \
@@ -483,8 +483,7 @@ glibc_libs : glibc_src boot/kernel
 	ln -sf ../lib64/libresolv.so.2 libresolv.so.2 && \
 	ln -sf ../lib64/libcrypt.so.1 libcrypt.so.1 && \
 	ln -sf ../lib64/libdl.so.2 libdl.so.2 && \
-	ln -sf ../lib64/libnsl.so.1 libnsl.so.1 && \
-	cd $(CURDIR) && \
+	ln -sf ../lib64/libnsl.so.1 libnsl.so.1
 	touch glibc_libs
 
 glibc_src : glibc-$(GLIBC_VERSION).tar.xz
@@ -516,7 +515,9 @@ kernel_firmware : boot/kernel
 
 boot/kernel : kernel_patch
 	mkdir -p boot
-	$(MAKE) -C linux-$(KERNEL_VERSION) && \
+	mkdir -p linux-$(KERNEL_VERSION)/usr
+	$(MAKE) -C linux-$(KERNEL_VERSION)
+	$(MAKE) -C linux-$(KERNEL_VERSION) headers_install ARCH=x86_64 INSTALL_HDR_PATH=$(CURDIR)/initrd_dir
 	cp linux-$(KERNEL_VERSION)/arch/x86_64/boot/bzImage boot/kernel
 
 kernel_patch : linux-$(KERNEL_VERSION).tar.xz patches/kernel.config
