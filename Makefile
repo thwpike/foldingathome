@@ -6,7 +6,7 @@ MOUNT = /mnt
 # Program Versions
 KERNEL_VERSION = 3.19.3
 GLIBC_VERSION = 2.21
-BUSYBOX_VERSION = 1.23.1
+BUSYBOX_VERSION = 1.23.2
 SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
@@ -339,7 +339,6 @@ initrd_dir/bin/busybox : busybox-$(BUSYBOX_VERSION).tar.bz2 glibc_libs patches/b
 	cd busybox-$(BUSYBOX_VERSION) && \
 	cp ../patches/busybox.config .config && \
 	patch -p0 < ../patches/busybox.patch && \
-	patch -p1 < ../patches/busybox-1.23.1-modprobe-small.patch && \
 	$(MAKE) CC="gcc -L../glibc" busybox && \
 	cp busybox ../initrd_dir/bin
 
