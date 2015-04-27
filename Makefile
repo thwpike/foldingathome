@@ -10,7 +10,7 @@ BUSYBOX_VERSION = 1.23.2
 SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
 CDRKIT_VERSION = 1.1.7.1
-GCC_VERSION = 4.9.1
+GCC_VERSION = 4.9.2
 
 all : folding_cd.iso diskless.zip usb.zip
 
