@@ -379,7 +379,7 @@ initrd_dir/lib64/libgcc_s.so.1: gcc_source glibc_libs
 gcc_source: gcc-$(GCC_VERSION).tar.bz2
 	tar xjf gcc-$(GCC_VERSION).tar.bz2 && \
 	cd gcc-$(GCC_VERSION) && \
-	./configure --disable-bootstrap && \
+	./configure --disable-bootstrap --enable-languages=c,c++ && \
 	touch ../gcc_source
 
 initrd_dir/lib64/libz.so.$(ZLIB_VERSION) : zlib_source
