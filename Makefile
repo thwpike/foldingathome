@@ -9,7 +9,7 @@ GLIBC_VERSION = 2.21
 BUSYBOX_VERSION = 1.23.2
 SYSLINUX_VERSION = 6.03
 BZIP_VERSION = 1.0.6
-CDRKIT_VERSION = 1.1.7.1
+CDRKIT_VERSION = 1.1.11
 GCC_VERSION = 4.9.2
 OPENSSL_VERSION=1.0.2
 OPENSSL_PATCH_LEVEL=a
@@ -279,15 +279,22 @@ initrd_dir/etc/folding/cgi-bin/fold.txt : patches/fold.txt
 	mkdir -p initrd_dir/etc/folding/cgi-bin
 	cp patches/fold.txt initrd_dir/etc/folding/cgi-bin
 
-initrd_dir/bin/genisoimage : glibc_libs cdrkit-$(CDRKIT_VERSION).tar.gz patches/genisoimage.patch
+initrd_dir/bin/genisoimage : glibc_libs cdrkit-$(CDRKIT_VERSION).tar.gz initrd_dir/lib64/libz.so.$(ZLIB_VERSION) 
 	mkdir -p initrd_dir/bin
-	tar xzf cdrkit-$(CDRKIT_VERSION).tar.gz && \
+	tar xzf cdrkit-$(CDRKIT_VERSION).tar.gz
 	cd cdrkit-$(CDRKIT_VERSION) && \
-	patch -p1 < ../patches/genisoimage.patch && \
-	$(MAKE) build/Makefile && \
-	cd build && \
-	$(MAKE) genisoimage && \
-	cp genisoimage/genisoimage ../../initrd_dir/bin/genisoimage
+	patch -p1 < ../patches/cdrkit-1.1.11-cmakewarn.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-dvdman.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-format.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-handler.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-manpagefix.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-memset.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-readsegfault.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-rootstat.patch && \
+	patch -p1 < ../patches/cdrkit-1.1.11-usalinst.patch
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)/include" $(MAKE) -C cdrkit-$(CDRKIT_VERSION) build/Makefile
+	LDFLAGS="-L$(CURDIR)/initrd_dir/lib64" CFLAGS="-I$(CURDIR)/zlib-$(ZLIB_VERSION) -I$(CURDIR)/openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL)/include" $(MAKE) -C cdrkit-$(CDRKIT_VERSION)/build genisoimage
+	cp cdrkit-$(CDRKIT_VERSION)/build/genisoimage/genisoimage initrd_dir/bin/genisoimage
 
 #### isolinux, pxelinux, syslinux ####
 diskless/syslinux.exe : initrd_dir/bin/syslinux
