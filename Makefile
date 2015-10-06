@@ -144,7 +144,7 @@ install_net: /var/lib/tftpboot/PXEClient/kernel /var/lib/tftpboot/PXEClient/init
 prefetch : linux-$(KERNEL_VERSION).tar.xz glibc-$(GLIBC_VERSION).tar.xz busybox-$(BUSYBOX_VERSION).tar.bz2 syslinux-$(SYSLINUX_VERSION).tar.xz bzip2-$(BZIP_VERSION).tar.gz cdrkit-$(CDRKIT_VERSION).tar.gz gcc-$(GCC_VERSION).tar.bz2 zlib-$(ZLIB_VERSION).tar.gz openssl-$(OPENSSL_VERSION)$(OPENSSL_PATCH_LEVEL).tar.gz wget-$(WGET_VERSION).tar.xz
 
 linux-$(KERNEL_VERSION).tar.xz :
-	wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-$(KERNEL_VERSION).tar.xz
+	wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(KERNEL_VERSION).tar.xz
 
 glibc-$(GLIBC_VERSION).tar.xz :
 	wget http://ftp.gnu.org/gnu/glibc/glibc-$(GLIBC_VERSION).tar.xz
@@ -153,7 +153,7 @@ busybox-$(BUSYBOX_VERSION).tar.bz2 :
 	wget http://busybox.net/downloads/busybox-$(BUSYBOX_VERSION).tar.bz2
 
 syslinux-$(SYSLINUX_VERSION).tar.xz :
-	wget http://www.kernel.org/pub/linux/utils/boot/syslinux/syslinux-$(SYSLINUX_VERSION).tar.xz
+	wget https://cdn.kernel.org/pub/linux/utils/boot/syslinux/syslinux-$(SYSLINUX_VERSION).tar.xz
 
 bzip2-$(BZIP_VERSION).tar.gz :
 	wget http://www.bzip.org/$(BZIP_VERSION)/bzip2-$(BZIP_VERSION).tar.gz
