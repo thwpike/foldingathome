@@ -23,12 +23,12 @@ Syslinux
 Busybox
 GlibC
 
-In order to build, you will need an up to date installation of Ubuntu 14.10 with
+In order to build, you will need an up to date installation of Ubuntu 15.04 with
 the following additional packages installed:
 apt-get install nasm zip genisoimage libmpfr-dev libgmp3-dev libmpc-dev \
                 libc6-dev-i386 lib32gcc1 gcc-multilib g++-multilib git-core \
                 qemu cmake libcap-dev mingw32 libncurses5-dev gettext \
-                autoconf libtool texinfo uuid-dev upx
+                autoconf libtool texinfo uuid-dev upx libbz2-dev
 
 This software downloads the folding client and cores from Stanford to comply
 with the Folding@Home license.
